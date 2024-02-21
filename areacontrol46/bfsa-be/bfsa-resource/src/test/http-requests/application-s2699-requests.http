@@ -1,0 +1,47 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_ppp&password=expert_ppp
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ApplicationS2699Controller # getApplicationS2699 by record id
+GET {{host}}/api/s2699-applications/1a0b4d2c-fd81-497e-8653-57819b685cf7
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2699Controller # approveApplicationS2699
+PUT {{host}}/api/s2699-applications/d5e8bee1-26ba-45e0-bbb5-8eadbed3867e/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2699Controller # refuseApplicationS2699
+PUT {{host}}/api/s2699-applications/676317d6-3d5f-4237-b483-934344d32fc0/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS2699Controller # forCorrectionApplicationS2699
+PUT {{host}}/api/s2699-applications/77fee257-715e-4fcb-a6e3-55977efa713b/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

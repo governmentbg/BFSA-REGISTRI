@@ -1,0 +1,48 @@
+<div class="m-4">
+  <h1>Profile</h1>
+
+  <div class="">
+    <mat-card>
+      <div class="flex flex-col md:flex-row p-6 gap-8 md:gap-20">
+        <div class="flex flex-col gap-4 min-w-max">
+          <div>
+            <img
+              src="https://randomuser.me/api/portraits/men/1.jpg"
+              class="rounded-full"
+              alt=""
+            />
+          </div>
+          <div>
+            <div class="text-xl font-semibold">
+              {{ user.fullName }}
+            </div>
+            <div class="opacity-50 mat-caption">
+              {{ user.email }}
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-4 md:w-1/2 flex-grow">
+          <div class="">
+            <div class="opacity-50 mat-caption">ID:</div>
+            {{ user.userId }}
+          </div>
+          <div class="break-words">
+            <div class="opacity-50 mat-caption">Token</div>
+            {{ user.token }}
+          </div>
+
+          <form [formGroup]="profileForm">
+            <div class="opacity-50 mat-caption">Theme</div>
+            <div class="flex items-center gap-2">
+              <mat-icon class="">brightness_5</mat-icon>
+              <mat-slide-toggle formControlName="theme" class="">
+              </mat-slide-toggle>
+              <mat-icon>bedtime</mat-icon>
+            </div>
+          </form>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,14 @@
+<h1 mat-dialog-title>Изпращане за корекция ?</h1>
+<form [formGroup]="correctionForm">
+  <mat-form-field appearance="fill">
+    <mat-label>Бележки</mat-label>
+    <textarea matInput formControlName="description"></textarea>
+  </mat-form-field>
+</form>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="discard()">Не</button>
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="confirm()">
+    Да
+  </button>
+</div>

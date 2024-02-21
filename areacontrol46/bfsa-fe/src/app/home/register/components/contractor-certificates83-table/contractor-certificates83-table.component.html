@@ -1,0 +1,102 @@
+<div class="overflow-auto mt-4">
+  <div *ngIf="applicant" class="w-full">
+    <mat-form-field class="w-full" appearance="fill">
+      <mat-label>Моля, изберете регистъра</mat-label>
+      <mat-icon class="opacity-50" matPrefix>filter_alt</mat-icon>
+      <mat-select [formControl]="registerControl">
+        <mat-option
+          *ngFor="let item of dataSourceFilter"
+          [value]="item.code"
+          [title]="item.name"
+        >
+          {{ item.name }}
+        </mat-option>
+      </mat-select>
+      <button
+        mat-icon-button
+        matSuffix
+        *ngIf="registerControl.value"
+        aria-label="Clear"
+        (click)="clearSelection($event)"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+  </div>
+  <table mat-table [dataSource]="dataSource" class="w-full">
+    <ng-container matColumnDef="validUntilDate">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Срок на валидност
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{
+          element.validUntilDate
+            ? formatDate(element.validUntilDate)
+            : "Безсрочен"
+        }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="regNumber">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Сертификат/Разрешение No
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.regNumber }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="regDate">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Дата на издаване
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.regDate | date : "dd.MM.yyyy" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Статус
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ translateStatus(element.status) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="serviceType">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Услуга
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.serviceType }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+        Действие
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="flex space-x-2">
+          <button mat-stroked-button (click)="edit(element)">
+            Редактиране
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (dblclick)="edit(row)"
+    ></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        No data matching the filter
+      </td>
+    </tr>
+  </table>
+</div>

@@ -1,0 +1,67 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  NomenclatureController # createNext
+POST {{host}}/api/noms/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "name": "Document Type",
+  "description": "Type of documents"
+}
+
+###  NomenclatureController # addNext
+POST {{host}}/api/noms/00100/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "code": "00100",
+  "name": "Серификат",
+  "description": "Сертификат"
+}
+
+###  Upload File
+POST {{host}}/api/files/00101
+accept: */*
+Authorization: Bearer {{access_token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="Temlate_TechnicalData_Full.xlsx"
+
+< Temlate_TechnicalData_Full.xlsx
+
+###  Get File (Resource)
+GET {{host}}/api/files/9c4cd02b-c9bb-4425-94a7-337afa512e28/file
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  Get FileDTO by id
+GET {{host}}/api/files/9c4cd02b-c9bb-4425-94a7-337afa512e28
+accept: */*
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+### Delete File by id.
+DELETE {{host}}/api/files/4209d415-2d22-4dc5-8de5-254b1c67759e
+accept: */*
+Authorization: Bearer {{access_token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary

@@ -1,0 +1,12 @@
+<h1 mat-dialog-title>Потвърждаване на директно вписване ?</h1>
+<!-- <div mat-dialog-content>
+  <p>What's your favorite animal?</p>
+  <mat-form-field appearance="fill">
+    <mat-label>Favorite Animal</mat-label>
+    <input matInput [(ngModel)]="data.animal">
+  </mat-form-field>
+</div> -->
+<div mat-dialog-actions>
+  <button mat-flat-button (click)="discard()">Не</button>
+  <button mat-flat-button cdkFocusInitial color="primary" (click)="confirm()">Да</button>
+</div>

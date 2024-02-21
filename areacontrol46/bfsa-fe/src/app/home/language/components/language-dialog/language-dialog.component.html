@@ -1,0 +1,52 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>{{ data.isAdd ? "Add a" : "Edit the" }} language</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Language ID</mat-label>
+        <input matInput formControlName="languageId" [readonly]="!data.isAdd" />
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="dialogForm.controls['name'].hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+        <mat-error
+          *ngIf="dialogForm.controls['description'].hasError('required')"
+        >
+          Description is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <div class="flex gap-6 mb-4">
+        <mat-slide-toggle color="primary" formControlName="main">
+          Main
+        </mat-slide-toggle>
+        <mat-slide-toggle color="primary" formControlName="enabled">
+          Enabled
+        </mat-slide-toggle>
+      </div>
+      <mat-form-field class="mb-2" appearance="fill">
+        <input matInput placeholder="Locale" formControlName="locale" />
+        <mat-error *ngIf="dialogForm.controls['locale'].hasError('required')">
+          Locale is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      {{ data.isAdd ? "Add" : "Update" }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,118 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>{{ data.isAdd ? "Add a" : "Edit the" }} user</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" [readonly]="!data.isAdd" />
+        <mat-error *ngIf="dialogForm.controls['username'].hasError('required')">
+          Username is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Password</mat-label>
+        <input
+          matInput
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+        />
+        <button
+          type="button"
+          mat-icon-button
+          matSuffix
+          (click)="hide = !hide"
+          [attr.aria-label]="'Hide password'"
+          [attr.aria-pressed]="hide"
+        >
+          <mat-icon>{{ hide ? "visibility_off" : "visibility" }}</mat-icon>
+        </button>
+        <mat-error *ngIf="dialogForm.controls['password'].hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <!-- <mat-form-field  class="mb-2" appearance="fill">
+        <mat-label>Confirm password</mat-label>
+        <input matInput type="password" formControlName="matchingPassword" />
+        <mat-error
+          *ngIf="dialogForm.controls['matchingPassword'].hasError('required')"
+        >
+          Password is <strong>required</strong>
+        </mat-error>
+      </mat-form-field> -->
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Full name</mat-label>
+        <input matInput formControlName="fullName" />
+        <mat-error *ngIf="dialogForm.controls['fullName'].hasError('required')">
+          Full name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+        <mat-error *ngIf="dialogForm.controls['email'].hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Identifier</mat-label>
+        <input matInput formControlName="identifier" />
+        <mat-error
+          *ngIf="dialogForm.controls['identifier'].hasError('required')"
+        >
+          Identifier is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Branches</mat-label>
+        <mat-select formControlName="branchId">
+          <mat-option *ngFor="let branch of data.branches" [value]="branch.id">
+            {{ branch.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="dialogForm.controls['branchId'].hasError('required')">
+          Branch is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Roles</mat-label>
+        <mat-select multiple formControlName="roles">
+          <mat-option *ngFor="let role of data.roles" [value]="role">
+            {{ role }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="dialogForm.controls['roles'].hasError('required')">
+          Role is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Directorates</mat-label>
+        <mat-select formControlName="directorateCode">
+          <mat-option
+            *ngFor="let code of data.directorateCodeList | keyvalue"
+            [value]="code.value"
+            [title]="code.key"
+          >
+            {{ code.key }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="dialogForm.controls['roles'].hasError('required')">
+          Role is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-slide-toggle class="mb-4" color="primary" formControlName="enabled">
+        Enabled
+      </mat-slide-toggle>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid"
+    >
+      {{ data.isAdd ? "Add" : "Update" }}
+    </button>
+  </mat-dialog-actions>
+</form>

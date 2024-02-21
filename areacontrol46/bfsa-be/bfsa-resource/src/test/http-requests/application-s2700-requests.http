@@ -1,0 +1,52 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_ppp&password=expert_ppp
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ApplicationS2700Controller # getApplicationS2700 by record id
+GET {{host}}/api/s2700-applications/555
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2700Controller # approveApplicationS2700
+PUT {{host}}/api/s2700-applications/554/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "recordId": "554",
+  "orderNumber": "1"
+}
+
+
+###  ApplicationS2700Controller # refuseApplicationS2700
+PUT {{host}}/api/s2700-applications/676317d6-3d5f-4237-b483-934344d32fc0/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS2700Controller # forCorrectionApplicationS2700
+PUT {{host}}/api/s2700-applications/77fee257-715e-4fcb-a6e3-55977efa713b/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

@@ -1,0 +1,432 @@
+<h1 class="text-center">
+  2272 - Регистрация на транспортни средства за превозване на суровини и храни.
+</h1>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за заявител
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име.."
+                formControlName="requestorFullName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="requestorIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="requestorEmail"
+                required
+              />
+              <mat-error
+                *ngIf="this.applicationForm.get('requestorEmail')?.errors"
+                >Emails must not match
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Качество на автор на заявлението</mat-label>
+              <mat-select formControlName="requestorAuthorTypeCode">
+                <mat-option
+                  *ngFor="let applicationAuthorType of requestorAuthorTypes"
+                  [value]="applicationAuthorType.code"
+                  >{{ applicationAuthorType.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <ng-container
+              *ngIf="
+                this.applicationForm.get('requestorAuthorTypeCode')?.value ===
+                '01306'
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Номер на пълномощно</mat-label>
+                <input
+                  matInput
+                  placeholder="Номер на пълномощно"
+                  formControlName="requestorPowerAttorneyNumber"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Заверено от</mat-label>
+                <input
+                  matInput
+                  placeholder="Заверено от"
+                  formControlName="requestorPowerAttorneyNotary"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Дата на пълномощно</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker1"
+                  formControlName="requestorPowerAttorneyDate"
+                  (click)="picker1.open()"
+                />
+                <mat-datepicker #picker1></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Валидно до</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker2"
+                  formControlName="requestorPowerAttorneyUntilDate"
+                  (click)="picker2.open()"
+                />
+                <mat-datepicker #picker2></mat-datepicker>
+              </mat-form-field>
+            </ng-container>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ОДБХ</mat-label>
+              <mat-select formControlName="branchIdentifier">
+                <mat-option
+                  *ngFor="let branch of branches"
+                  [value]="branch.identifier"
+                  >{{ branch.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <!-- correspondenceAddress -->
+          <ng-container formGroupName="applicantCorrespondenceAddress">
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Адрес за кореспонденция:
+            </div>
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Област</mat-label>
+                <mat-select
+                  (selectionChange)="onChangeCorrespondenceZone($event.value)"
+                >
+                  <mat-option
+                    *ngFor="let areaSettlement of areaSettlements"
+                    [value]="areaSettlement.id"
+                    >{{ areaSettlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Община</mat-label>
+                <mat-select
+                  (selectionChange)="
+                    onChangeCorrespondenceMunicipalitySettlements($event.value)
+                  "
+                >
+                  <mat-option
+                    *ngFor="
+                      let municipality of correspondenceMunicipalitySettlements
+                    "
+                    [value]="municipality.id"
+                    >{{ municipality.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Населено място</mat-label>
+                <mat-select formControlName="settlementCode">
+                  <mat-option
+                    *ngFor="let settlement of correspondenceSettlements"
+                    [value]="settlement.id"
+                    >{{ settlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Пощенски код</mat-label>
+                <input
+                  matInput
+                  placeholder="Пощенски код"
+                  formControlName="postCode"
+                  required
+                />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Адрес (BG)</mat-label>
+                <input
+                  matInput
+                  placeholder="Адрес (BG)"
+                  formControlName="address"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="radio-btn-box">
+            <mat-radio-group formControlName="entityType">
+              <mat-radio-button value="LEGAL">Юридическо лице</mat-radio-button
+              >&nbsp;&nbsp;
+              <mat-radio-button value="PHYSICAL"
+                >Физическо лице</mat-radio-button
+              >
+            </mat-radio-group>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.isPhysicalPersonForm"
+          >
+            Данни за физическо лице
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="!this.isPhysicalPersonForm"
+          >
+            Данни за ЮЛ
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="applicantFullName"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill" *ngIf="this.isPhysicalPersonForm">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="applicantIdentifier"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field
+              appearance="fill"
+              *ngIf="!this.isPhysicalPersonForm"
+            >
+              <mat-label>ЕИК</mat-label>
+              <input
+                matInput
+                placeholder="ЕИК"
+                formControlName="applicantIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="applicantEmail"
+                required
+              />
+              <mat-error
+                *ngIf="this.applicationForm.get('applicantEmail')?.errors"
+                >Emails must not match
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Телефон</mat-label>
+              <input
+                matInput
+                placeholder="Телефон"
+                formControlName="applicantPhone"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Специфични данни за МПС
+          </div>
+
+          <div class="section">
+            <div
+              class="section"
+              formArrayName="vehicles"
+              *ngIf="this.vehicles.length > 0"
+            >
+              <ng-container
+                *ngFor="let vehicleForm of vehicles?.controls; let i = index"
+              >
+                <div class="lesson-form-row" [formGroupName]="i">
+                  <mat-form-field>
+                    <mat-label>Вид превозно средство</mat-label>
+                    <mat-select formControlName="vehicleTypeCode">
+                      <mat-option
+                        *ngFor="let vehicleType of vehicleTypes"
+                        [value]="vehicleType.code"
+                        >{{ vehicleType.name }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Марка и модел</mat-label>
+                    <input
+                      matInput
+                      placeholder="Марка и модел"
+                      formControlName="brandModel"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Регистрационен номер</mat-label>
+                    <input
+                      matInput
+                      placeholder="Регистрационен номер"
+                      formControlName="registrationPlate"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Товароподемност</mat-label>
+                    <input
+                      matInput
+                      placeholder="Товароподемност"
+                      formControlName="load"
+                      required
+                      type="number"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Мерна единица</mat-label>
+                    <mat-select formControlName="loadUnitCode">
+                      <mat-option
+                        *ngFor="let measuringUnit of measuringUnits"
+                        [value]="measuringUnit.code"
+                        >{{ measuringUnit.name }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Обем (за цистерни и контейнери)</mat-label>
+                    <input
+                      matInput
+                      placeholder="Обем"
+                      formControlName="volume"
+                      type="number"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Мерна единица</mat-label>
+                    <mat-select formControlName="volumeUnitCode">
+                      <mat-option
+                        *ngFor="let measuringUnit of measuringUnits"
+                        [value]="measuringUnit.code"
+                        >{{ measuringUnit.name }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Собственост на МПС</mat-label>
+                    <mat-select formControlName="vehicleOwnershipTypeCode">
+                      <mat-option
+                        *ngFor="let vehicleOwnership of vehicleOwnerships"
+                        [value]="vehicleOwnership.code"
+                        >{{ vehicleOwnership.name }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-checkbox formControlName="transportationLicense">
+                    Имам издаден лиценз за извършване на превоз на товари на
+                    територията на Република Бъглария или лиценз за извършване
+                    за международен превоз на товари съгласно чл.6, ал.1 от
+                    Закона за автомобилните превози</mat-checkbox
+                  >
+                  <!-- TODO: Add checkbox for existic - transportationLicense -->
+                  <mat-form-field
+                    *ngIf="vehicleForm?.get('transportationLicense')?.value"
+                  >
+                    <mat-label>Номер на лиценз (Номер на сертификат)</mat-label>
+                    <input
+                      matInput
+                      placeholder="Номер на лиценз (Номер на сертификат)"
+                      formControlName="description"
+                    />
+                  </mat-form-field>
+
+                  <div class="pt-4 mb-14">
+                    <div class="mb-4">Вид произведени храни:</div>
+                    <div *ngIf="!foodTypes" class="animate-pulse">
+                      Loading Food Types...
+                    </div>
+                    <app-food-types-checkbox-list
+                      *ngIf="this.foodTypes?.length"
+                      [foodTypes]="foodTypes"
+                      (selectedFoodTypes)="onToggleChange($event, i)"
+                    >
+                    </app-food-types-checkbox-list>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="addVehicle()"
+          >
+            Добави
+          </button>
+        </li>
+      </ol>
+      <button
+        type="reset"
+        mat-raised-button
+        class="close-btn"
+        (click)="closeDialog()"
+      >
+        Затвори
+      </button>
+      <!-- [disabled]="!applicationForm.valid" -->
+      <button mat-raised-button color="primary" (click)="registerApplication()">
+        Запази
+      </button>
+    </form>
+  </mat-step>
+</mat-stepper>

@@ -1,0 +1,131 @@
+<h1 class="text-center">
+  2700 - Вписване в регистъра на лица, които извършват консултантски услуги за
+  интегрирано управление на вредителите при земеделските култури като
+  специализирана растителнозащитна услуга.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+          Запази
+        </button> -->
+
+        <!-- <button
+          [disabled]="!applicationForm.valid"
+          mat-flat-button
+          (click)="updateApplication()"
+        >
+          Запази
+        </button> -->
+
+        <button mat-flat-button (click)="downloadOrder()">
+          Печатане на заповед
+        </button>
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            1. Лица извършващи консултантски услуги
+          </div>
+
+          <div
+            formArrayName="ch83CertifiedPersons"
+            *ngIf="ch83CertifiedPersons.length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let ch83CertifiedPersonForm of ch83CertifiedPersons.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Име</mat-label>
+                  <input
+                    matInput
+                    placeholder="Име"
+                    formControlName="name"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Презиме</mat-label>
+                  <input
+                    matInput
+                    placeholder="Презиме"
+                    formControlName="surname"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Фамилия</mat-label>
+                  <input
+                    matInput
+                    placeholder="Фамилия "
+                    formControlName="familyName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>ЕГН</mat-label>
+                  <input
+                    matInput
+                    placeholder="ЕГН"
+                    formControlName="identifier"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+        <!-- <button mat-flat-button color="primary" matStepperNext>Продължи</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

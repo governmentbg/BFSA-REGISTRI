@@ -1,0 +1,100 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  FertilizerCertController # findAll
+GET {{host}}/api/fertilizer-certs/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FertilizerCertController # findById
+GET {{host}}/api/fertilizer-certs/f4816b08-a1b6-44c4-9670-d3dd77645f91
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FertilizerCertController # create
+POST {{host}}/api/fertilizer-certs/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "regNumber": "0136",
+  "regDate": "2023-03-16",
+  "entryDate": "2023-03-16",
+  "validUntilDate": "2023-03-16",
+  "edition": "Нов",
+  "ph": 6.5,
+  "dose": 10.5,
+  "waterAmount": 100,
+  "appNumber": 3,
+  "orderNumber": "66",
+  "orderDate": "2023-03-16",
+  "enabled": true,
+  "fertilizerTypeCode": "00101",
+  "manufacturerId": "a076ee75-dc55-4419-9dbd-a192658cfb03",
+  "certificateHolderId": "a076ee75-dc55-4419-9dbd-a192658cfb03",
+  "name": "ХХХ",
+  "ingredients": "Силициев диоксид – аморфен, хидратиран (SiO2) – 98%; Варовик – 10%; Водоразтворими соли – 1,5%; Съдържание на влага – 5%;",
+  "wording": "4-4-2",
+  "crop": "Сортировка",
+  "application": "Почвен подобрител, имащ способност да намалява влажността в средата на отглеждане на културите. Това създава благоприятни условия за развитие на здрави растения.",
+  "reason": "Абсорбирането на излишната влага е естествена преграда за развитието на гъбни болести.",
+  "description": "Доза на приложение"
+}
+
+
+###  FertilizerCertController # update
+PUT {{host}}/api/fertilizer-certs/f4816b08-a1b6-44c4-9670-d3dd77645f91
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id" : "f4816b08-a1b6-44c4-9670-d3dd77645f91",
+  "regNumber": "0136",
+  "regDate": "2023-03-16",
+  "entryDate": "2023-03-16",
+  "validUntilDate": "2023-03-16",
+  "edition": "Нов",
+  "ph": 6.5,
+  "dose": 10.5,
+  "waterAmount": 100,
+  "appNumber": 3,
+  "orderNumber": "66",
+  "orderDate": "2023-03-16",
+  "enabled": true,
+  "fertilizerTypeCode": "00101",
+  "manufacturerId": "a076ee75-dc55-4419-9dbd-a192658cfb03",
+  "certificateHolderId": "a076ee75-dc55-4419-9dbd-a192658cfb03",
+  "name": "ХХХ - Обновено",
+  "ingredients": "Силициев диоксид – аморфен, хидратиран (SiO2) – 98%; Варовик – 10%; Водоразтворими соли – 1,5%; Съдържание на влага – 5%;",
+  "wording": "4-4-2",
+  "crop": "Сортировка",
+  "application": "Почвен подобрител, имащ способност да намалява влажността в средата на отглеждане на културите. Това създава благоприятни условия за развитие на здрави растения.",
+  "reason": "Абсорбирането на излишната влага е естествена преграда за развитието на гъбни болести.",
+  "description": "Доза на приложение"
+}
+
+
+###  FertilizerCertController # history
+GET {{host}}/api/fertilizer-certs/f4816b08-a1b6-44c4-9670-d3dd77645f91/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

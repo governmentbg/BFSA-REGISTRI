@@ -1,0 +1,80 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  UserController # findAll
+GET {{host}}/api/users/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  UserController # get
+GET {{host}}/api/users/username/admin
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  UserController # getCurrentUser
+GET {{host}}/api/users/me
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  UserController # search
+GET {{host}}/api/users?q=ad
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+###  UserController # history
+GET {{host}}/api/users/2ac9d258-2035-4945-9b0f-f64a9058f481/history
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  UserController # saveIfExists
+PUT {{host}}/api/users/2ac9d258-2035-4945-9b0f-f64a9058f481
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "fullName": "test 123 456",
+  "enabled": true,
+  "roles": [
+      "ADMIN"
+  ]
+}
+
+###  UserController # setEnabled
+PUT {{host}}/api/users/9adb2462-4fb0-4d2f-a1c2-765d2ac56f10/true
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+###  UserController # roles
+GET {{host}}/api/users/roles
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+###  AdminController # updateRoles
+PUT {{host}}/api/users/083a3c6c-235b-4667-81ac-0a64f9eb6147/roles
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+  ["ADMIN"]
+
+
+###  UserController # signout
+POST {{host}}/api/users/signout
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "id": "0b3b64c6-e7fe-41cb-8e7d-91d1547bc641"
+}

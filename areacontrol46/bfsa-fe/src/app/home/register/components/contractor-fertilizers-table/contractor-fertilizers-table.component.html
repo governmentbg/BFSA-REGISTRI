@@ -1,0 +1,89 @@
+<div class="overflow-auto">
+  <table mat-table [dataSource]="dataSource" class="w-full">
+    <ng-container matColumnDef="regNumber">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Удостоверение No
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.regNumber }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="regDate">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">Дата</th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.regDate | date : "dd.MM.yyyy" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Наименование
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.name }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="productCategoryName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Категория на продукта
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.productCategoryName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="productTypeName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Вид на продукта
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.productTypeName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="manufacturerFullName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Производител
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.manufacturer.fullName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="applicationStatus">
+        <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+          Статус
+        </th>
+        <td mat-cell *matCellDef="let element">
+          {{ element.applicationStatus ? translateStatus(element.applicationStatus) : "n/a" }}
+        </td>
+      </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+        Действие
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="flex space-x-2">
+          <button mat-stroked-button (click)="edit(element)">
+            Редактиране
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (dblclick)="edit(row)"
+    ></tr>
+
+    <!-- Row shown when there is no matching data. -->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length"></td>
+    </tr>
+  </table>
+</div>

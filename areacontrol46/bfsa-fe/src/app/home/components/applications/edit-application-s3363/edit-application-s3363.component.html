@@ -1,0 +1,204 @@
+<h1 class="text-center">
+  3363 - Вписване в регистъра по чл. 6, ал. 1, т. 16 от Закона за защита на
+  растенията, на търгуваните на територията на Република България семена,
+  третирани с продукти за растителна защита, които са разрешени в поне една
+  държава членка на Европейския съюз, по смисъла на чл. 49, параграф 1 от
+  Регламент (ЕО) № 1107/2009
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+              Запази
+            </button> -->
+
+        <!-- <button
+              [disabled]="!applicationForm.valid"
+              mat-flat-button
+              (click)="updateApplication()"
+            >
+              Запази
+            </button> -->
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+      <ol>
+        <li class="mat-form-field--inline">
+          <mat-form-field appearance="fill">
+            <mat-label>Дата</mat-label>
+            <input
+              matInput
+              placeholder="Дата"
+              formControlName="registrationDate"
+            />
+          </mat-form-field>
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Вид на семената</mat-label>
+              <input
+                matInput
+                placeholder="Вид на семената"
+                formControlName="seedName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Количество семена</mat-label>
+              <input
+                matInput
+                placeholder="Количество семена"
+                formControlName="seedQuantity"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Търговско наименование на ПРЗ</mat-label>
+              <input
+                matInput
+                placeholder="Търговско наименование на ПРЗ"
+                formControlName="seedTradeName"
+              />
+            </mat-form-field>
+          </div>
+          <div class="section">
+            <div
+              formArrayName="treatments"
+              *ngIf="testingTreatments.length > 0"
+            >
+              <div
+                *ngFor="
+                  let testingTreatmentsForm of testingTreatments?.controls;
+                  let i = index
+                "
+              >
+                <div [formGroupName]="i" class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>А.В., с които са третирани</mat-label>
+                    <input
+                      matInput
+                      placeholder="А.В., с които са третирани"
+                      formControlName="treatmentDescription"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>г/л</mat-label>
+                    <input
+                      matInput
+                      placeholder="г/л"
+                      formControlName="treatmentAmount"
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section">
+            <mat-form-field appearance="fill" appearance="fill">
+              <mat-label>Производител на ПРЗ</mat-label>
+              <input
+                matInput
+                placeholder="Производител на ПРЗ"
+                formControlName="pppManufacturerName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Вносител на ПРЗ</mat-label>
+              <input
+                matInput
+                placeholder="Вносител на ПРЗ"
+                formControlName="pppImporterName"
+              />
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="countries" *ngIf="testingCountries.length > 0">
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              ПРЗ е разрешен за пускане на пазара и употреба в:
+            </div>
+
+            <div
+              *ngFor="let country of testingCountries?.controls; let i = index"
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Държава</mat-label>
+                  <input
+                    matInput
+                    placeholder="Държава"
+                    formControlName="name"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Номер на разрешението</mat-label>
+              <input
+                matInput
+                placeholder="Номер на разрешението"
+                formControlName="certificateNumber"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Дата на издаване</mat-label>
+              <input
+                matInput
+                placeholder="Дата на издаване"
+                formControlName="certificateDate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Валидно до</mat-label>
+              <input
+                matInput
+                placeholder="Валидно до"
+                formControlName="certificateUntilDate"
+              />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+    </div>
+  </mat-step>
+</mat-stepper>

@@ -1,0 +1,16 @@
+<div class="ml-1.5" *ngFor="let foodType of foodTypes">
+  <mat-checkbox
+    [checked]="true"
+    [disabled]="!areFoodTypesEnabled"
+    #checkbox
+    (change)="this.selectedFoodType(foodType, checkbox.checked)"
+  >
+    {{ foodType.name }}
+  </mat-checkbox>
+  <!-- <app-nested-food-types-list
+      *ngIf="this.parentFoodType.parent"
+      [parentFoodType]="this.parentFoodType.parent"
+    >
+    recursion here if we have nested foodtypes
+    </app-nested-food-types-list> -->
+</div>

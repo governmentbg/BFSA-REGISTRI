@@ -1,0 +1,188 @@
+<h1 class="text-center">
+  2711 - Издаване на удостоверение за търговия с продукти за растителна защита
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Обект за търговия с продукти за растителна защита:
+          </div>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Вид на обекта</mat-label>
+            <input
+              matInput
+              placeholder="Адрес (BG)"
+              formControlName="facilityTypeName"
+              required
+            />
+          </mat-form-field>
+
+          <div class="section" formGroupName="facilityAddress">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълен адрес</mat-label>
+              <input
+                matInput
+                placeholder="Адрес (BG)"
+                formControlName="fullAddress"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Лица със сертификат по чл. 83 от ЗЗР, свързани с дейностите в обекта
+          </div>
+
+          <ng-container *ngIf="this.data.ch83CertifiedPerson?.identifier">
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Лице, отговорно за дейността в обекта
+            </div>
+
+            <div class="section" formGroupName="ch83CertifiedPerson">
+              <mat-form-field appearance="fill">
+                <mat-label>Пълно име</mat-label>
+                <input
+                  matInput
+                  placeholder="Име"
+                  formControlName="fullName"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>ЕГН</mat-label>
+                <input
+                  matInput
+                  placeholder="ЕГН"
+                  formControlName="identifier"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <mat-checkbox [checked]="true" disabled
+              >Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+            >
+          </ng-container>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Лица, извършващи дейността в обекта:
+          </div>
+
+          <div
+            class="section"
+            formArrayName="ch83CertifiedPersons"
+            *ngIf="this.ch83CertifiedPersons.length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let ch83CertifiedPersonForm of ch83CertifiedPersons?.controls;
+                let i = index
+              "
+            >
+              <div class="lesson-form-row" [formGroupName]="i">
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълно име</mat-label>
+                  <input
+                    matInput
+                    placeholder="Име"
+                    formControlName="fullName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>ЕГН</mat-label>
+                  <input
+                    matInput
+                    placeholder="ЕГН"
+                    formControlName="identifier"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+
+          <div display="grid">
+            <mat-checkbox [checked]="true" disabled
+              >Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+            >
+
+            <!-- <div
+              class="section"
+              *ngIf="
+                applicationForm.get('fumigationCertificate')?.value === true
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Документ №</mat-label>
+                <input
+                  matInput
+                  placeholder="Презиме"
+                  formControlName="fumigationCertificateNumber"
+                  required
+                />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Издаден от</mat-label>
+                <input
+                  matInput
+                  placeholder="Презиме"
+                  formControlName="fumigationCertificateIssuedBy"
+                  required
+                />
+              </mat-form-field>
+            </div> -->
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+        <!-- <button mat-flat-button color="primary" matStepperNext>Продължи</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

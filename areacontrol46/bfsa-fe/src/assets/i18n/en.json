@@ -1,0 +1,91 @@
+{
+  "auth": {
+    "login": {
+      "language": "Language"
+    },
+    "signin": {
+      "language": "Language"
+    }
+  },
+  "signIn": "Sign In",
+  "remember": "Remember me",
+  "password": "Password",
+  "username": "Username",
+  "noAccount": "Don't have an account?",
+  "register": "Register here",
+  "forgotPassword": "Forgot password?",
+  "restorePassword": "Restore your password",
+  "signOut": "Sign Out",
+  "profile": "Profile",
+  "status": "Status",
+  "register-83": "Register physical persons by section 83",
+  "registerMessage": "An activation code has been sent to your email. You have 24 hours to activate your account.",
+  "varifyRegistrationSuccessMessage": "Congratulations! You succesfully verified your registration!",
+  "varifyRegistrationUnsuccessMessage": "Sorry. The registration link is not valid.",
+  "forgottenPasswordMessage": "A password reset code has been sent to your email. You have 24 hours to change your password",
+  "verifyPasswordUnsuccessMessage": "Sorry. The reset password link is not valid.",
+  "verifyPasswordSuccessMessage": "You succesfully reset your password.",
+  "internalUserManagement": "Internal user management",
+  "externalUserManagement": "External user management",
+  "inspection": {
+    "title": "Inspections"
+  },
+  "dashboard": {
+    "title": "Dashboard"
+  },
+  "registers": {
+    "contractor": {
+      "title": "Business operator"
+    }
+  },
+  "nomenclature": {
+    "title": "Nomenclatures"
+  },
+  "classifier": {
+    "title": "Classifiers"
+  },
+  "settlement": {
+    "title": "Settlements"
+  },
+  "activityGroup": {
+    "title": "Activity groups"
+  },
+  "messageResource": {
+    "title": "Messages"
+  },
+  "language": {
+    "title": "Languages"
+  },
+  "user": {
+    "title": "Users"
+  },
+  "branch": {
+    "title": "Regional directorates"
+  },
+  "nav": {
+    "category": {
+      "registers": "REGISTERS",
+      "administration": "ADMINISTRATION",
+      "management": "MANAGEMENT"
+    },
+    "registers": "Registers",
+    "languages": "Languages",
+    "messageResources": "Messages",
+    "foodControl": "Food Control",
+    "plantProtectionQualityControl": "Plant Protection and Quality Control of Fresh Fruits and Vegetables",
+    "plantProtectionProducts": "Plant Protection Products",
+    "dashboard": "Dashboard",
+    "applications": "Applications",
+    "nomenclatures": "Nomenclatures",
+    "classifiers": "Classifiers",
+    "settlements": "Settlements",
+    "activityGroups": "Activity groups",
+    "tasks": "Tasks",
+    "users": "Users",
+    "inspections": "Inspections",
+    "archive": "Archive",
+    "references": "References",
+    "contractors": "Contractors",
+    "branches": "Regional directorates"
+  }
+}

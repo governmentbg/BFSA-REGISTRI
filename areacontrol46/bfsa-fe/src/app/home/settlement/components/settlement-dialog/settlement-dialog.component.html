@@ -1,0 +1,108 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <h1 mat-dialog-title>{{ data.isAdd ? "Add a" : "Edit the" }} Settlement</h1>
+  <div mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+        <!-- <mat-hint>Hint</mat-hint> -->
+        <mat-error *ngIf="dialogForm.controls['name'].hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" />
+        <mat-error *ngIf="dialogForm.controls['code'].hasError('required')">
+          Code is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Name Lat</mat-label>
+        <input matInput formControlName="nameLat" />
+        <mat-error *ngIf="dialogForm.controls['nameLat'].hasError('required')">
+          Name Lat is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>District</mat-label>
+        <input matInput formControlName="district" />
+        <mat-error *ngIf="dialogForm.controls['district'].hasError('required')">
+          District is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Municipality</mat-label>
+        <input matInput formControlName="municipality" />
+        <mat-error
+          *ngIf="dialogForm.controls['municipality'].hasError('required')"
+        >
+          Municipality is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Place Type</mat-label>
+        <input matInput formControlName="placeType" />
+        <mat-error
+          *ngIf="dialogForm.controls['placeType'].hasError('required')"
+        >
+          Place Type is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>TSB</mat-label>
+        <input matInput formControlName="tsb" />
+        <mat-error *ngIf="dialogForm.controls['tsb'].hasError('required')">
+          TSB is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Parent Code</mat-label>
+        <input matInput formControlName="parentCode" />
+        <mat-error
+          *ngIf="dialogForm.controls['parentCode'].hasError('required')"
+        >
+          Country Code is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Country Code</mat-label>
+        <input matInput formControlName="countryCode" />
+        <mat-error
+          *ngIf="dialogForm.controls['countryCode'].hasError('required')"
+        >
+          Country Code is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <ng-container *ngIf="!data.isAdd">
+        <mat-slide-toggle
+          color="primary"
+          formControlName="enabled"
+          class="mb-2"
+        >
+          Enabled
+        </mat-slide-toggle>
+      </ng-container>
+    </div>
+  </div>
+  <div mat-dialog-actions [align]="'end'">
+    <button mat-button mat-dialog-close>Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      {{ data.isAdd ? "Add" : "Update" }}
+    </button>
+  </div>
+</form>

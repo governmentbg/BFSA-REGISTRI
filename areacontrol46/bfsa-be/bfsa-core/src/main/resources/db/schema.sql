@@ -1,0 +1,4 @@
+SELECT 'Hello, World!' AS greeting;
+
+-- CREATE SCHEMA IF NOT EXISTS fph;
+-- CREATE EXTENSION IF NOT EXISTS pgcrypto;

@@ -1,0 +1,318 @@
+<h1 class="text-center">
+  769 - Регистрация на обекти за производство и търговия с храни <br />
+  Търговия чрез подвижни/временни обекти
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div
+            class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+            *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+          >
+            <button mat-flat-button (click)="downloadOrder()">
+              Печатане на заповед
+            </button>
+
+            <button mat-flat-button (click)="openApprovalDialog()">
+              Одобрение
+            </button>
+
+            <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+            <button mat-flat-button (click)="openCorrectionDialog()">
+              За корекция
+            </button>
+          </div>
+
+          <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+            Има грешки при финално действие: {{ finalActionErrors }}
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за подвижни обекти и автомати за храна
+          </div>
+
+          <div formArrayName="facilities" *ngIf="facilities.length > 0">
+            <div
+              *ngFor="
+                let facilityFormGroup of facilities.controls;
+                let i = index
+              "
+              [formGroupName]="i"
+            >
+              <div class="my-4 uppercase font-bold text-xs opacity-100">
+                Данни за обекта
+              </div>
+
+              <div class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Вид на обекта</mat-label>
+                  <input
+                    matInput
+                    placeholder="Вид на обекта"
+                    formControlName="facilityTypeName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Наименование</mat-label>
+                  <input
+                    matInput
+                    placeholder="Наименование"
+                    formControlName="name"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Площ в кв. метри</mat-label>
+                  <input
+                    matInput
+                    placeholder="Площ в кв. метри"
+                    formControlName="area"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълен адрес</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълен адрес"
+                    formControlName="fullAddress"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+
+              <div class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label
+                    >Описание на дейностите, извършвани в обекта</mat-label
+                  >
+                  <input
+                    matInput
+                    placeholder="Описание на дейностите, извършвани в обекта"
+                    formControlName="activityDescription"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Вид водоснабдяване в обекта</mat-label>
+                  <input
+                    matInput
+                    placeholder="Вид водоснабдяване в обекта"
+                    formControlName="waterSupplyTypeName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Начин на отвеждане на отпадните води</mat-label>
+                  <input
+                    matInput
+                    placeholder="Начин на отвеждане на отпадните води"
+                    formControlName="disposalWasteWater"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Пояснение към групи храни:</mat-label>
+                  <input
+                    formControlName="foodTypeDescription"
+                    matInput
+                    placeholder="Пояснение към групи храни:"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+              <!-- <span>
+                Групи храни, които ще се дистрибутират в обекта
+                <div *ngFor="let foodType of getFacilityFoodTypes(i)">
+                  {{ foodType.name }}
+                </div>
+              </span> -->
+
+              <div class="mb-4">
+                Групи храни, които ще се дистрибутират в обекта
+              </div>
+              <div *ngIf="!getFacilityFoodTypes(i)" class="animate-pulse">
+                Loading Food Types...
+              </div>
+              <app-food-types-checkbox-list
+                [areFoodTypesEnabled]="
+                  this.data?.recordStatus === 'PAYMENT_CONFIRMED' ||
+                  this.data?.recordStatus === 'ENTERED'
+                "
+                [foodTypes]="getFacilityFoodTypes(i)"
+                (selectedFoodTypes)="onToggleChange($event, i)"
+              ></app-food-types-checkbox-list>
+            </div>
+          </div>
+
+          <div>
+            <mat-checkbox
+              [disabled]="true"
+              class="checkbox"
+              [checked]="vehicles.length > 0"
+              ><span class="checkbox"
+                >Използвам МПС за транспортиране на храни по чл.52
+              </span>
+            </mat-checkbox>
+
+            <div formArrayName="vehicles" *ngIf="vehicles.length > 0">
+              <div
+                class="section"
+                *ngFor="
+                  let vehicleFormGroup of vehicles.controls;
+                  let i = index
+                "
+                [formGroupName]="i"
+              >
+                <mat-form-field appearance="fill">
+                  <mat-label>Собственост на МПС</mat-label>
+                  <input
+                    formControlName="vehicleOwnershipTypeName"
+                    matInput
+                    placeholder="Собственост на МПС"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Вид превозно средство</mat-label>
+                  <input
+                    formControlName="vehicleTypeName"
+                    matInput
+                    placeholder="Вид превозно средство"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Марка и модел</mat-label>
+                  <input
+                    formControlName="brandModel"
+                    matInput
+                    placeholder="Марка и модел"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Регистрационен номер</mat-label>
+                  <input
+                    formControlName="registrationPlate"
+                    matInput
+                    placeholder="Регистрационен номер"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <mat-checkbox
+            [disabled]="true"
+            [checked]="this.ch50VehicleCertNumbers.length > 0"
+            >Използвам МПС за транспортиране на храни по чл. 50</mat-checkbox
+          >
+          <div
+            formArrayName="ch50VehicleCertNumbers"
+            *ngIf="ch50VehicleCertNumbers.length > 0"
+          >
+            <div
+              class="section"
+              *ngFor="
+                let vehicleFormGroup of ch50VehicleCertNumbers.controls;
+                let i = index
+              "
+              [formGroupName]="i"
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Собственост на МПС</mat-label>
+                <input
+                  formControlName="vehicleOwnershipTypeName"
+                  matInput
+                  placeholder="Собственост на МПС"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label> Вид превозно средство </mat-label>
+                <input
+                  formControlName="vehicleTypeName"
+                  matInput
+                  placeholder="Вид превозно средство"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Марка и модел</mat-label>
+                <input
+                  formControlName="brandModel"
+                  matInput
+                  placeholder="Марка и модел"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Регистрационен номер</mat-label>
+                <input
+                  formControlName="registrationPlate"
+                  matInput
+                  placeholder="Регистрационен номер"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Стикер No</mat-label>
+                <input
+                  formControlName="certificateNumber"
+                  matInput
+                  placeholder="Стикер No"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill" class="date-holder">
+              <mat-label>Дата</mat-label>
+              <input matInput formControlName="commencementActivityDate" />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+    </div>
+  </mat-step>
+</mat-stepper>

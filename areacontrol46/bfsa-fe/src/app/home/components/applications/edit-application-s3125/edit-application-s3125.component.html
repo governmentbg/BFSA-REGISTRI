@@ -1,0 +1,264 @@
+<h1 class="text-center">
+  3125 - Регистрация на хранителни добавки и храни, предназначени за употреба
+  при интензивно мускулно натоварване.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="downloadOrder()">
+          Печатане на заповед
+        </button>
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Описание на бизнес оператора
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Тип на оператора</mat-label>
+              <input
+                matInput
+                placeholder="Тип на оператора"
+                formControlName="applicantTypeName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div
+            formArrayName="foodSupplements"
+            *ngIf="foodSupplements.length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let foodSupplementForm of foodSupplements.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Адрес на дистрибуция</mat-label>
+                  <input
+                    matInput
+                    placeholder="Адрес на дистрибуция"
+                    formControlName="distributionFacilityAddress"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Вид обект</mat-label>
+                  <input
+                    matInput
+                    placeholder="Вид обект"
+                    formControlName="facilityTypeName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Данни за производство</mat-label>
+                  <input
+                    matInput
+                    placeholder="Данни за производство"
+                    formControlName="manufactureFacilityAddress"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Тип храна/хранителна добавка</mat-label>
+                  <input
+                    matInput
+                    placeholder="Наименование"
+                    formControlName="foodSupplementTypeName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Наименование</mat-label>
+                  <input
+                    matInput
+                    placeholder="Наименование"
+                    formControlName="name"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Предназначение</mat-label>
+                  <input
+                    matInput
+                    placeholder="Предназначение"
+                    formControlName="purpose"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Състав</mat-label>
+                  <input
+                    matInput
+                    placeholder="Състав"
+                    formControlName="ingredients"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Количество в препоръчаната дневна доза</mat-label>
+                  <input
+                    matInput
+                    placeholder="Количество в препоръчаната дневна доза"
+                    formControlName="quantity"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Мерна единица</mat-label>
+                  <input
+                    matInput
+                    placeholder="Мерна единица"
+                    formControlName="measuringUnitName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Държава</mat-label>
+                  <mat-select formControlName="countries" multiple>
+                    <mat-option
+                      *ngFor="let country of euCountries"
+                      [value]="country.code"
+                      >{{ country.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+
+          <mat-checkbox
+            [disabled]="true"
+            [checked]="this.data?.distanceTradingAddress?.settlementCode"
+          >
+            <span class="checkbox"
+              >Осъществявам търговия от разстояние</span
+            ></mat-checkbox
+          >
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.data?.distanceTradingAddress?.settlementCode"
+          >
+            Данни при търговия с храни от разстояние:
+          </div>
+
+          <div
+            class="section"
+            formGroupName="distanceTradingAddress"
+            *ngIf="this.data?.distanceTradingAddress?.settlementCode"
+          >
+            <mat-form-field appearance="fill">
+              <mat-label>Телефон</mat-label>
+              <input
+                matInput
+                placeholder="Телефон"
+                formControlName="phone"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Електронен адрес</mat-label>
+              <input
+                matInput
+                placeholder="Електронен адрес"
+                formControlName="mail"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Интернет страница</mat-label>
+              <input
+                matInput
+                placeholder="Интернет страница"
+                formControlName="url"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div
+            class="section"
+            formGroupName="distanceTradingAddress"
+            *ngIf="this.data?.distanceTradingAddress?.settlementCode"
+          >
+            <mat-form-field appearance="fill">
+              <mat-label>Пълен Адрес</mat-label>
+              <input
+                matInput
+                placeholder="Адрес"
+                formControlName="fullAddress"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="fill" class="date-holder">
+            <mat-label>Дата на пускане на пазара</mat-label>
+            <input matInput formControlName="commencementActivityDate" />
+          </mat-form-field>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+        <!-- <button mat-flat-button color="primary" matStepperNext>Продължи</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

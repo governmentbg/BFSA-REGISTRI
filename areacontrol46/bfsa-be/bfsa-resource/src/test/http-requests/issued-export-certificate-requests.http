@@ -1,0 +1,77 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  IssuedExportCertController # create
+POST {{host}}/api/issued-export-certificates/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "regNumber": "BG0112004",
+  "certNumber": "BG010040",
+  "certDate": "2023-02-25",
+  "quantity": 11.20,
+  "name": "Lux Certificate ltd 3",
+  "description": "Best cert ever. Description",
+  "contractorId": "89fa105a-df49-4130-b192-d09bc2e940a3",
+  "countryCode": "BG",
+  "enabled": true
+}
+
+
+###  IssuedExportCertController # update
+PUT {{host}}/api/issued-export-certificates/84980225-3303-4b16-98f1-07eb25aa4256
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "84980225-3303-4b16-98f1-07eb25aa4256",
+  "regNumber": "BG0112004",
+  "certNumber": "BG010040",
+  "certDate": "2023-02-25",
+  "quantity": 11.20,
+  "name": "Име на сертификата",
+  "description": "Ъпдейтната версия",
+  "contractorId": "89fa105a-df49-4130-b192-d09bc2e940a3",
+  "countryCode": "BG",
+  "enabled": true
+}
+
+
+###  IssuedExportCertController # findAll
+GET {{host}}/api/issued-export-certificates/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  IssuedExportCertController # findById
+GET {{host}}/api/issued-export-certificates/84980225-3303-4b16-98f1-07eb25aa4256
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  IssuedExportCertController # search
+GET {{host}}/api/issued-export-certificates?q=
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+

@@ -1,0 +1,104 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ActivityGroupController # findAllParents
+GET {{host}}/api/activity-groups/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ActivityGroupController # findAllParentsVO
+GET {{host}}/api/activity-groups/parents
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ActivityGroupController # findById
+GET {{host}}/api/activity-groups/b9ddaf18-3d66-4d0b-a255-1d36555a7f82
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ActivityGroupController # create
+POST {{host}}/api/activity-groups/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "name":"Секция X111 - test",
+  "description":"Месо от домашни копитни - test ",
+  "enabled": true,
+  "parentCode": "",
+  "relatedActivityCategories" : ["00810", "00812"],
+  "animalSpecies" : ["00901", "00908", "00909"],
+  "subActivityGroups": [
+    {
+      "name":"Група 01 - test",
+      "description":"Месо от домашни копитни - test",
+      "enabled": true,
+      "subActivityGroups":[],
+      "relatedActivityCategories" : ["00802", "00808"],
+      "animalSpecies" : ["00901", "00908", "00909"],
+      "remarks" : ["01001", "01002"]
+    }
+  ],
+  "remarks" : ["01001", "01002"]
+}
+
+
+###  ActivityGroupController # create sub group
+POST {{host}}/api/activity-groups/405fd8b7-5340-4f4e-8791-427b8fe057b6/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "name":"Под група - test",
+  "description":"Под група - test",
+  "enabled": true,
+  "relatedActivityCategories" : ["00804", "00808", "00809"],
+  "remarks" : ["01001", "01002"]
+}
+
+
+###  ActivityGroupController # update
+PUT {{host}}/api/activity-groups/{id}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id" : "61679406-0463-490e-b8c9-7edb8f92d61d",
+  "groupTypeCode" : "00103",
+  "name": "Watermelon III33",
+  "description": "Nice and tasty watermelon.",
+  "enabled": true,
+  "relatedActivityCategories" : ["00807", "00812", "00809"],
+  "subActivityGroups": [ ],
+  "remarks" : ["01001", "01002"]
+}
+
+
+###  ActivityGroupController # history
+GET {{host}}/api/activity-groups/{id}/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

@@ -1,0 +1,113 @@
+### POST login (internal users) (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+### POST signin (external users / contractors) (Set access_token to the global variables)
+POST {{host}}/api/auth/signin
+Content-Type: application/x-www-form-urlencoded
+
+username=user&password=123456
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  AuthController # buildInfo
+GET {{host}}/api/auth/build-info
+accept: */*
+
+###  AuthController # refreshtoken
+POST {{host}}/api/auth/token/refresh
+Content-Type: application/json
+
+{
+  "token": "{{refresh_token}}"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["accessToken"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  AuthController # registerContractor
+POST {{host}}/api/auth/signup
+Content-Type: application/json
+Accept-Language: bg
+
+{
+  "fullName": "Vladimir Angelov",
+  "email": "emil.dinev@bul-si.bg",
+  "username": "vladimir",
+  "password": "vladimir13",
+  "matchingPassword": "vladimir13"
+}
+
+###  AuthController # registerContractorConfirm
+PUT {{host}}/api/auth/signup-confirm
+Content-Type: application/json
+
+{
+  "token": "b005b4f6-81f5-4dc0-9441-88fb1e8c615d&lang"
+}
+
+###  AuthController # forgotPassword
+POST {{host}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "username": "vladimir",
+  "email": "ang.vladimir@abv.bg"
+}
+
+###  AuthController # forgotPasswordConfirm
+PUT {{host}}/api/auth/forgot-password-confirm
+Content-Type: application/json
+
+{
+  "token": "853e270a-f1b8-485a-8f2f-42991dcb95d9",
+  "password": "vladimir22",
+  "matchingPassword": "vladimir22"
+}
+
+###  AuthController # resendRegistrationToken
+POST {{host}}/api/auth/token/resend
+Content-Type: application/json
+
+{
+  "token": "9980ed28-8116-4545-a5a9-589f7300eecc"
+}
+
+###  AuthController # signout
+POST {{host}}/api/auth/signout
+Content-Type: application/json
+
+{
+  "id": "eafae356-d358-423b-9cee-6df67d93118e"
+}
+
+###  AuthController # findAllLanguages
+GET {{host}}/api/auth/langs/
+accept: */*

@@ -1,0 +1,25 @@
+version: "3"
+services:
+  bfsa:
+    container_name: bfsa-fe
+    image: bfsa-fe:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ANGULAR_PROFILES_ACTIVE=${ANGULAR_PROFILES}
+    restart: always
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/log/bfsa-fe:/var/log/nginx"
+    networks:
+      - net-bfsa
+    ports:
+      - "80:80"
+    extra_hosts:
+      - "bfsa-be-dev.bul-si.bg:10.10.0.61"
+      - "bfsa-be-test.bul-si.bg:10.10.0.78"
+networks:
+  net-bfsa:
+    driver: bridge

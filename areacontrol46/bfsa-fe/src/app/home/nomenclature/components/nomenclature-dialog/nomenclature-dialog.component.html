@@ -1,0 +1,53 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <h1 mat-dialog-title>{{ data.isAdd ? "Add a" : "Edit the" }} Nomenclature</h1>
+  <div mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="dialogForm.controls['name'].hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+        <mat-error *ngIf="dialogForm.controls['description'].hasError('required')">
+          Description is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <ng-container *ngIf="!data.isAdd">
+        <mat-slide-toggle
+          color="primary"
+          formControlName="enabled"
+          class="mb-2"
+        >
+          Enabled
+        </mat-slide-toggle>
+      </ng-container>
+      <div class='svg-container' #dataContainer>
+      </div>
+      <span class="file-name" *ngIf="doesFileExist">{{file.name}}</span>
+    </div>
+  </div>
+  <div mat-dialog-actions [align]="'end'">
+    <button mat-raised-button mat-dialog-close>Close</button>
+    <button
+	class='add-btn'
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      {{ data.isAdd ? "Add" : "Update" }}
+    </button>
+		<button class="upload-btn" mat-flat-button type="button" (click)="fileInput.click()" color="primary" >Upload file
+			<input type="file" accept='.svg' #fileInput hidden (change)="uploadedFile($event)"/>
+		</button>
+    <button *ngIf="isFileUploaded" class="upload-btn" mat-flat-button type="button" (click)="removeFile()" color="primary" >Remove file
+		</button>
+	
+</div>
+</form>

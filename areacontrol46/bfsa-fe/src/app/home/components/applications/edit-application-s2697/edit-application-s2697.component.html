@@ -1,0 +1,126 @@
+<h1 class="text-center">
+  2697 - Регистър на лицата, които притежават удостоверение за внос или
+  въвеждане на партида от неодобрени активни вещества.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <!-- енд хере -->
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="this.isExpert && isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Специфична част
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Внос/въвеждане на неодобрени активни вещества
+          </div>
+
+          <div formArrayName="substances" *ngIf="this.substances.length > 0">
+            <div
+              *ngFor="let substanceForm of substances?.controls; let i = index"
+            >
+              <div [formGroupName]="i">
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Наименование на АВ</mat-label>
+                    <input
+                      matInput
+                      placeholder="Наименование на АВ"
+                      formControlName="name"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Код на АВ</mat-label>
+                    <input
+                      matInput
+                      placeholder="Код на АВ"
+                      formControlName="code"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Партиден №</mat-label>
+                    <input
+                      matInput
+                      placeholder="Партиден №"
+                      formControlName="number"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Количество</mat-label>
+                  <input
+                    matInput
+                    placeholder="Количество"
+                    formControlName="quantity"
+                    type="number"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            До производството на ПРЗ, активното вещество ще се съхранява в склад
+            за съхранение на ПРЗ
+          </div>
+
+          <div class="section" formGroupName="warehouseAddress">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълен адрес</mat-label>
+              <input
+                matInput
+                placeholder="Пълен адрес"
+                formControlName="fullAddress"
+                required
+              />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

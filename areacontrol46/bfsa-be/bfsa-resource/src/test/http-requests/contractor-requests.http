@@ -1,0 +1,221 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ContractorController # findAll
+GET {{host}}/api/contractors/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # get
+GET {{host}}/api/contractors/username/admin
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # getCurrentUser
+GET {{host}}/api/contractors/me
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # findById
+GET {{host}}/api/contractors/e9af2ee3-8efb-4ae2-8d89-322b3527966d
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # records
+GET {{host}}/api/contractors/e9af2ee3-8efb-4ae2-8d89-322b3527966d/records
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # search
+GET {{host}}/api/contractors?q=us
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # history
+GET {{host}}/api/contractors/f1157c95-ea2b-4f04-b67b-7021b862cd34/history
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # facility-history
+GET {{host}}/api/contractors/cd948cd7-8899-445d-905e-0d098ed28f85/facility-history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ContractorController # update
+PUT {{host}}/api/contractors/56ae8613-086a-48bf-ab91-ca6956f6046c
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "id": "56ae8613-086a-48bf-ab91-ca6956f6046c",
+  "fullName": "Владимир Ангелов",
+  "identifier" : "9503190000",
+  "enabled": true,
+  "roles": [
+      "ADMIN"
+  ],
+  "facilities" : [
+    {
+      "email" : "vladimir.angelov@bul-si.bg",
+      "phone1" : "0088991122",
+      "address" : {
+        "id": "ad6ba633-3a61-439f-b614-d8a0107b2417",
+        "address": "Бело поле, ул. Струма 38",
+        "addressLat": "Belo pole, Struma 38 str.",
+        "enabled": true
+      }
+    }
+  ],
+  "relatedActivityCategories" : ["00802", "00804"],
+  "groups" : [
+    "6edfbd80-4fe2-4c45-b308-83b5d5b95a37"
+  ],
+  "registerCode" : "0002001"
+}
+
+###  ContractorController # setEnabled
+PUT {{host}}/api/contractors/9adb2462-4fb0-4d2f-a1c2-765d2ac56f10/true
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # updateRoles
+PUT {{host}}/api/contractors/083a3c6c-235b-4667-81ac-0a64f9eb6147/roles
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+  ["ADMIN"]
+
+
+###  ContractorController # signout
+POST {{host}}/api/contractors/signout
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "id": "f8c2fb51-ac9c-42fe-bf55-69b19b14e770"
+}
+
+
+###  ContractorController # signup
+POST {{host}}/api/auth/signup
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "matchingPassword": "string",
+  "email": "vladimir.angelov@bul-si.bg",
+  "fullName": "User22 User22",
+  "username": "user22",
+  "password": "string",
+  "identifier":"9999"
+}
+
+
+###  AuthController # registerContractorConfirm
+PUT {{host}}/api/auth/signup-confirm
+Content-Type: application/json
+
+{
+  "token": "18991ccf-0e7c-43a3-a9cb-a4fb7a44e8d7"
+}
+
+
+###  ContractorController # create facility
+POST {{host}}/api/contractors/aa8d9b86-6c07-4aa6-8e49-c9c2be14fcbe/facility
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "email" : "test-3@mail.bv",
+  "phone1" : "00-88-99-77-22",
+  "phone2" : "00-88-99-33-33",
+  "enabled" : true,
+  "addressId" : "dcd0ba96-addd-4eb5-b0e9-cffd89e960d4",
+  "contractorId" : "aa8d9b86-6c07-4aa6-8e49-c9c2be14fcbe",
+  "description" : "Първоначален запис (Обект 3)",
+  "name" : "Обект 3 (user1)"
+}
+
+
+###  ContractorController # update facility
+PUT {{host}}/api/contractors/f1157c95-ea2b-4f04-b67b-7021b862cd34/facility
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id" : "cb91ca16-15a9-4c43-abe8-4903dfa96c6f",
+  "email" : "string123456789@mail.zxc",
+  "phone1" : "string11111111",
+  "phone2" : "string111111",
+  "enabled" : true,
+  "addressId" : "b11a5e40-eaad-4e06-ab9d-8dcabd32073c",
+  "contractorId" : "f1157c95-ea2b-4f04-b67b-7021b862cd34",
+  "foodBankLicenseId" : "aa76e501-8c68-4f19-bbb6-0ffe4de794d5",
+  "description" : "string1111111",
+  "name" : "string111111111"
+}
+
+
+###  ContractorController # change facilities Owner
+PUT {{host}}/api/contractors/332aa743-4e29-4bbb-a04e-d7a6d63fcd33/facilities-owner/aa8d9b86-6c07-4aa6-8e49-c9c2be14fcbe?comment=PromiqnaNaSobstwenik
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # find by register code
+GET {{host}}/api/contractors/register-code/0002001
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # find by register code and branch
+GET {{host}}/api/contractors/register-code-and-branch/0002001
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # find by division code and branch
+GET {{host}}/api/contractors/division-code-and-branch/0002002
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ContractorController # find by contractor paper service type
+GET {{host}}/api/contractors/papers-by/{serviceType}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ContractorController # contractor-distance-trading by id
+GET {{host}}/api/contractors/contractor-distance-trading/d49b5181-8cdf-4102-846e-e7a1cb83ee86
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

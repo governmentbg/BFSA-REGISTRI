@@ -1,0 +1,289 @@
+<div class="m-4 pb-20">
+  <h1>Заявления</h1>
+
+  <mat-card>
+    <mat-card-content>
+      <!-- <div class="flex md:flex-row gap-2 my-2">
+        <h3 *ngIf="isAdmin">Храни:</h3>
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="primary"
+          (click)="createApplicationS3180Dialog()"
+        >
+          3180
+        </button>
+
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="primary"
+          (click)="createApplicationS3181Dialog()"
+        >
+          3181
+        </button>
+
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="primary"
+          (click)="createApplicationS3182Dialog()"
+        >
+          3182
+        </button>
+
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="primary"
+          (click)="createApplicationS2272Dialog()"
+        >
+          2272
+        </button>
+      </div>
+
+      <div class="flex md:flex-row gap-2">
+        <h3 *ngIf="isAdmin" class="m-0" style="margin-right: 17.5px">ПРЗ:</h3>
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="warn"
+          (click)="createApplicationS2701Dialog()"
+        >
+          2701
+        </button>
+
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="warn"
+          (click)="createApplicationS1590Dialog()"
+        >
+          1590
+        </button>
+
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="warn"
+          (click)="createApplicationS2699Dialog()"
+        >
+          2699
+        </button>
+
+        <button
+          *ngIf="isAdmin"
+          mat-flat-button
+          color="warn"
+          (click)="createApplicationS2702Dialog()"
+        >
+          2702
+        </button>
+      </div> -->
+      <div class="flex flex-col lg:flex-row lg:justify-between lg:items-start">
+        <form [formGroup]="searchForm">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+            <mat-form-field
+              appearance="standard"
+              *ngIf="this.isExpert || this.isFinance"
+            >
+              <mat-label>Филтър по всички критерии</mat-label>
+              <input
+                formControlName="q"
+                matInput
+                (keyup)="applyFilter($event)"
+                placeholder="Въведете текста тук..."
+                #input
+              />
+            </mat-form-field>
+            <div
+              class="flex flex-col lg:items-center lg:flex-row mb-6 lg:mb-0 lg:gap-2"
+            >
+              <mat-form-field appearance="standard">
+                <mat-select
+                  placeholder="{{ 'status' | translate }}"
+                  formControlName="recordStatus"
+                >
+                  <mat-option value="">Филтър по статус..</mat-option>
+                  <mat-option
+                    *ngFor="let status of recordStatuses"
+                    [value]="status[0]"
+                    >{{ status[1] }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+              <button mat-stroked-button (click)="submitForm()">Търси</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="overflow-auto">
+        <table mat-table [dataSource]="dataSource" class="w-full">
+          <ng-container matColumnDef="entryDate">
+            <th mat-header-cell *matHeaderCellDef>Дата</th>
+            <td mat-cell *matCellDef="let element">
+              {{ formatDate(element.entryDate) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="entryNumber">
+            <th mat-header-cell *matHeaderCellDef>Входящ номер</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.entryNumber }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="requestorIdentifier">
+            <th mat-header-cell *matHeaderCellDef>ЕГН/ЛНЧ</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.requestorIdentifier }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="approvalDocumentStatus">
+            <th mat-header-cell *matHeaderCellDef>Статус</th>
+            <td mat-cell *matCellDef="let element">
+              {{ translateStatus(element.recordStatus) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="requestorFullName">
+            <th mat-header-cell *matHeaderCellDef>Заявител</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.requestorFullName }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="applicantIdentifier">
+            <th mat-header-cell *matHeaderCellDef>ЕГН/ЛНЧ/ЕИК</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.applicantIdentifier }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="applicantFullName">
+            <th mat-header-cell *matHeaderCellDef>Бизнес оператор</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.applicantFullName }}
+            </td>
+          </ng-container>
+
+          <!-- <ng-container matColumnDef="facilityRegNumber">
+    <th mat-header-cell *matHeaderCellDef>facilityRegNumber</th>
+    <td mat-cell *matCellDef="let element">{{ element.facilityRegNumber }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="facilityRegDate">
+    <th mat-header-cell *matHeaderCellDef>facilityRegDate</th>
+    <td mat-cell *matCellDef="let element">{{ element.facilityRegDate }}</td>
+  </ng-container> -->
+
+          <ng-container matColumnDef="serviceType">
+            <th mat-header-cell *matHeaderCellDef>Услуга</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.serviceType }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="recordPrice">
+            <th mat-header-cell *matHeaderCellDef>Сума 1</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.recordPrice }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="applicationPrice">
+            <th mat-header-cell *matHeaderCellDef>Сума 2</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.applicationPrice }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Действие</th>
+            <td mat-cell *matCellDef="let element">
+              <ng-container>
+                <!-- *ngIf="
+                  (!isFinance && isStatusPaid(element)) ||
+                  isStatusInspectionCompleted(element)
+                " -->
+                <!-- <button
+                  *ngIf="!isExpert && !isFinance"
+                  mat-button
+                  color="primary"
+                  (click)="this.editApplicationDialog(element)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button> -->
+
+                <button
+                  *ngIf="
+                    (!isFinance && isStatusInspectionCompleted(element)) ||
+                    (!isFinance && isStatusPaid(element)) ||
+                    (!isFinance &&
+                      isApplicationRecordPriceZero(element) &&
+                      isApplicationStatusEntered(element))
+                  "
+                  mat-button
+                  color="primary"
+                  (click)="this.editApplicationDialog(element)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+
+                <button
+                  *ngIf="isStatusRejectedOrApproved(element)"
+                  mat-button
+                  color="primary"
+                  (click)="this.editApplicationDialog(element)"
+                >
+                  <mat-icon>visibility</mat-icon>
+                </button>
+              </ng-container>
+
+              <button
+                *ngIf="isExpert && isServicePaid(element)"
+                mat-button
+                color="primary"
+                (click)="this.openExpertDialog(element)"
+              >
+                <mat-icon>euro_symbol</mat-icon>
+              </button>
+              <button
+                *ngIf="
+                  (isFinance && isPaymentInConfirmationStatusRecord(element)) ||
+                  isPaymentInConfirmationStatusApplication(element)
+                "
+                mat-button
+                color="primary"
+                (click)="this.openFinanceDialog(element)"
+              >
+                <mat-icon>euro_symbol</mat-icon>
+              </button>
+
+              <button
+                mat-button
+                color="primary"
+                *ngIf="this.isExpert"
+                (click)="this.openFilesDialog(element)"
+              >
+                <mat-icon>folder</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+    </mat-card-content>
+    <mat-paginator
+      #paginator
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[5, 10, 20]"
+      [showFirstLastButtons]="true"
+    >
+    </mat-paginator>
+  </mat-card>
+</div>

@@ -1,0 +1,190 @@
+<div *ngIf="!activityGroup" class="animate-pulse">
+  Loading activity group...
+</div>
+
+<div *ngIf="activityGroup">
+  <div class="my-8">
+    <div class="flex gap-2 items-center">
+      <div class="">
+        <button
+          (click)="back()"
+          mat-icon-button
+          aria-label="Button with a arrow back icon"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="text-xl">
+        {{ activityGroup.name }}
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <div class="p-2">Description:</div>
+    <mat-card>
+      <mat-card-content>
+        <div class="mb-4 text-base">
+          {{ activityGroup.description }}
+        </div>
+        <div class="flex items-center gap-2 text-base">
+          Enabled
+          <mat-icon color="primary" *ngIf="activityGroup.enabled"
+            >check_circle</mat-icon
+          >
+          <mat-icon color="warn" *ngIf="!activityGroup.enabled"
+            >unpublished</mat-icon
+          >
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button mat-button (click)="editActivityGroup(activityGroup)">
+          Edit
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div *ngIf="activityGroup.subActivityGroups">
+    <div class="mb-8">
+      <div class="p-2">Sub Activity Groups:</div>
+      <mat-card>
+        <mat-card-content>
+          <div
+            *ngFor="let item of activityGroup.subActivityGroups"
+            class="truncate"
+          >
+            <a
+              [routerLink]="['/app/activity-group', item.id]"
+              class="hover:underline text-base"
+              [title]="item.name"
+            >
+              {{ item.name }}
+            </a>
+          </div>
+          <div *ngIf="!activityGroup.subActivityGroups.length" class="">
+            No sub activity groups.
+          </div>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions>
+          <button (click)="addSubActivityGroup()" mat-button>Add</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+
+  <div
+    *ngIf="
+      activityGroup.relatedActivityCategories.length ||
+      activityGroup.associatedActivityCategories.length ||
+      activityGroup.animalSpecies.length ||
+      activityGroup.remarks.length
+    "
+    class=""
+  >
+    <div class="p-2">Activity Categories:</div>
+
+    <mat-card>
+      <mat-card-content>
+        <div
+          class="flex flex-col gap-8 md:flex-row md:gap-20"
+          [formGroup]="activityCategoriesForm"
+        >
+          <div *ngIf="activityGroup.relatedActivityCategories.length">
+            <div class="mb-2">Related:</div>
+            <div class="overflow-y-auto w-fit h-40 flex flex-col">
+              <div formArrayName="relatedActivityCategories">
+                <div
+                  *ngFor="
+                    let item of relatedActivityCategories.controls;
+                    index as i
+                  "
+                  class="hover:bg-gray-100 dark:hover:bg-gray-600 pr-4"
+                >
+                  <div [formGroupName]="i">
+                    <mat-checkbox formControlName="checked" class="text-base">
+                      {{ item.value.name }} -
+                      {{ item.value.code }}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="activityGroup.associatedActivityCategories.length">
+            <div class="mb-2">Associated:</div>
+            <div class="overflow-y-auto w-fit h-40 flex flex-col">
+              <div formArrayName="associatedActivityCategories">
+                <div
+                  *ngfor="
+                    let item of associatedActivityCategories.controls;
+                    index as i
+                  "
+                  class="hover:bg-gray-100 dark:hover:bg-gray-600 pr-4"
+                >
+                  <div [formGroupName]="i">
+                    <mat-checkbox formControlName="checked" class="text-base">
+                      {{ item.value.name }} -
+                      {{ item.value.code }}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="activityGroup.animalSpecies.length">
+            <div class="mb-2">Animal Species:</div>
+            <div class="overflow-y-auto w-fit h-40 flex flex-col">
+              <div formArrayName="animalSpecies">
+                <div
+                  *ngFor="let item of animalSpecies.controls; index as i"
+                  class="hover:bg-gray-100 dark:hover:bg-gray-600 pr-4"
+                >
+                  <div [formGroupName]="i">
+                    <mat-checkbox formControlName="checked" class="text-base">
+                      {{ item.value.name }} -
+                      {{ item.value.code }}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="activityGroup.remarks.length">
+            <div class="mb-2">Remarks:</div>
+            <div class="overflow-y-auto w-fit h-40 flex flex-col">
+              <div formArrayName="remarks">
+                <div
+                  *ngFor="let item of remarks.controls; index as i"
+                  class="hover:bg-gray-100 dark:hover:bg-gray-600 pr-4"
+                >
+                  <div [formGroupName]="i">
+                    <mat-checkbox formControlName="checked" class="text-base">
+                      {{ item.value.name }} -
+                      {{ item.value.code }}
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button
+          mat-button
+          [disabled]="activityCategoriesForm.pristine"
+          (click)="updateActivityCategories()"
+        >
+          Update
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

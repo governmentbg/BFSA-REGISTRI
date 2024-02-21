@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://eform.e-gov.bg/dictionary/Agent"
+        xmlns="http://eform.e-gov.bg/dictionary/Agent"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:legal="http://eform.e-gov.bg/dictionary/LegalEntity"
+        xmlns:person="http://eform.e-gov.bg/dictionary/Person"
+        xmlns:channel="http://eform.e-gov.bg/dictionary/CommunicationChannels">
+
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/LegalEntity" schemaLocation="LegalEntity.xsd"/>
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/Person" schemaLocation="Person.xsd"/>
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/CommunicationChannels" schemaLocation="CommunicationChannels.xsd"/>
+
+	<xsd:complexType name="Agent">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="bg">
+			Agent представлява всеки ресурс, който действа или има правомощия да изпълнява определена роля във връзка с услугата. Това включва хора, организации и групи. Негови подкласове са класовете Public Organisation, Person и Legal Entity
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="legal" type="legal:LegalEntity" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Юридическо лице, от името на което действа автора (посредници, представители)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="person" type="person:Person" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="communicationChannels" type="channel:CommunicationChannels" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Юридическо лице, от името на което действа автора (посредници, представители)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+</xsd:schema>

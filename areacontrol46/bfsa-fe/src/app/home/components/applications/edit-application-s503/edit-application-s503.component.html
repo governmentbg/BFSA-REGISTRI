@@ -1,0 +1,176 @@
+<h1 class="text-center">
+  503 - Издаване на удостоверение за преопаковане на продукти за растителна
+  защита.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+          Запази
+        </button> -->
+
+        <!-- <button
+          [disabled]="!applicationForm.valid"
+          mat-flat-button
+          (click)="updateApplication()"
+        >
+          Запази
+        </button> -->
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за обекта:
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            1. Обект за преопаковане на продукти за растителна защита, находящ
+            се на адрес:
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълен адрес</mat-label>
+              <input
+                matInput
+                placeholder="Пълен адрес"
+                formControlName="fullAddress"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2. Лица със сертификат по чл. 83 от ЗЗР, свързани с дейностите в
+            обекта
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2.1. Лице, отговорно за дейността в обекта:
+          </div>
+
+          <div class="section" formGroupName="ch83CertifiedPerson">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="fullName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>EГН</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="identifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox [checked]="true" [disabled]="true">
+            Притежава диплома</mat-checkbox
+          >
+          <mat-checkbox
+            class="example-margin"
+            [checked]="true"
+            [disabled]="true"
+          >
+            Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+          >
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2.2. Лица, извършващи дейността в обекта:
+          </div>
+
+          <div
+            formArrayName="ch83CertifiedPersons"
+            *ngIf="this.ch83CertifiedPersons.length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let carryingOutActivityPersonForm of ch83CertifiedPersons?.controls;
+                let i = index
+              "
+            >
+              <div class="section" [formGroupName]="i">
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълно име</mat-label>
+                  <input
+                    matInput
+                    placeholder="Име"
+                    formControlName="fullName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>ЕГН</mat-label>
+                  <input
+                    matInput
+                    placeholder="ЕГН"
+                    formControlName="identifier"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+              <mat-checkbox
+                class="example-margin"
+                [checked]="true"
+                [disabled]="true"
+              >
+                Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+              >
+            </ng-container>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+        <!-- <button mat-flat-button color="primary" matStepperNext>Продължи</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

@@ -1,0 +1,10 @@
+<div mat-dialog-title>Потвърждение</div>
+<mat-dialog-content>
+  <div *ngIf="data">
+    {{ data.title }}
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Не</button>
+  <button mat-button [mat-dialog-close]="true">Да</button>
+</mat-dialog-actions>

@@ -1,0 +1,99 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  FoodSupplementController # create
+POST {{host}}/api/food-supplements/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "serialNumber": "SN0001",
+  "entryDate": "2023-03-02",
+  "notificationNumber": "001",
+  "notificationDate": "2023-03-02",
+  "name": "Тест",
+  "purpose": "string",
+  "ingredients": "string",
+  "description": "Тестово описание",
+  "marketReleaseDate": "2023-03-02",
+  "deletionOrderNumber": "string",
+  "deletionOrderDate": "2023-03-02",
+  "enabled": true,
+  "manufacturerId": "1",
+  "merchantId": "1"
+}
+
+
+###  FoodSupplementController # update
+PUT {{host}}/api/food-supplements/08de461c-0f10-4b8d-9e58-fc98550062b3
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "08de461c-0f10-4b8d-9e58-fc98550062b3",
+  "serialNumber": "SN0001-1",
+  "entryDate": "2023-03-02",
+  "notificationNumber": "001-1",
+  "notificationDate": "2023-03-02",
+  "name": "Тест-промяна-2",
+  "purpose": "string",
+  "ingredients": "string",
+  "description": "Тестово описание",
+  "marketReleaseDate": "2023-03-02",
+  "deletionOrderNumber": "string",
+  "deletionOrderDate": "2023-03-02",
+  "enabled": true,
+  "manufacturerId": "1",
+  "merchantId": "1"
+}
+
+
+###  FoodSupplementController # findAll
+GET {{host}}/api/food-supplements/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodSupplementController # findAllByApplicantId
+GET {{host}}/api/food-supplements/applicant/56
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodSupplementController # getById
+GET {{host}}/api/food-supplements/08de461c-0f10-4b8d-9e58-fc98550062b3
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodSupplementController # search
+GET {{host}}/api/food-supplements?q=Те
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodSupplementController # history
+GET {{host}}/api/food-supplements/08de461c-0f10-4b8d-9e58-fc98550062b3/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

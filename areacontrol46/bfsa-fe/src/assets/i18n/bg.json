@@ -1,0 +1,91 @@
+{
+  "auth": {
+    "login": {
+      "language": "Език"
+    },
+    "signin": {
+      "language": "Език"
+    }
+  },
+  "signIn": "Влезте в акаунта си",
+  "remember": "Помни ме",
+  "password": "Парола",
+  "username": "Потребителско име",
+  "noAccount": "Нямате акаунт?",
+  "register": "Регистрирайте се тук",
+  "forgotPassword": "Забравена парола?",
+  "restorePassword": "Възстановете паролата си",
+  "signOut": "Излезте",
+  "profile": "Профил",
+  "status": "Статус",
+  "register-83": " Регистър на лица по чл.83",
+  "registerMessage": "Код за активиране е изпратен на електронната  поща. Имате 24 часа да активирате вашия профил.",
+  "varifyRegistrationSuccessMessage": "Вие успешно потвърдихте регистрацията си.",
+  "varifyRegistrationUnsuccessMessage": "Линкът за регистрация не е валиден.",
+  "forgottenPasswordMessage": "Код за смяна на парола е изпратен на електронната поща. Имате 24 часа да смените вашата парола.",
+  "verifyPasswordUnsuccessMessage": "Линкът за нулиране на паролата не е валиден.",
+  "verifyPasswordSuccessMessage": "Вие успешно нулирахте паролата си.",
+  "internalUserManagement": "Вътрешни потребители",
+  "externalUserManagement": "Въшни потребители",
+  "inspection": {
+    "title": "Проверки"
+  },
+  "dashboard": {
+    "title": "Начален екран"
+  },
+  "registers": {
+    "contractor": {
+      "title": "Бизнес оператор"
+    }
+  },
+  "nomenclature": {
+    "title": "Номенклатури"
+  },
+  "classifier": {
+    "title": "Класификатори"
+  },
+  "settlement": {
+    "title": "Населени места"
+  },
+  "activityGroup": {
+    "title": "Категории дейности"
+  },
+  "messageResource": {
+    "title": "Съобщения"
+  },
+  "language": {
+    "title": "Езици"
+  },
+  "user": {
+    "title": "Потребители"
+  },
+  "branch": {
+    "title": "Областни дирекции"
+  },
+  "nav": {
+    "category": {
+      "registers": "РЕГИСТРИ",
+      "administration": "АДМИНИСТРАЦИЯ",
+      "management": "УПРАВЛЕНИЕ"
+    },
+    "registers": "Регистри",
+    "languages": "Езици",
+    "messageResources": "Съобщения",
+    "foodControl": "Контрол на храните",
+    "plantProtectionQualityControl": "Растителна защита и контрол на качеството на пресни плодове и зеленчуци",
+    "plantProtectionProducts": "Продукти за растителна защита",
+    "dashboard": "Начален екран",
+    "applications": "Заявления",
+    "nomenclatures": "Номенклатури",
+    "classifiers": "Класификатори",
+    "settlements": "Населени места",
+    "activityGroups": "Категории дейности",
+    "tasks": "Задачи",
+    "users": "Потребители",
+    "inspections": "Проверки",
+    "archive": "Архив",
+    "references": "Справки",
+    "contractors": "Контрагенти",
+    "branches": "Областни дирекции"
+  }
+}

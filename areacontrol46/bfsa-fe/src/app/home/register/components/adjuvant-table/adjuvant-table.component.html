@@ -1,0 +1,100 @@
+<div class="overflow-auto mt-4">
+  <table mat-table [dataSource]="dataSource" class="w-full">
+    <ng-container matColumnDef="adjuvantName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Наименование
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.adjuvantName }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="adjuvantProductFormulationTypeName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Формулация
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.adjuvantProductFormulationTypeName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="manufacturerName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Производител
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.manufacturerName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="supplierFullName">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Пуснат на пазара от
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.supplier.fullName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="orderNumber">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Заповед No
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.orderNumber }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Статус
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ translateStatus(element.applicationStatus) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="orderDate">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Дата на заповед
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ formatDate(element.orderDate) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="applicationStatus">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Статус
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ translateStatus(element.applicationStatus) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+        Действие
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="flex space-x-2">
+          <button mat-stroked-button (click)="edit(element)">
+            Редактиране
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (dblclick)="edit(row)"
+    ></tr>
+
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+        No data matching the filter
+      </td>
+    </tr>
+  </table>
+</div>

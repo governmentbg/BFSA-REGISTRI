@@ -1,0 +1,55 @@
+<form [formGroup]="inspectionForm" novalidate (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>Създаване на проверка за одобрение</div>
+  <mat-dialog-content>
+    <div class="flex flex-col gap-2">
+      <mat-form-field appearance="fill">
+        <mat-label>Експерт</mat-label>
+        <mat-select formControlName="users" multiple>
+          <mat-option *ngFor="let user of users" [value]="user.id">{{
+            user.fullName
+          }}</mat-option>
+        </mat-select>
+        <mat-error
+          *ngIf="inspectionForm.controls['users'].hasError('required')"
+        >
+          Field is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Дата</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          formControlName="endDate"
+          (focus)="picker.open()"
+          [min]="minDate"
+          [matDatepickerFilter]="filterDate"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error
+          *ngIf="inspectionForm.controls['endDate'].hasError('required')"
+        >
+          Date is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="fill" hintLabel="Max 300 characters">
+        <mat-label>No на заповед/писмо</mat-label>
+        <textarea matInput formControlName="description" maxlength="300">
+        </textarea>
+        <mat-hint align="end">{{ inspectionForm.controls['description'].value?.length }}/300</mat-hint>
+        <mat-error
+          *ngIf="inspectionForm.controls['description'].hasError('required')"
+        >
+          Field is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Отказ</button>
+    <button mat-flat-button color="primary" type="submit" [disabled]="this.inspectionForm.invalid">
+      Запази
+    </button>
+  </mat-dialog-actions>
+</form>

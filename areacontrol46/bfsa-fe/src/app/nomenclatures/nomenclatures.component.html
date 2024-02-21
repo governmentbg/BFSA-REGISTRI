@@ -1,0 +1,93 @@
+<div class="m-4">
+  <h1 class="mat-h1">Nomenclatures</h1>
+
+  <div class="demo-button-container">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="addNomenclatureCategory()"
+      class="demo-button"
+    >
+      Add category
+    </button>
+  </div>
+
+  <table
+    mat-table
+    [dataSource]="matTableDataSource"
+    multiTemplateDataRows
+    class="mat-elevation-z8"
+  >
+    <ng-container
+      matColumnDef="{{ column }}"
+      *ngFor="let column of columnsToDisplay"
+    >
+      <th mat-header-cell *matHeaderCellDef>{{ column }}</th>
+      <td mat-cell *matCellDef="let element; let index = i">
+        {{ element[column] }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="expand">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">&nbsp;</th>
+      <td mat-cell *matCellDef="let element; let i = dataIndex">
+        <button
+          class="expand-button"
+          mat-icon-button
+          aria-label="expand row"
+          (click)="
+            expandedElement = expandedElement === element ? null : element;
+            $event.stopPropagation()
+          "
+        >
+          <mat-icon *ngIf="expandedElement !== element"
+            >keyboard_arrow_down</mat-icon
+          >
+          <mat-icon *ngIf="expandedElement === element"
+            >keyboard_arrow_up</mat-icon
+          >
+        </button>
+        <button
+          mat-icon-button
+          color="primary"
+          (click)="editNomenclature(element, i)"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let element">
+        <div
+          class="example-element-detail"
+          [@detailExpand]="
+            element == expandedElement ? 'expanded' : 'collapsed'
+          "
+        >
+          <div class="example-element-diagram">
+            <app-sub-nomenclatures
+              [dataSource]="element.subNomenclatures"
+              [categoryCode]="element.code"
+            ></app-sub-nomenclatures>
+          </div>
+        </div></td
+    ></ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+    <tr
+      mat-row
+      *matRowDef="let element; columns: columnsToDisplayWithExpand"
+      class="example-element-row"
+      [class.example-expanded-row]="expandedElement === element"
+      (dblclick)="
+        expandedElement = expandedElement === element ? null : element
+      "
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: ['expandedDetail']"
+      class="example-detail-row"
+    ></tr>
+  </table>
+</div>

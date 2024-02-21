@@ -1,0 +1,68 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  AddressController # create
+POST {{host}}/api/addresses/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "address": "Бело поле, ул. Струма 38",
+  "addressLat": "Belo pole, Struma 38 str.",
+  "addressType": "00102",
+  "enabled": true,
+  "settlement": "04279"
+}
+
+
+###  AddressController # update
+PUT {{host}}/api/addresses/9ff16ed3-ac7d-43b7-95e2-5a98e20e5521
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "id": "9ff16ed3-ac7d-43b7-95e2-5a98e20e5521",
+  "address": "Бело поле, ул. Струма 38",
+  "addressLat": "Belo pole, Struma 38 str.",
+  "addressType": "00102",
+  "enabled": true,
+  "settlement": "04279"
+}
+
+
+###  AddressController # findAll
+GET {{host}}/api/addresses/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  AddressController # getById
+GET {{host}}/api/addresses/{id}
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  AddressController # search
+GET {{host}}/api/addresses?q=
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  AddressController # history
+GET {{host}}/api/addresses/fe8472dd-1f29-4d5e-9de3-eac7c70f40f0/history
+accept: */*
+Authorization: Bearer {{access_token}}

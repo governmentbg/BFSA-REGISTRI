@@ -1,0 +1,26 @@
+<div *ngIf="!activityGroups" class="animate-pulse">
+  Loading activity groups...
+</div>
+
+<div *ngIf="activityGroups">
+  <div class="">
+    <div class="p-2">Sections:</div>
+    <mat-card>
+      <mat-card-content>
+        <div *ngFor="let item of activityGroups" class="truncate">
+          <a
+            [routerLink]="['/app/activity-group', item.id]"
+            class="hover:underline text-base"
+            [title]="item.name"
+          >
+            {{ item.name }}
+          </a>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button (click)="addActivityGroup()" mat-button>Add</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

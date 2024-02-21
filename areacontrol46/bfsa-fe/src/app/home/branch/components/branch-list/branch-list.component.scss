@@ -1,0 +1,12 @@
+table th,
+table td {
+  @apply border p-2;
+}
+
+.mat-column-address {
+  min-width: 200px !important;
+}
+
+.mat-column-description {
+  min-width: 500px !important;
+}

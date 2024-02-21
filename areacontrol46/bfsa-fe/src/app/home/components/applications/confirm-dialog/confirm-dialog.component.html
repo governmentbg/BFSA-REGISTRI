@@ -1,0 +1,21 @@
+<div class="margin-auto">
+  <h1 mat-dialog-title>Потвърждение на изтриване ?</h1>
+</div>
+
+<mat-form-field appearance="fill">
+  <mat-label>Цена</mat-label>
+  <input matInput placeholder="Цена" formControlName="recordPrice" required />
+</mat-form-field>
+
+<div mat-dialog-actions class="flex justify-between">
+  <button mat-raised-button color="warn" (click)="discard()">Отказ</button>
+  <button
+    [disabled]="recordPrice.invalid"
+    mat-raised-button
+    cdkFocusInitial
+    color="primary"
+    (click)="confirm()"
+  >
+    Потвърди
+  </button>
+</div>

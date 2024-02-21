@@ -1,0 +1,152 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  SettlementController # findAllParentsWithoutSubs
+GET {{host}}/api/settlements/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  SettlementController # findAllParents
+GET {{host}}/api/settlements
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # findAllParents
+GET {{host}}/api/settlements/parents
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # findByCode
+GET {{host}}/api/settlements/87655
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # findAllByParentCodeSettlementVO
+GET {{host}}/api/settlements/04279/sub-settlements
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # findAllRegionSettlements
+GET {{host}}/api/settlements/68134/region-settlements
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # findAllMunicipalitySettlements
+GET {{host}}/api/settlements/68134/municipality-settlements
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # create
+POST {{host}}/api/settlements/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "code" : "69999",
+  "name":"Благоевград",
+  "nameLat":"Blagoevgrad",
+  "regionCode": "BLG",
+  "regionName": "Благоевград",
+  "regionNameLat": "Благоевград",
+  "municipalityCode": "BLG03",
+  "municipalityName": "Благоевград",
+  "municipalityNameLat": "Благоевград",
+  "placeType": "CITY",
+  "tsb": "SW",
+  "enabled": true,
+  "countryCode": "FR",
+  "subSettlements": [
+    {
+      "code" : "65666",
+      "name":"Петрич",
+      "nameLat":"Petrich",
+      "regionCode": "BLG",
+      "regionName": "Благоевград",
+      "regionNameLat": "Благоевград",
+      "municipalityCode": "BLG03",
+      "municipalityName": "Благоевград",
+      "municipalityNameLat": "Благоевград",
+      "placeType": "CITY",
+      "tsb": "SW",
+      "enabled": true,
+      "subSettlements" : [
+        {
+          "code" : "775777",
+          "name":"Ключ",
+          "nameLat":"kluch",
+          "regionCode": "BLG",
+          "regionName": "Благоевград",
+          "regionNameLat": "Благоевград",
+          "municipalityCode": "BLG03",
+          "municipalityName": "Благоевград",
+          "municipalityNameLat": "Благоевград",
+          "placeType": "VILLAGE",
+          "tsb": "SW",
+          "enabled": true,
+          "subSettlements" : []
+        }
+      ]
+    }
+  ]
+}
+
+
+###  SettlementController # update
+PUT {{host}}/api/settlements/09999
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+
+  "countryCode": "FR"
+
+}
+
+
+###  SettlementController # history
+GET {{host}}/api/settlements/04279
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  SettlementController # getInfo
+GET {{host}}/api/settlements/63344/info
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+
+###  SettlementController # getCodes
+GET {{host}}/api/settlements/95279/get-codes
+accept: */*
+Authorization: Bearer {{access_token}}
+#Resort:       95279 Кунино Енерджи- АД, Сградоцентрала
+#Settlement:   40645 Кунино
+#Municipality: 62997 Роман
+#Region:       12259 Враца
+
+###  SettlementController # search
+GET {{host}}/api/settlements?q=бурссс
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+

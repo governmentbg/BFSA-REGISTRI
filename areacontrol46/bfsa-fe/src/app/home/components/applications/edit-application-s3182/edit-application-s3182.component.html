@@ -1,0 +1,346 @@
+<h1 class="text-center">
+  3182 - Регистрация на обекти за производство и търговия на едро с материали и
+  предмети, предназначени за контакт с храни.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div
+            class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+            *ngIf="
+              this.isExpert && isApplicationStatusPaymentConfirmedOrEntered
+            "
+          >
+            <!-- <button mat-flat-button (click)="this.updateApplication()">
+          Запази
+        </button> -->
+
+            <button mat-flat-button (click)="openApprovalDialog()">
+              Одобрение
+            </button>
+
+            <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+            <button mat-flat-button (click)="openCorrectionDialog()">
+              За корекция
+            </button>
+          </div>
+
+          <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+            Има грешки при финално действие: {{ finalActionErrors }}
+          </div>
+
+          <div formGroupName="facility">
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Специфични данни за обекта
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Вид дейност</mat-label>
+                <mat-select formControlName="activityTypeCode">
+                  <mat-option
+                    *ngFor="let activityType of activityTypes"
+                    [value]="activityType.code"
+                    >{{ activityType.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Адрес на обекта, в който ще се осъществява дейността
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Пълен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Адрес"
+                  formControlName="fullAddress"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Допълнителна информация за обекта
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Разрешение за ползванепо чл. 177, ал.2 от Закона за
+                  устройство на територията №</mat-label
+                >
+                <input
+                  matInput
+                  placeholder="Разрешение за ползванепо чл. 177, ал.2 от Закона за
+              устройство на територията №"
+                  formControlName="permission177"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Описание на дейностите, извършвани в обекта</mat-label
+                >
+                <input
+                  matInput
+                  placeholder="Описание на дейностите, извършвани в обекта"
+                  formControlName="activityDescription"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Вид водоснабдяване в обекта</mat-label>
+                <mat-select formControlName="waterSupplyTypeCode">
+                  <mat-option
+                    *ngFor="let waterSupplyType of waterSupplyTypes"
+                    [value]="waterSupplyType.code"
+                    >{{ waterSupplyType.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Начин на отвеждане на отпадните води</mat-label>
+                <input
+                  matInput
+                  placeholder="Начин на отвеждане на отпадните води"
+                  formControlName="disposalWasteWater"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div
+              class="my-4 uppercase font-bold text-xs opacity-100"
+              *ngIf="displayFacilityCapacities"
+            >
+              Капацитет на обекта
+            </div>
+
+            <div
+              *ngIf="facilityCapacities.length"
+              formArrayName="facilityCapacities"
+            >
+              <div
+                class="section"
+                *ngFor="
+                  let facilityCapacitiesForm of facilityCapacities.controls;
+                  let i = index
+                "
+                [formGroupName]="i"
+              >
+                <mat-form-field appearance="fill">
+                  <mat-label>Изделие</mat-label>
+                  <input
+                    matInput
+                    placeholder="Изделие"
+                    formControlName="product"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Материал</mat-label>
+                  <mat-select formControlName="materialCode">
+                    <mat-option
+                      *ngFor="let materialType of materialTypes"
+                      [value]="materialType.code"
+                      >{{ materialType.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Количество</mat-label>
+                  <input
+                    matInput
+                    placeholder="Количество"
+                    formControlName="quantity"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Мерна единица</mat-label>
+                  <mat-select formControlName="unitCode">
+                    <mat-option
+                      *ngFor="let measurementUnit of measurementUnits"
+                      [value]="measurementUnit.code"
+                      >{{ measurementUnit.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+
+                <!-- <button mat-raised-button (click)="removeVehicle(i)">
+                  <mat-icon>delete_forever</mat-icon>
+                </button> -->
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.data?.address?.settlementCode"
+          >
+            Средства за комуникация при търговия от разстояние
+          </div>
+
+          <div
+            formGroupName="address"
+            *ngIf="this.data?.address?.settlementCode"
+          >
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Телефон</mat-label>
+                <input
+                  matInput
+                  placeholder="Телефон"
+                  formControlName="phone"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Електронен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Електронен адрес"
+                  formControlName="mail"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Интернет страница</mat-label>
+                <input
+                  matInput
+                  placeholder="Интернет страница"
+                  formControlName="url"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Адрес (BG)</mat-label>
+                <input
+                  matInput
+                  placeholder="Адрес (BG)"
+                  formControlName="fullAddress"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div>
+            <mat-checkbox
+              [disabled]="true"
+              class="checkbox"
+              [checked]="displayUsingFoodTransportByClause52"
+              ><span class="checkbox"
+                >Използвам МПС за транспортиране на храни по чл.52 Описание на
+                превозните средства по чл.52, които ще се използват за
+                транспортиране на храни</span
+              >
+            </mat-checkbox>
+
+            <div
+              *ngIf="displayUsingFoodTransportByClause52"
+              formArrayName="vehicles"
+            >
+              <div
+                class="section"
+                *ngFor="
+                  let vehicleFormGroup of vehicles.controls;
+                  let i = index
+                "
+                [formGroupName]="i"
+              >
+                <mat-form-field>
+                  <mat-label>Собственост на МПС</mat-label>
+                  <mat-select formControlName="vehicleOwnershipTypeCode">
+                    <mat-option
+                      *ngFor="let vehicleOwnership of vehicleOwnerships"
+                      [value]="vehicleOwnership.code"
+                      >{{ vehicleOwnership.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field class="facilityAdress">
+                  <mat-label>Вид превозно средство</mat-label>
+                  <mat-select formControlName="vehicleTypeCode">
+                    <mat-option
+                      *ngFor="let vehicleType of vehicleTypes"
+                      [value]="vehicleType.code"
+                      >{{ vehicleType.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Марка и модел</mat-label>
+                  <input
+                    formControlName="brandModel"
+                    matInput
+                    placeholder="Марка и модел"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Регистрационен номер</mat-label>
+                  <input
+                    formControlName="registrationPlate"
+                    matInput
+                    placeholder="Регистрационен номер"
+                    required
+                  />
+                </mat-form-field>
+
+                <!-- <button mat-raised-button (click)="removeVehicle(i)">
+                  <mat-icon>delete_forever</mat-icon>
+                </button> -->
+              </div>
+            </div>
+
+            <!-- <button mat-raised-button color="primary" type="button" (click)="addVehicle()">Добави</button> -->
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" (click)="closeDialog()">
+        Затвори
+      </button>
+    </div>
+  </mat-step>
+</mat-stepper>

@@ -1,0 +1,314 @@
+<h1 class="text-center">
+  2701 - Издаване на сертификат за работа с продукти за растителна защита от
+  професионална категория на употреба.
+</h1>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за заявител
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="requestorFullName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="requestorIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="requestorEmail"
+                required
+              />
+              <mat-error
+                *ngIf="this.applicationForm.get('requestorEmail')?.errors"
+                >Имейлите не трябва да съвпадат
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Телефон</mat-label>
+              <input
+                matInput
+                placeholder="Телефон"
+                formControlName="requestorPhone"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Качество на автор на заявлението</mat-label>
+              <mat-select formControlName="requestorAuthorTypeCode">
+                <mat-option
+                  *ngFor="let applicationAuthorType of requestorAuthorTypes"
+                  [value]="applicationAuthorType.code"
+                  >{{ applicationAuthorType.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="radio-btn-box">
+            <mat-checkbox
+              formControlName="requestorApplicantMatch"
+              class="example-margin"
+              >Данните на заявител съвпадат с тези на ФЛ</mat-checkbox
+            >
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за физическо лице
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>ОДБХ</mat-label>
+              <mat-select formControlName="branchIdentifier">
+                <mat-option
+                  *ngFor="let branch of branches"
+                  [value]="branch.identifier"
+                  >{{ branch.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="applicantEmail"
+                required
+              />
+              <mat-error
+                *ngIf="this.applicationForm.get('applicantEmail')?.errors"
+                >Имейлите не трябва да съвпадат
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="applicantFullName"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="applicantIdentifier"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Телефон</mat-label>
+              <input
+                matInput
+                placeholder="Телефон"
+                formControlName="applicantPhone"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <!-- correspondenceAddress -->
+          <ng-container formGroupName="applicantCorrespondenceAddress">
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Адрес за кореспонденция:
+            </div>
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Област</mat-label>
+                <mat-select
+                  (selectionChange)="onChangeCorrespondenceZone($event.value)"
+                >
+                  <mat-option
+                    *ngFor="let areaSettlement of areaSettlements"
+                    [value]="areaSettlement.id"
+                    >{{ areaSettlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Община</mat-label>
+                <mat-select
+                  (selectionChange)="
+                    onChangeCorrespondenceMunicipalitySettlements($event.value)
+                  "
+                >
+                  <mat-option
+                    *ngFor="
+                      let municipality of correspondenceMunicipalitySettlements
+                    "
+                    [value]="municipality.id"
+                    >{{ municipality.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Населено място</mat-label>
+                <mat-select formControlName="settlementCode">
+                  <mat-option
+                    *ngFor="let settlement of correspondenceSettlements"
+                    [value]="settlement.id"
+                    >{{ settlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Пощенски код</mat-label>
+                <input
+                  matInput
+                  placeholder="Пощенски код"
+                  formControlName="postCode"
+                  required
+                />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Адрес (BG)</mat-label>
+                <input
+                  matInput
+                  placeholder="Адрес (BG)"
+                  formControlName="address"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            No на диплома/документ за обучение
+          </div>
+
+          <mat-radio-group
+            aria-label="Тип на документ"
+            formControlName="educationalDocumentType"
+            class="radio-box"
+          >
+            <mat-radio-button class="radio-btn" value="DIPLOMA"
+              >Диплома за висше образование в областта на аграрните науки с
+              професионално направление "Растителна защита" или
+              "Растениевъдство"</mat-radio-button
+            >
+            <mat-radio-button class="radio-btn" value="TRAINING"
+              >Документ за преминато обучение в БАБХ, висше училище или
+              институция в системата на професионалното образование по програма,
+              одобрена от изпълнителния директор на БАБХ</mat-radio-button
+            >
+          </mat-radio-group>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>No на документ</mat-label>
+              <input
+                matInput
+                placeholder="No на документ"
+                formControlName="educationalDocumentNumber"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Учебно заведение</mat-label>
+              <input
+                matInput
+                placeholder="Учебно заведение"
+                formControlName="educationalInstitution"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Дата</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker"
+                formControlName="educationalDocumentDate"
+                (click)="picker.open()"
+              />
+              <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+      <button
+        type="reset"
+        mat-raised-button
+        class="close-btn"
+        (click)="closeDialog()"
+      >
+        Затвори
+      </button>
+      <button
+        [disabled]="!applicationForm.valid"
+        mat-raised-button
+        color="primary"
+        (click)="registerApplication()"
+      >
+        Запази
+      </button>
+    </form>
+  </mat-step>
+  <mat-step>
+    <div class="h-[75vh] overflow-x-hidden overflow-y-scroll mb-8 mt-4">
+      <ng-template matStepLabel>Прикачване на файл</ng-template>
+      <div>
+        <input
+          type="file"
+          #fileInput
+          (change)="onFileSelected(fileInput)"
+          style="display: none"
+          accept="image/png, image/jpeg"
+        />
+        <button mat-raised-button color="primary" (click)="fileInput.click()">
+          Прикачи
+          <mat-icon>attach_file</mat-icon>
+        </button>
+        <span *ngIf="this.selectedFile">{{ selectedFile.name }}</span>
+      </div>
+    </div>
+
+    <div class="flex gap-2">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" (click)="closeDialog()">
+        Затвори
+      </button>
+    </div>
+  </mat-step>
+</mat-stepper>

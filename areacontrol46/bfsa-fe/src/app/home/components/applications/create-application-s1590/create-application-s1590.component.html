@@ -1,0 +1,499 @@
+<h1 class="text-center">
+  1590 - Вписване в Регистъра на лицата, които извършват специализирани
+  растителнозащитни услуги - a) фумигация.
+</h1>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за заявител
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име.."
+                formControlName="requestorFullName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="requestorIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="requestorEmail"
+                required
+              />
+              <mat-error
+                *ngIf="this.applicationForm.get('requestorEmail')?.errors"
+                >Emails must not match
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Качество на автор на заявлението</mat-label>
+              <mat-select formControlName="requestorAuthorTypeCode">
+                <mat-option
+                  *ngFor="let applicationAuthorType of requestorAuthorTypes"
+                  [value]="applicationAuthorType.code"
+                  >{{ applicationAuthorType.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <ng-container
+              *ngIf="
+                this.applicationForm.get('requestorAuthorTypeCode')?.value ===
+                '01306'
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Номер на пълномощно</mat-label>
+                <input
+                  matInput
+                  placeholder="Номер на пълномощно"
+                  formControlName="requestorPowerAttorneyNumber"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Заверено от</mat-label>
+                <input
+                  matInput
+                  placeholder="Заверено от"
+                  formControlName="requestorPowerAttorneyNotary"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Дата на пълномощно</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker1"
+                  formControlName="requestorPowerAttorneyDate"
+                  (click)="picker1.open()"
+                />
+                <mat-datepicker #picker1></mat-datepicker>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Валидно до</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker2"
+                  formControlName="requestorPowerAttorneyUntilDate"
+                  (click)="picker2.open()"
+                />
+                <mat-datepicker #picker2></mat-datepicker>
+              </mat-form-field>
+            </ng-container>
+          </div>
+
+          <!-- correspondenceAddress -->
+          <ng-container formGroupName="applicantCorrespondenceAddress">
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Адрес за кореспонденция:
+            </div>
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Област</mat-label>
+                <mat-select
+                  (selectionChange)="onChangeCorrespondenceZone($event.value)"
+                >
+                  <mat-option
+                    *ngFor="let areaSettlement of areaSettlements"
+                    [value]="areaSettlement.id"
+                    >{{ areaSettlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Община</mat-label>
+                <mat-select
+                  (selectionChange)="
+                    onChangeCorrespondenceMunicipalitySettlements($event.value)
+                  "
+                >
+                  <mat-option
+                    *ngFor="
+                      let municipality of correspondenceMunicipalitySettlements
+                    "
+                    [value]="municipality.id"
+                    >{{ municipality.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Населено място</mat-label>
+                <mat-select formControlName="settlementCode">
+                  <mat-option
+                    *ngFor="let settlement of correspondenceSettlements"
+                    [value]="settlement.id"
+                    >{{ settlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Пощенски код</mat-label>
+                <input
+                  matInput
+                  placeholder="Пощенски код"
+                  formControlName="postCode"
+                  required
+                />
+              </mat-form-field>
+              <mat-form-field appearance="fill">
+                <mat-label>Адрес (BG)</mat-label>
+                <input
+                  matInput
+                  placeholder="Адрес (BG)"
+                  formControlName="address"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="radio-btn-box">
+            <mat-radio-group formControlName="entityType">
+              <mat-radio-button value="LEGAL">Юридическо лице</mat-radio-button
+              >&nbsp;&nbsp;
+              <mat-radio-button value="PHYSICAL"
+                >Физическо лице</mat-radio-button
+              >
+            </mat-radio-group>
+          </div>
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.isPhysicalPersonForm"
+          >
+            Данни за физическо лице:
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="!this.isPhysicalPersonForm"
+          >
+            Данни за ЮЛ:
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="applicantFullName"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill" *ngIf="this.isPhysicalPersonForm">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="applicantIdentifier"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field
+              appearance="fill"
+              *ngIf="!this.isPhysicalPersonForm"
+            >
+              <mat-label>ЕИК</mat-label>
+              <input
+                matInput
+                placeholder="ЕИК"
+                formControlName="applicantIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="applicantEmail"
+                required
+              />
+              <mat-error
+                *ngIf="this.applicationForm.get('applicantEmail')?.errors"
+                >Emails must not match
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Телефон</mat-label>
+              <input
+                matInput
+                placeholder="Телефон"
+                formControlName="applicantPhone"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <!-- headOfficeAddress -->
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Склад за съхранение на ПРЗ
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>ОДБХ</mat-label>
+              <mat-select formControlName="branchIdentifier">
+                <mat-option
+                  *ngFor="let branch of branches"
+                  [value]="branch.identifier"
+                  >{{ branch.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <ng-container>
+              <mat-form-field appearance="fill">
+                <mat-label>Област</mat-label>
+                <mat-select
+                  (selectionChange)="onChangeHeadOfficeZone($event.value)"
+                >
+                  <mat-option
+                    *ngFor="let areaSettlement of areaSettlements"
+                    [value]="areaSettlement.id"
+                    >{{ areaSettlement.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Община</mat-label>
+                <mat-select
+                  (selectionChange)="
+                    onChangeHeadOfficeMunicipalitySettlements($event.value)
+                  "
+                >
+                  <mat-option
+                    *ngFor="let municipality of municipalitySettlements"
+                    [value]="municipality.id"
+                    >{{ municipality.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+            </ng-container>
+          </div>
+
+          <div class="section" formGroupName="warehouseAddress">
+            <mat-form-field appearance="fill">
+              <mat-label>Населено място</mat-label>
+              <mat-select formControlName="settlementCode">
+                <mat-option
+                  *ngFor="let settlement of settlements"
+                  [value]="settlement.id"
+                  >{{ settlement.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Адрес (BG)</mat-label>
+              <input
+                matInput
+                placeholder="Адрес (BG)"
+                formControlName="address"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2. Лица със сертификат по чл. 83 от ЗЗР, свързани с дейностите в
+            обекта
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2.1 Лице, което контролира процеса по фумигация
+          </div>
+
+          <div class="section" formGroupName="ch83CertifiedPerson">
+            <mat-form-field appearance="fill">
+              <mat-label>Име</mat-label>
+              <input
+                matInput
+                placeholder="Име"
+                formControlName="name"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Презиме</mat-label>
+              <input
+                matInput
+                placeholder="Презиме"
+                formControlName="surname"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Фамилия</mat-label>
+              <input
+                matInput
+                placeholder="Фамилия"
+                formControlName="familyName"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="identifier"
+                required
+              />
+            </mat-form-field>
+
+            <mat-checkbox formControlName="certificateByClause83"
+              >Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+            >
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2.1 Лице, което контролира процеса по фумигация
+          </div>
+
+          <div
+            class="section"
+            formArrayName="ch83CertifiedPersons"
+            *ngIf="this.ch83CertifiedPersons.length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let fumigationPersonForm of ch83CertifiedPersons?.controls;
+                let i = index
+              "
+            >
+              <div class="lesson-form-row" [formGroupName]="i">
+                <mat-form-field appearance="fill">
+                  <mat-label>Име</mat-label>
+                  <input
+                    matInput
+                    placeholder="Име"
+                    formControlName="name"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Презиме</mat-label>
+                  <input
+                    matInput
+                    placeholder="Презиме"
+                    formControlName="surname"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>Фамилия</mat-label>
+                  <input
+                    matInput
+                    placeholder="Фамилия"
+                    formControlName="familyName"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>ЕГН</mat-label>
+                  <input
+                    matInput
+                    placeholder="ЕГН"
+                    formControlName="identifier"
+                    required
+                  />
+                </mat-form-field>
+
+                <div display="grid">
+                  <mat-checkbox formControlName="certificateByClause83"
+                    >Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+                  >
+
+                  <mat-checkbox formControlName="fumigationCertificate"
+                    >Документ за завършено обучение по фумигация</mat-checkbox
+                  >
+
+                  <!-- <button
+                    mat-raised-button
+                    color="primary"
+                    type="button"
+                    (click)="removeFumigationPerson(i)"
+                  >
+                    -
+                  </button> -->
+
+                  <button
+                    class="remove-btn"
+                    mat-mini-fab
+                    type="button"
+                    color="primary"
+                    aria-label="Example icon button with a menu icon"
+                  >
+                    <mat-icon (click)="removeFumigationPerson(i)"
+                      >delete</mat-icon
+                    >
+                  </button>
+                </div>
+              </div>
+            </ng-container>
+          </div>
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="button"
+            (click)="addFumigationPerformingPerson()"
+          >
+            Добави
+          </button>
+        </li>
+      </ol>
+
+      <button
+        type="reset"
+        mat-raised-button
+        class="close-btn"
+        (click)="closeDialog()"
+      >
+        Затвори
+      </button>
+      <button mat-raised-button color="primary" (click)="registerApplication()">
+        Запази
+      </button>
+    </form>
+  </mat-step>
+</mat-stepper>

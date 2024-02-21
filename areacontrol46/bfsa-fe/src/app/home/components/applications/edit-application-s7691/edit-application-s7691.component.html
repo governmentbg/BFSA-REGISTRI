@@ -1,0 +1,623 @@
+<h1 class="text-center">
+  769 - Регистрация на обекти за производство и търговия с храни <br />
+  Производство на първични продукти
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div
+            class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+            *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+          >
+            <button mat-flat-button (click)="downloadOrder()">
+              Печатане на заповед
+            </button>
+
+            <button mat-flat-button (click)="openApprovalDialog()">
+              Одобрение
+            </button>
+
+            <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+            <button mat-flat-button (click)="openCorrectionDialog()">
+              За корекция
+            </button>
+          </div>
+
+          <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+            Има грешки при финално действие: {{ finalActionErrors }}
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за обекта
+          </div>
+
+          <div class="section" formGroupName="facility">
+            <mat-form-field appearance="fill">
+              <mat-label>Вид дейност</mat-label>
+              <input
+                matInput
+                placeholder="Вид дейност"
+                formControlName="activityTypeName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Наименование</mat-label>
+              <input
+                matInput
+                placeholder="Вид дейност"
+                formControlName="name"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="mb-4">Вид и наименование на ПЪРВИЧНИТЕ продукти</div>
+          <div *ngIf="!this.data.primaryProductFoodTypes" class="animate-pulse">
+            Loading Food Types...
+          </div>
+          <app-food-types-checkbox-list
+            *ngIf="this.data?.primaryProductFoodTypes?.length"
+            [areFoodTypesEnabled]="
+              this.data?.recordStatus === 'PAYMENT_CONFIRMED' ||
+              this.data?.recordStatus === 'ENTERED'
+            "
+            [foodTypes]="this.data.primaryProductFoodTypes"
+            (selectedFoodTypes)="onToggleChangePrimaryProduct($event)"
+          ></app-food-types-checkbox-list>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пояснение към групи храни</mat-label>
+              <input
+                matInput
+                placeholder="Пояснение към групи храни"
+                formControlName="primaryProductFoodTypeDescription"
+                required
+              />
+            </mat-form-field>
+
+            <ng-container
+              formGroupName="facility"
+              *ngIf="
+                this.applicationForm.get('facility')?.get('regNumber')?.value
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Регистрационен номер на животновъдния обект</mat-label
+                >
+                <input
+                  matInput
+                  placeholder="Регистрационен номер на животновъдния обект"
+                  formControlName="regNumber"
+                  required
+                />
+              </mat-form-field>
+            </ng-container>
+
+            <mat-form-field
+              appearance="fill"
+              *ngIf="
+                this.applicationForm.get('primaryProductLiveStockRegNumber')
+                  ?.value
+              "
+            >
+              <mat-label>Регистрационен номер на животновъдния обект</mat-label>
+              <input
+                matInput
+                placeholder="Регистрационен номер на животновъдния обект"
+                formControlName="primaryProductLiveStockRegNumber"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field
+              appearance="fill"
+              *ngIf="
+                this.applicationForm.get('primaryProductFarmerIdentifier')
+                  ?.value
+              "
+            >
+              <mat-label>ЕИК на земеделския производител</mat-label>
+              <input
+                matInput
+                placeholder="ЕИК на земеделския производител"
+                formControlName="primaryProductFarmerIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Адрес на обекта, в който ще се осъществява/управлява дейността
+          </div>
+
+          <div class="section" formGroupName="facility">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълен адрес</mat-label>
+              <input
+                matInput
+                placeholder="Пълен адрес"
+                formControlName="fullAddress"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Период</mat-label>
+              <input
+                formControlName="periodName"
+                matInput
+                placeholder="Период"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за капацитета
+          </div>
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Годишен капацитет</mat-label>
+              <input
+                formControlName="foodAnnualCapacity"
+                matInput
+                placeholder="Годишен капацитет"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Мерна единица</mat-label>
+              <input
+                formControlName="foodAnnualCapacityUnitName"
+                matInput
+                placeholder="Мерна единица"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Период</mat-label>
+              <input
+                formControlName="foodPeriodName"
+                matInput
+                placeholder="Период"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Прогнозен годишен добив на земеделска продукция</mat-label
+              >
+              <input
+                formControlName="primaryProductEstimatedAnnualYield"
+                matInput
+                placeholder="Прогнозен годишен добив на земеделска продукция"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <ng-container
+            *ngIf="this.applicationForm.get('producedFoodTypes')?.value"
+          >
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Данни за произведените храни
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Пояснение към групи храни</mat-label>
+                <input
+                  formControlName="producedFoodTypeDescription"
+                  matInput
+                  placeholder="Пояснение към групи храни"
+                  required
+                />
+              </mat-form-field>
+              <!-- 
+              <mat-form-field appearance="fill">
+                <mat-label>Мерна единица</mat-label>
+                <input
+                  formControlName="producedFoodAnnualCapacityUnitName"
+                  matInput
+                  placeholder="Мерна единица"
+                  required
+                />
+              </mat-form-field> -->
+            </div>
+
+            <div class="mb-4">Вид и наименование на ПРОИЗВЕДЕНИТЕ храни</div>
+            <app-food-types-checkbox-list
+              *ngIf="this.data?.producedFoodTypes"
+              [areFoodTypesEnabled]="
+                this.data?.recordStatus === 'PAYMENT_CONFIRMED' ||
+                this.data?.recordStatus === 'ENTERED'
+              "
+              [foodTypes]="this.data?.producedFoodTypes"
+              (selectedFoodTypes)="onToggleChangeProducedFoodTypes($event)"
+            ></app-food-types-checkbox-list>
+          </ng-container>
+
+          <mat-checkbox
+            [disabled]="true"
+            [checked]="this.applicationForm.get('huntingPartyBranch')?.value"
+          >
+            <span class="checkbox"
+              >Извършвам обработка на дивеч</span
+            ></mat-checkbox
+          >
+
+          <ng-container
+            *ngIf="this.applicationForm.get('huntingPartyBranch')?.value"
+          >
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Данни при обработка на дивеч
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Наименование на ловното сдружение</mat-label>
+                <input
+                  formControlName="huntingPartyBranch"
+                  matInput
+                  placeholder="Наименование на ловното сдружение"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Площ на ловностопанските райони на ловните дружини, членуващи
+                  в него
+                </mat-label>
+                <input
+                  formControlName="areaHuntingAreas"
+                  matInput
+                  placeholder="Площ на ловностопанските райони на ловните дружини, членуващи в него"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Местонахождение на пункта за обработка на дивеч</mat-label
+                >
+                <input
+                  formControlName="locationGameProcessingFacility"
+                  matInput
+                  placeholder="Местонахождение на пункта за обработка на дивеч"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Капацитет на пункта за обработка на дивеч</mat-label>
+                <input
+                  formControlName="gameStationCapacity"
+                  matInput
+                  placeholder="Капацитет на пункта за обработка на дивеч"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Мерна единица</mat-label>
+                <input
+                  formControlName="gameStationCapacityUnitName"
+                  matInput
+                  placeholder="Мерна единица"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Период</mat-label>
+                <input
+                  formControlName="gameProcessingPeriodName"
+                  matInput
+                  placeholder="Период"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Отговорни лица за хигиената и поддръжката на пункта за
+                  обработка на дивеч, както и правила за организацията на
+                  дейността в пункта</mat-label
+                >
+                <input
+                  formControlName="responsiblePeople"
+                  matInput
+                  placeholder="Отговорни лица за хигиената и поддръжката на пункта за обработка на дивеч, както и правила за организацията на дейността в пункта"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Вида на дивеча, от който ще се добива месото</mat-label
+                >
+                <input
+                  formControlName="gameType"
+                  matInput
+                  placeholder="Вида на дивеча, от който ще се добива месото"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>
+                  Разрешен добив на ловното сдружение (число) в брой за сезон
+                </mat-label>
+                <input
+                  formControlName="permittedExtraction"
+                  matInput
+                  placeholder="Разрешен добив на ловното сдружение (число) в брой за сезон"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="fishingVessels.length > 0"
+          >
+            Данни за риболовните съдове
+          </div>
+
+          <div formArrayName="fishingVessels" *ngIf="fishingVessels.length > 0">
+            <div
+              class="section"
+              *ngFor="
+                let fishingVesselForm of fishingVessels.controls;
+                let i = index
+              "
+              [formGroupName]="i"
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Регистрационен номер на лодката</mat-label>
+                <input
+                  formControlName="regNumber"
+                  matInput
+                  placeholder="Регистрационен номер на лодката"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Външна маркировка</mat-label>
+                <input
+                  formControlName="externalMarking"
+                  matInput
+                  placeholder="Външна маркировка"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Тип на риболовния съд</mat-label>
+                <input
+                  formControlName="typeName"
+                  matInput
+                  placeholder="Тип на риболовния съд"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Предназначение на риболовния съд </mat-label>
+                <input
+                  formControlName="assignmentTypeName"
+                  matInput
+                  placeholder="Предназначение на риболовния съд"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Дължина на корпуса в метри</mat-label>
+                <input
+                  formControlName="hullLength"
+                  matInput
+                  placeholder="Дължина на корпуса в метри"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="section">
+            <mat-checkbox
+              [disabled]="true"
+              [checked]="
+                this.applicationForm.get('deliveryAddressLivestockFacility')
+                  ?.value
+              "
+            >
+              <span class="checkbox"
+                >Осъществявам директни доставки на първични продукти</span
+              ></mat-checkbox
+            >
+          </div>
+
+          <ng-container>
+            <div
+              class="section"
+              *ngIf="
+                this.applicationForm.get('deliveryAddressLivestockFacility')
+                  ?.value
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Регистрационен номер на животновъдния обект</mat-label
+                >
+                <input
+                  matInput
+                  placeholder="Регистрационен номер на животновъдния обект"
+                  formControlName="deliveryLiveStockRegNumber"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>ЕИК на земеделския производител</mat-label>
+                <input
+                  matInput
+                  placeholder="ЕИК на земеделския производител"
+                  formControlName="deliveryFarmerIdentifier"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label
+                  >Адрес на обекта за първично производство на храни</mat-label
+                >
+                <input
+                  matInput
+                  placeholder="Адрес на обекта за първично производство на храни"
+                  formControlName="deliveryAddressLivestockFacility"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Kапацитет на обекта</mat-label>
+                <input
+                  matInput
+                  placeholder="Kапацитет на обекта"
+                  formControlName="deliveryFacilityCapacity"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Мерна единица</mat-label>
+                <input
+                  matInput
+                  placeholder="Мерна единица"
+                  formControlName="deliveryFacilityCapacityUnitName"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Период</mat-label>
+                <input
+                  matInput
+                  placeholder="Период"
+                  formControlName="deliveryPeriodName"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <mat-checkbox
+            [disabled]="true"
+            [checked]="
+              this.applicationForm.get('address')?.get('fullAddress')?.value
+            "
+          >
+            <span class="checkbox"
+              >Осъществявам търговия от разстояние</span
+            ></mat-checkbox
+          >
+
+          <ng-container
+            formGroupName="address"
+            *ngIf="
+              this.applicationForm.get('address')?.get('fullAddress')?.value
+            "
+          >
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Телефон</mat-label>
+                <input
+                  matInput
+                  placeholder="Телефон"
+                  formControlName="phone"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Електронен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Електронен адрес"
+                  formControlName="mail"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Интернет страница</mat-label>
+                <input
+                  matInput
+                  placeholder="Интернет страница"
+                  formControlName="url"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Пълен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Пълен адрес"
+                  formControlName="fullAddress"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="section">
+            <mat-form-field appearance="fill" class="date-holder">
+              <mat-label>Дата</mat-label>
+              <input matInput formControlName="commencementActivityDate" />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+    </div>
+  </mat-step>
+</mat-stepper>

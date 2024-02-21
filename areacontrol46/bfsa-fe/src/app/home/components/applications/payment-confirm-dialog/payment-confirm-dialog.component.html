@@ -1,0 +1,13 @@
+<div class="margin-auto"><h1 mat-dialog-title>Потвърждаване на плащане</h1></div>
+<div class="margin-auto">
+  <mat-form-field appearance="fill">
+    <mat-label>Сума</mat-label>
+    <input matInput placeholder="Сума" [formControl]="amount" required />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions class="flex justify-between">
+  <button mat-raised-button color="warn" (click)="discard()">Отказ</button>
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="confirm()">
+    Потвърди
+  </button>
+</div>

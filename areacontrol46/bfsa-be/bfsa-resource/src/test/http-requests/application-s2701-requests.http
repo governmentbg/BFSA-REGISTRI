@@ -1,0 +1,83 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  ApplicationS2701Controller # register
+POST {{host}}/api/s2701-applications/register
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "requestorIdentifier": "1111111111",
+  "requestorFullName": "RequestorFullName1",
+  "requestorPhone": "923480234",
+  "requestorEmail": "requestor1@mail.com",
+  "requestorPowerAttorneyNumber": "123132132",
+  "requestorPowerAttorneyNotary": "13132123",
+  "requestorPowerAttorneyDate": "2023-08-09",
+  "requestorPowerAttorneyUntilDate": "2023-08-09",
+  "requestorAuthorTypeCode": "01301",
+  "applicantIdentifier": "2222222222",
+  "applicantFullName": "ApplicantFullName2",
+  "applicantEmail": "applicant2@mail.com",
+  "applicantPhone": "2134324",
+  "applicantLegalForm": "string",
+  "applicantHeadOfficeSettlementCode": "string",
+  "applicantHeadOfficeAddress": {
+    "address": "Адрес номер едно",
+    "postCode": "1000",
+    "addressTypeCode": "00201",
+    "settlementCode": "02676"
+  },
+  "applicantCorrespondenceSettlementCode": "string",
+  "applicantCorrespondenceAddress": {
+    "address": "Адрес за кореспонденция",
+    "postCode": "1000",
+    "addressTypeCode": "00203",
+    "settlementCode": "04279"
+  },
+  "branchSequenceNumber": "01",
+  "recordId": "string",
+  "recordIdentifier": "string",
+  "serviceType": "S2701",
+  "regNumber": "string",
+  "regDate": "2023-08-09",
+  "price": 0,
+  "recordStatus": "ENTERED",
+  "approvalDocumentStatus": "ENTERED",
+  "requestorApplicantMatch": false,
+  "educationalDocumentType": "DIPLOMA",
+  "educationalDocumentNumber": "string",
+  "educationalDocumentDate": "2023-08-09",
+  "educationalInstitution": "string",
+  "description": "string",
+  "discrepancyUntilDate": "2023-08-09"
+}
+
+
+###  ApplicationS2701Controller # getApplicationS2701 by record id
+GET {{host}}/api/s2701-applications/f1cdcae1-70c6-4efe-a511-c76bb1bdcfe5
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+
+###  ApplicationS2701Controller # approveApplicationS2701
+PUT {{host}}/api/s2701-applications/498/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

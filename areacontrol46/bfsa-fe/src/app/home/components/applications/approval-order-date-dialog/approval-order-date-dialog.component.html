@@ -1,0 +1,32 @@
+<h1 mat-dialog-title>Потвърждаване на одобрение ?</h1>
+
+<form [formGroup]="approvalForm">
+  <mat-form-field appearance="fill" class="w-full">
+    <mat-label>Заповед No</mat-label>
+    <input
+      matInput
+      placeholder="Заповед No"
+      formControlName="orderNumber"
+      required
+    />
+  </mat-form-field>
+
+  <div>
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Дата</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="orderDate"
+        (click)="picker.open()"
+      />
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+</form>
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="discard()">Не</button>
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="confirm()">
+    Да
+  </button>
+</div>

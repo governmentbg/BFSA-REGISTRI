@@ -1,0 +1,108 @@
+global.yes	bg	Да
+global.yes	en	Yes
+global.no	bg	Не
+global.no	en	No
+global.successfully	bg	Успешно
+global.successfully	en	Successfully
+global.failed	bg	Провален
+global.failed	en	Failed
+global.token.expired	bg	Токенът е изтекъл
+global.token.expired	en	The token has expired
+global.something.went.wrong	bg	Нещо се обърка
+global.something.went.wrong	en	Something went wrong
+global.token.not.found	bg	Токенът не е намерен
+global.token.not.found	en	Token not found
+
+global.application.service.S2701.name	bg	Име на услугата
+global.application.service.S2701.name	en	Service Name
+global.application.service.S3180.name	bg	Име на услугата
+global.application.service.S3180.name	en	Service Name
+
+email.register.user.verification.subject	bg	Потвърждение за регистрация
+email.register.user.verification.subject	en	Registration Confirmation
+email.register.user.verification.message	bg	Благодарим ви, че създадохте акаунт. Моля, щракнете върху връзката по-долу, за да активирате акаунта си. Тази връзка ще изтече след 24 часа.
+email.register.user.verification.message	en	Thank you for creating an account. Please click the link below to activate your account. This link will expire in 24 hours.
+
+email.forgot.password.verification.subject	bg	Потвърждение за нулиране на парола
+email.forgot.password.verification.subject	en	Reset Password Confirmation
+email.forgot.password.verification.message	bg	Добре дошъл обратно. Моля, щракнете върху връзката по-долу, за да нулирате паролата си. Тази връзка ще изтече след 24 часа.
+email.forgot.password.verification.message	en	Welcome back. Please click the link below to reset your password. This link will expire in 24 hours.
+
+email.application.payment.notification.subject	en	Notification of submitted application for provision of administrative service.
+email.application.payment.notification.subject	bg	Уведомление за подадено заявление за предоставяне административна услуга от БАБХ {0}.
+email.application.payment.notification.message	en	тука трябва да има текст за съобщението на английски
+email.application.payment.notification.message	bg	Входящ номер:{0}\nАдминистративна услуга: {1}\nТакса: {2}\n\tИмате възможност да платите като използвате средата за електронни плащания за централната и местната администрация на МЕУ  https://pay.egov.bg/\n\tВходът в системата е възможен чрез:\n- Квалифициран електронен подпис (КЕП)\n- Код за плащане <ние генерираме>, валиден 24 часа.\n\tАко вече сте платили, моля да ни извините.\n\tТова съобщение e генерирано автоматично. Моля не му отговаряйте.\n
+
+email.application.correction.notification.subject	bg	Връщане за корекция
+email.application.correction.notification.subject	en	Return for correction
+
+forgot.password.success	bg	Код за смяна на парола е изпратен на {0}. Имате {1} часа да смените вашата парола.
+forgot.password.success	en	A password reset code has been sent to {0}. You have {1} hours to change your password.
+forgot.password.email.in.use	bg	Имейл адресът вече се използва!
+forgot.password.email.in.use	en	Email Address already in use!
+
+S16.name	bg	S16
+S16.name	en	S16
+S502.name	bg	S502
+S502.name	en	S502
+S503.name	bg	S503
+S503.name	en	S503
+S769.name	bg	S769
+S769.name	en	S769
+S7691.name	bg	S7691
+S7691.name	en	S7691
+S7692.name	bg	S7692
+S7692.name	en	S7692
+S7693.name	bg	S7693
+S7693.name	en	S7693
+S7694.name	bg	S7694
+S7694.name	en	S7694
+S7695.name	bg	S7695
+S7695.name	en	S7695
+S7696.name	bg	S7696
+S7696.name	en	S7696
+S1199.name	bg	S1199
+S1199.name	en	S1199
+S1366.name	bg	S1366
+S1366.name	en	S1366
+S1590.name	bg	S1590
+S1590.name	en	S1590
+S1811.name	bg	S1811
+S1811.name	en	S1811
+S2170.name	bg	S2170
+S2170.name	en	S2170
+S2272.name	bg	S2272
+S2272.name	en	S2272
+S2274.name	bg	S2274
+S2274.name	en	S2274
+S2695.name	bg	S2695
+S2695.name	en	S2695
+S2697.name	bg	S2697
+S2697.name	en	S2697
+S2698.name	bg	S2698
+S2698.name	en	S2698
+S2699.name	bg	S2699
+S2699.name	en	S2699
+S2700.name	bg	S2700
+S2700.name	en	S2700
+S2701.name	bg	Издаване на сертификат за работа с продукти за растителна защита от професионална категория на употреба
+S2701.name	en	Issuance of a certificate for working with plant protection products of a professional category of use
+S2702.name	bg	S2702
+S2702.name	en	S2702
+S2711.name	bg	S2711
+S2711.name	en	S2711
+S2869.name	bg	S2869
+S2869.name	en	S2869
+S3125.name	bg	S3125
+S3125.name	en	S3125
+S3180.name	bg	Одобрение на обекти за производство, преработка и/или дистрибуция на храни от животински произход
+S3180.name	en	Approval of facilities for the production, processing and/or distribution of food of animal origin
+S3181.name	en	Registration of operators who carry out distance food trade.
+S3181.name	bg	Регистрация на операторите, които извършват търговия с храни от разстояние.
+S3182.name	bg	S3182
+S3182.name	en	S3182
+S3201.name	bg	S3201
+S3201.name	en	S3201
+S3362.name	en	S3362
+S3363.name	en	S3363
+S3365.name	en	S3365

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://eform.e-gov.bg/dictionary/CommunicationChannels"
+        xmlns="http://eform.e-gov.bg/dictionary/CommunicationChannels"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:code="http://eform.e-gov.bg/dictionary/ContactPoint">
+
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/ContactPoint" schemaLocation="ContactPoint.xsd"/>
+
+	<xsd:complexType name="CommunicationChannels">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="bg">
+          Данни за контакт с физическо лице или организация. Класът съдържа различните видове контактна информация: телефон, имейл и факс.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="communicationChannel" type="code:ContactPoint" minOccurs="1" maxOccurs="3">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+              Вид на контакта. Номенклатура „Вид данни за контакт“
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+  
+</xsd:schema>

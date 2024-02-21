@@ -1,0 +1,181 @@
+<h1 class="text-center">
+  3362 - За вписване в регистъра на продуктите за растителна защита, които са
+  преопаковани, във връзка с чл. 6, ал. 1, т. 2 от Закона за защита на
+  растенията.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+          Запази
+        </button> -->
+
+        <!-- <button
+          [disabled]="!applicationForm.valid"
+          mat-flat-button
+          (click)="updateApplication()"
+        >
+          Запази
+        </button> -->
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Дата</mat-label>
+              <input
+                matInput
+                placeholder="Дата"
+                formControlName="registrationDate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Име</mat-label>
+              <input
+                matInput
+                placeholder="Име"
+                formControlName="fullName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Oт дата</mat-label>
+              <input
+                matInput
+                placeholder="Oт дата"
+                formControlName="contractStartDate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>До дата</mat-label>
+              <input
+                matInput
+                placeholder="До дата"
+                formControlName="contractEndDate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Търговско наименование на ПРЗ</mat-label>
+              <input matInput placeholder="Oт дата" formControlName="pppName" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Производител на ПРЗ</mat-label>
+              <input
+                matInput
+                placeholder="Oт дата"
+                formControlName="pppManufacturerName"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Вместимост на опаковката на преопакования ПРЗ</mat-label
+              >
+              <input
+                matInput
+                type="number"
+                placeholder="Вместимост на опаковката на преопакования ПРЗ"
+                formControlName="pppPackageVolume"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label> Мерна единица </mat-label>
+              <input
+                matInput
+                placeholder="Мерна единица"
+                formControlName="pppPackageUnitName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Материал на опаковката на преопакования ПРЗ</mat-label>
+              <input
+                matInput
+                placeholder="Материал на опаковката на преопакования ПРЗ"
+                formControlName="pppPackageMaterial"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Вместимост на опаковката</mat-label>
+              <input
+                matInput
+                type="number"
+                placeholder="Вместимост на опаковката на преопакования ПРЗ"
+                formControlName="packageVolume"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label> Мерна единица </mat-label>
+              <input
+                matInput
+                placeholder="Мерна единица"
+                formControlName="packageUnitName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Материал на опаковката</mat-label>
+              <input
+                matInput
+                placeholder="Материал на опаковката на преопакования ПРЗ"
+                formControlName="packageMaterial"
+              />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+    </div>
+  </mat-step>
+</mat-stepper>

@@ -1,0 +1,24 @@
+<div *ngIf="!settlements" class="animate-pulse">Loading settlements...</div>
+
+<div *ngIf="settlements">
+  <div class="">
+    <div class="p-2">Names:</div>
+    <mat-card>
+      <mat-card-content>
+        <div *ngFor="let item of settlements" class="truncate">
+          <a
+            [routerLink]="['/app/settlement', item.id]"
+            class="hover:underline text-base"
+            [title]="item.name"
+          >
+            {{ item.name }}
+          </a>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button (click)="addSettlement()" mat-button>Add</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

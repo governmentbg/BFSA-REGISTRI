@@ -1,0 +1,47 @@
+<form
+  *ngIf="dialogForm"
+  [formGroup]="dialogForm"
+  novalidate
+  (ngSubmit)="onSubmit()"
+>
+  <div mat-dialog-title>Редактиране</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Разрешение № </mat-label>
+        <input matInput formControlName="approvalDocumentNumber" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Дата на издаване </mat-label>
+        <input matInput formControlName="firstEntryDate" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Вид материал </mat-label>
+        <input matInput formControlName="materialType" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Количество </mat-label>
+        <input matInput formControlName="materialTotalAmount" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Статус </mat-label>
+        <input matInput formControlName="recordStatus" />
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Затвори</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      Обнови
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,315 @@
+<h1 class="text-center">
+  502 - Заявление за одобряване на бази за извършване на биологично изпитване на
+  продукти за растителна защита
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="this.isExpert && isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="downloadOrder()">
+          Печатане на заповед
+        </button>
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Специфична част
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.testingAddresses.length > 0"
+          >
+            Mеста за изпитване
+          </div>
+
+          <div
+            formArrayName="testingAddresses"
+            *ngIf="this.testingAddresses.length > 0"
+          >
+            <div
+              *ngFor="
+                let testingAddressForm of testingAddresses?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field>
+                  <mat-label>Пълен адрес</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълен адрес"
+                    formControlName="fullAddress"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Населено място</mat-label>
+                  <input
+                    matInput
+                    placeholder="Населено място"
+                    formControlName="settlementName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Землище</mat-label>
+                  <input
+                    matInput
+                    placeholder="Землище"
+                    formControlName="land"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>№ на парцел</mat-label>
+                  <input
+                    matInput
+                    placeholder="№ на парцел"
+                    formControlName="plotNumber"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Искано одобрение по чл. 23, ал. 1 от Наредба № 19 за
+                първоначално одобряване на база</mat-label
+              >
+              <mat-select formControlName="plantGroupTypeCodes" multiple>
+                <mat-option
+                  *ngFor="let plantGroupType of plantGroupTypes"
+                  [value]="plantGroupType.code"
+                  >{{ plantGroupType.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.pppTestingPersons.length > 0"
+          >
+            Информация по Приложението на Наредба № 19.
+          </div>
+
+          <div
+            formArrayName="pppTestingPersons"
+            *ngIf="this.pppTestingPersons.length > 0"
+          >
+            <div
+              *ngFor="
+                let pppTestingPersonForm of pppTestingPersons?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field>
+                  <mat-label>Име на лицето</mat-label>
+                  <input
+                    matInput
+                    placeholder="Име на лицето"
+                    formControlName="fullName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>ЕГН</mat-label>
+                  <input
+                    matInput
+                    placeholder="ЕГН"
+                    formControlName="identifier"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Функции и отговорности</mat-label>
+                  <input
+                    matInput
+                    placeholder="Функции и отговорности"
+                    formControlName="description"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.easedFacilities.length > 0"
+          >
+            Списък на притежаваните или взети под наем съоръжения /сгради,
+            оранжерии и др.
+          </div>
+
+          <div class="section">
+            <mat-form-field>
+              <mat-label>Описание</mat-label>
+              <input
+                matInput
+                placeholder="Описание"
+                formControlName="easedFacilities"
+              />
+            </mat-form-field>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.maintenanceEquipments.length > 0"
+          >
+            Оборудване - поддръжка и калибриране
+          </div>
+
+          <div
+            formArrayName="maintenanceEquipments"
+            *ngIf="this.maintenanceEquipments.length > 0"
+          >
+            <div
+              *ngFor="
+                let maintenanceEquipmentForm of maintenanceEquipments?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field>
+                  <mat-label>Тип оборудване</mat-label>
+                  <input
+                    matInput
+                    placeholder="Тип оборудване"
+                    formControlName="equipmentTypeName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Вид оборудване</mat-label>
+                  <input
+                    matInput
+                    placeholder="Вид оборудване"
+                    formControlName="equipmentSubTypeName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Описание</mat-label>
+                  <input
+                    matInput
+                    placeholder="Описание"
+                    formControlName="description"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.testMethodologies.length > 0"
+          >
+            Методики на изпитване
+          </div>
+
+          <div
+            formArrayName="testMethodologies"
+            *ngIf="this.testMethodologies.length > 0"
+          >
+            <div
+              *ngFor="
+                let maintenanceEquipmentForm of testMethodologies?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field>
+                  <mat-label>Методики за изпитване</mat-label>
+                  <input
+                    matInput
+                    placeholder="Методики за изпитване"
+                    formControlName="typeName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Описание</mat-label>
+                  <input
+                    matInput
+                    placeholder="Описание"
+                    formControlName="description"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <mat-form-field>
+              <mat-label>
+                Планове за изследване, организиране на опит, събиране на сурови
+                данни, доклади</mat-label
+              >
+              <input
+                matInput
+                placeholder=" Планове за изследване, организиране на опит, събиране на сурови данни, доклади"
+                formControlName="researchPlansDescription"
+              />
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label
+                >Организация на архивиране на документацията от изпитването
+              </mat-label>
+              <input
+                matInput
+                placeholder="Организация на архивиране на документацията от изпитването "
+                formControlName="archivingDocDescription"
+              />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

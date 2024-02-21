@@ -1,0 +1,4 @@
+bfsa:
+  e-payment:
+    keystore: ../bfsa-core/src/main/resources/daeu/daeu.jks
+    truststore: ../bfsa-core/src/main/resources/daeu/daeu.jks

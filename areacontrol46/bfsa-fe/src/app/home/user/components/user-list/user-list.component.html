@@ -1,0 +1,122 @@
+<div *ngIf="!users" class="animate-pulse">Loading users...</div>
+
+<div [hidden]="!users">
+  <mat-card>
+    <mat-card-content>
+      <div
+        class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 md:mb-0"
+      >
+        <mat-form-field appearance="fill">
+          <mat-label>Търсене</mat-label>
+          <mat-icon class="opacity-50" matPrefix>search</mat-icon>
+          <input
+            matInput
+            (keyup)="applyFilter($event)"
+            placeholder="Ex. ad"
+            #input
+          />
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="addUser()">
+          Add new user
+        </button>
+      </div>
+
+      <div class="overflow-auto">
+        <table mat-table [dataSource]="dataSource" class="w-full">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef>ID</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.id }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="fullName">
+            <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+              Full Name
+            </th>
+            <td mat-cell *matCellDef="let element">{{ element.fullName }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="username">
+            <th mat-header-cell *matHeaderCellDef>Username</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.username }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="identifier">
+            <th mat-header-cell *matHeaderCellDef>Identifier</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.identifier }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="enabled">
+            <th mat-header-cell *matHeaderCellDef>Enabled</th>
+            <td mat-cell *matCellDef="let element">
+              <mat-icon color="primary" *ngIf="element.enabled"
+                >check_circle</mat-icon
+              >
+              <mat-icon color="warn" *ngIf="!element.enabled"
+                >unpublished</mat-icon
+              >
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="roles">
+            <th mat-header-cell *matHeaderCellDef>Roles</th>
+            <td mat-cell *matCellDef="let element">
+              <div *ngFor="let item of element.roles">
+                {{ item }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="directorateCode">
+            <th mat-header-cell *matHeaderCellDef>Directorates</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.directorateCode }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="*">
+            <th mat-header-cell *matHeaderCellDef aria-label="row actions"></th>
+            <td mat-cell *matCellDef="let element">
+              <div class="flex gap-2">
+                <button mat-stroked-button (click)="editUser(element)">
+                  Edit
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            (dblclick)="editUser(row)"
+          ></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="8">
+              No data matching the filter "{{ input.value }}"
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        showFirstLastButtons
+        aria-label="Select page"
+      >
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: 'jdbc:postgresql://10.10.0.61:5432/bfsa' #?currentSchema=bfsa'
+    username: bulsiadmin
+    password: bulsivirtual
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        hbm2dll:
+          create_namespaces: true

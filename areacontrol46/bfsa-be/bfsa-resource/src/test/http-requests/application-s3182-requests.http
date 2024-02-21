@@ -1,0 +1,130 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ApplicationS3182Controller # register
+POST {{host}}/api/s3182-applications/register
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "requestorFullName": "test",
+  "requestorIdentifier": 82516296052,
+  "requestorEmail": "test-dc51228@mail.com",
+  "requestorAuthorTypeCode": "01301",
+  "applicantType": "LEGAL",
+  "applicantFullName": "test",
+  "applicantIdentifier": 7490257847,
+  "applicantEmail": "test-f02d2a7@mail.com",
+  "applicantPostCode": "123",
+  "applicantAddress": "test",
+  "applicantPhoneNumber": "123-123-123",
+  "contractorType": "LEGAL",
+  "applicantHeadOfficeAddress": {
+    "address": "Head office address",
+    "postCode": "1000",
+    "addressTypeCode": "00201",
+    "settlementCode": "02676"
+  },
+  "applicantCorrespondenceAddress": {
+    "address": "Correspondence address",
+    "postCode": "1000",
+    "addressTypeCode": "00203",
+    "settlementCode": "02676"
+  },
+
+  "address": {
+    "phone": "123-123-123",
+    "mail": "test-af9df2f@mail.com",
+    "url": "test",
+    "settlementCode": "02107",
+    "address": "асдсаaдсадса"
+  },
+  "branchSequenceNumber": "01",
+
+  "serviceType": "S3182",
+  "facilitiesPaperNumbers": [],
+  "foreignFacilityAddresses": [],
+  "vehicles": [
+    {
+      "vehicleOwnershipTypeCode": "01601",
+      "vehicleTypeCode": "01704",
+      "name": "садасдас",
+      "registrationPlate": "21312"
+    }
+  ],
+  "vehiclePaperRegNumbers": [],
+  "commencementActivityDate": "2024-08-26T21:00:00.000Z",
+  "registeredFacilityInBulgaria": false,
+  "registeredFacilityOutsideOfBulgaria": false,
+  "usingFoodTransportByClause52": true,
+  "usingFoodTransportByClause50": false,
+  "facility": {
+    "permission177": "21321321",
+    "settlementCode": "02676",
+    "activityDescription": "сдасдас",
+    "activityTypeCode": "01802",
+    "address": "asd",
+    "waterSupplyTypeCode": "02401",
+    "disposalWasteWater": "тръби",
+    "name": "садсадасас",
+    "facilityCapacities": [
+      {
+        "product": "садасдасдасд",
+        "materialCode": "02302",
+        "quantity": "222",
+        "unitCode": "01903"
+      }
+    ]
+  },
+  "product": "садасдасдасд",
+  "material": "02302",
+  "quantity": "222",
+  "unit": "01903"
+}
+
+
+###  ApplicationS3182Controller # getApplicationS3182 by record id
+GET {{host}}/api/s3182-applications/932
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS3182Controller # approveApplicationS3182
+PUT {{host}}/api/s3182-applications/676317d6-3d5f-4237-b483-934344d32fc0/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS3182Controller # refuseApplicationS3182
+PUT {{host}}/api/s3182-applications/676317d6-3d5f-4237-b483-934344d32fc0/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS3182Controller # forCorrectionApplicationS3182
+PUT {{host}}/api/s3182-applications/77fee257-715e-4fcb-a6e3-55977efa713b/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

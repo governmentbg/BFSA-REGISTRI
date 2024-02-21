@@ -1,0 +1,388 @@
+<h1 class="text-center">
+  2695 - Издаване на разрешение за прилагане на продукти за растителна защита
+  чрез въздушно пръскане от ОДБХ
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки свързвани при създаване на заявлението!
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="this.isExpert && isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <div class="my-4 uppercase font-bold text-xs opacity-100">
+        Въздушното пръскане ще се проведе:
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Oт дата</mat-label>
+              <input
+                matInput
+                placeholder="Oт дата"
+                formControlName="aerialSprayStartDate"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>До дата</mat-label>
+              <input
+                matInput
+                placeholder="До дата"
+                formControlName="aerialSprayEndDate"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Земеделската култура, която ще бъде третирана</mat-label
+              >
+              <input
+                matInput
+                placeholder="Земеделската култура, която ще бъде третирана"
+                formControlName="aerialSprayAgriculturalGroupName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Видове за третиране</mat-label>
+              <input
+                matInput
+                placeholder="Вид"
+                formControlName="subAgricultures"
+              />
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Фенофаза на културата</mat-label>
+            <input
+              matInput
+              placeholder="Фенофаза на културата"
+              formControlName="phenophaseCultureName"
+            />
+          </mat-form-field>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.plantProtectionProducts.length > 0"
+          >
+            ПРЗ, който ще бъдат приложени:
+          </div>
+
+          <div
+            formArrayName="plantProtectionProducts"
+            *ngIf="this.plantProtectionProducts.length > 0"
+          >
+            <div
+              *ngFor="
+                let pppForm of plantProtectionProducts?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i">
+                <mat-checkbox formControlName="pppAerialSpray">
+                  ПРЗ е одобрен за прилагане чрез въздушно пръскане
+                </mat-checkbox>
+
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Функция</mat-label>
+                    <input
+                      matInput
+                      placeholder="Функция"
+                      formControlName="pppFunctionName"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label
+                      >Търговско наименование на ПРЗ, който ще бъде
+                      приложен</mat-label
+                    >
+                    <input
+                      matInput
+                      placeholder="Търговско наименование на ПРЗ, който ще бъде приложен"
+                      formControlName="pppName"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label> ПРЗ е закупен от </mat-label>
+                    <input
+                      matInput
+                      placeholder="ПРЗ е закупен от"
+                      formControlName="pppPurchase"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Доза/дка на ПРЗ </mat-label>
+                    <input
+                      matInput
+                      placeholder="Доза/дка на ПРЗ"
+                      formControlName="pppDose"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label> Мерна единица </mat-label>
+                    <input
+                      matInput
+                      placeholder="Мерна единица"
+                      formControlName="pppUnitName"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label> Карантинен срок на ПРЗ </mat-label>
+                    <input
+                      matInput
+                      placeholder="Карантинен срок на ПРЗ"
+                      formControlName="pppQuarantinePeriod"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div formArrayName="pppPests">
+                  <div
+                    *ngFor="
+                      let pest of getNestedPestsArrayAtIndex(i).controls;
+                      let j = index
+                    "
+                  >
+                    <div [formGroupName]="j" class="section">
+                      <mat-form-field appearance="fill">
+                        <mat-label> Група вредители</mat-label>
+                        <input
+                          matInput
+                          placeholder="Група вредители"
+                          formControlName="pestGroupName"
+                        />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Вредител</mat-label>
+                        <input
+                          matInput
+                          placeholder="Вредител"
+                          formControlName="pest"
+                        />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            2. Подлежащи на третиране парцели/БЗС
+          </div>
+
+          <ng-container formGroupName="field">
+            <div class="section">
+              <mat-form-field appearance="fill" class="date-holder">
+                <mat-label> Дата на провеждане </mat-label>
+                <input matInput formControlName="treatmentDate" />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="date-holder">
+                <mat-label> Час на третиране от </mat-label>
+                <input matInput formControlName="treatmentStartHour" />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="date-holder">
+                <mat-label> Час на третиране до </mat-label>
+                <input matInput formControlName="treatmentEndHour" />
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="fill" class="date-holder">
+              <mat-label> Пълен адрес </mat-label>
+              <input matInput formControlName="fullAddress" />
+            </mat-form-field>
+
+            <div class="section">
+              <mat-form-field appearance="fill" class="date-holder">
+                <mat-label> Местност </mat-label>
+                <input matInput formControlName="land" />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="date-holder">
+                <mat-label> Площ дка </mat-label>
+                <input matInput formControlName="treatmentArea" />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="date-holder">
+                <mat-label> Отстоящ на метри </mat-label>
+                <input matInput formControlName="treatmentDistance" />
+              </mat-form-field>
+            </div>
+
+            <div class="my-4 uppercase font-bold text-xs opacity-100">
+              Отстоящ от съседно/и селище/ща
+            </div>
+
+            <div formArrayName="distantNeighborSettlements">
+              <div
+                *ngFor="
+                  let distantNeightborForm of distantNeighborSettlements?.controls;
+                  let i = index
+                "
+              >
+                <div [formGroupName]="i" class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label> Наименование на селището</mat-label>
+                    <input
+                      matInput
+                      placeholder="Наименование на селището"
+                      formControlName="treatmentSettlements"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Разстояние в метри</mat-label>
+                    <input
+                      matInput
+                      placeholder="Разстояние в метри"
+                      formControlName="treatmentDistances"
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            3. Данни за лицето, отговорно за организиране и провеждане на
+            въздушното пръскане
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label> Наименование на авиационния оператор </mat-label>
+              <input
+                matInput
+                placeholder="Наименование на авиационния оператор "
+                formControlName="aviationOperatorName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕИК</mat-label>
+              <input
+                matInput
+                placeholder="ЕИК"
+                formControlName="aviationOperatorIdentifier"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Свидетелство по чл. 64 ал. 2 от ЗГВ №</mat-label>
+              <input
+                matInput
+                placeholder="Свидетелство по чл. 64 ал. 2 от ЗГВ №"
+                formControlName="aviationCh64CertNumber"
+              />
+            </mat-form-field>
+
+            <!-- todo to fix controlName later -->
+
+            <mat-form-field appearance="fill">
+              <mat-label>Дата</mat-label>
+              <input
+                matInput
+                placeholder="Дата"
+                formControlName="aviationCh64CertDate"
+              />
+            </mat-form-field>
+          </div>
+
+          <mat-checkbox [checked]="true" disabled
+            >Притежава сертификат по чл. 83 от ЗЗР</mat-checkbox
+          >
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Приготвянето на работния разтвор и зареждането ще се извърши на
+                работна площадка</mat-label
+              >
+              <input
+                matInput
+                placeholder="Приготвянето на работния разтвор и зареждането ще се извърши на работна площадка"
+                formControlName="worksite"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Землище</mat-label>
+              <input
+                matInput
+                placeholder="Землище"
+                formControlName="workLand"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section" formGroupName="ch83CertifiedPerson">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="fullName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input matInput placeholder="ЕГН" formControlName="identifier" />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

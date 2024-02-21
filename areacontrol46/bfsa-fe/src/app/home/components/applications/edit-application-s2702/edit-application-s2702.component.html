@@ -1,0 +1,631 @@
+<h1 class="text-center">
+  2702 - Издаване на разрешение за внос, притежаване, съхранение и движение на
+  карантинни вредители, растителни продукти и други обекти за извършване на
+  научни изследвания и селекция.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="this.isExpert && isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+        Запази
+      </button> -->
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за лицето/лицата, отговаярщо/и за дейността
+          </div>
+
+          <div
+            formArrayName="activityResponsiblePersons"
+            *ngIf="this.activityResponsiblePersons.length > 0"
+          >
+            <div
+              *ngFor="
+                let activityResponsiblePersonForm of activityResponsiblePersons?.controls;
+                let i = index
+              "
+            >
+              <div class="section" [formGroupName]="i">
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълно име</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълно име"
+                    formControlName="fullName"
+                    required
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="fill">
+                  <mat-label>ЕГН</mat-label>
+                  <input
+                    matInput
+                    placeholder="ЕГН"
+                    formControlName="identifier"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Телефон</mat-label>
+                  <input
+                    matInput
+                    placeholder="Телефон"
+                    formControlName="phone"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Имейл</mat-label>
+                  <input
+                    matInput
+                    placeholder="Имейл"
+                    formControlName="email"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Научна - техническа степен</mat-label>
+                  <input
+                    matInput
+                    placeholder="Научна - техническа степен"
+                    formControlName="degree"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за материала, за който се заявява временно разрешение
+          </div>
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Вид на материала</mat-label>
+              <input
+                matInput
+                placeholder="Вид на материала"
+                formControlName="materialType"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Научно наименование на материала / публикувани
+                източници</mat-label
+              >
+              <input
+                matInput
+                placeholder="Научно наименование на материала / публикувани
+          източници"
+                formControlName="materialName"
+                required
+              />
+            </mat-form-field>
+
+            <div>
+              <mat-label
+                >Общо количество на материала, който ще се
+                въвежда/движи</mat-label
+              >
+              <h4>{{ materialQuantitySum }}</h4>
+            </div>
+            <!-- todo calculate sum from table (quantity) -->
+
+            <!-- <mat-form-field appearance="fill">
+        <mat-label>Мерна единица</mat-label>
+        <mat-select formControlName="materialMeasuringUnitCode">
+          <mat-option
+            *ngFor="let measuringUnit of measuringUnits"
+            [value]="measuringUnit.code"
+            >{{ measuringUnit.name }}</mat-option
+          >
+        </mat-select>
+      </mat-form-field> -->
+
+            <mat-form-field appearance="fill">
+              <mat-label>Мерна единица</mat-label>
+              <input
+                matInput
+                placeholder="Научно наименование на материала / публикувани
+          източници"
+                formControlName="materialMeasuringUnitName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.materialMovements.length > 0"
+          >
+            Списък с всички въвеждания/движения
+          </div>
+
+          <div
+            class="section"
+            formArrayName="materialMovements"
+            *ngIf="this.materialMovements.length > 0"
+          >
+            <ng-container
+              *ngFor="
+                let materialMovementForm of materialMovements?.controls;
+                let i = index
+              "
+            >
+              <div class="lesson-form-row" [formGroupName]="i">
+                <div>№ по ред: {{ i + 1 }}</div>
+
+                <!-- todo set it from the array index + 1 -->
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Количество на материала</mat-label>
+                  <input
+                    matInput
+                    placeholder="Количество на материала"
+                    formControlName="materialQuantity"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Страна на произход</mat-label>
+              <mat-select formControlName="materialOriginCountryCode">
+                <mat-option
+                  *ngFor="let country of euCountries"
+                  [value]="country.code"
+                  >{{ country.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Страна на износ (ако е различна от страна на
+                произход)</mat-label
+              >
+              <mat-select formControlName="materialExportCountryCode">
+                <mat-option
+                  *ngFor="let country of euCountries"
+                  [value]="country.code"
+                  >{{ country.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Условия на опаковане на материала</mat-label>
+              <input
+                matInput
+                placeholder="Условия на опаковане на материала"
+                formControlName="materialPackagingCondition"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за износител/изпращач/доставчик
+          </div>
+
+          <ng-container formGroupName="supplier">
+            <mat-radio-group formControlName="entityType">
+              <mat-radio-button value="LEGAL">Юридическо лице</mat-radio-button
+              >&nbsp;&nbsp;
+              <mat-radio-button value="PHYSICAL"
+                >Физическо лице</mat-radio-button
+              >
+            </mat-radio-group>
+
+            <div
+              class="my-4 uppercase font-bold text-xs opacity-100"
+              *ngIf="this.isPhysicalPersonForm"
+            >
+              Данни за физическо лице
+            </div>
+
+            <div
+              class="my-4 uppercase font-bold text-xs opacity-100"
+              *ngIf="!this.isPhysicalPersonForm"
+            >
+              Данни за ЮЛ
+            </div>
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Вид дейност</mat-label>
+                <mat-select formControlName="contractorActivityTypeCode">
+                  <mat-option
+                    *ngFor="
+                      let contractorActivityType of contractorActivityTypes
+                    "
+                    [value]="contractorActivityType.code"
+                    >{{ contractorActivityType.name }}</mat-option
+                  >
+                </mat-select>
+              </mat-form-field>
+
+              <ng-container *ngIf="this.isPhysicalPersonForm">
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълно име</mat-label>
+                  <input
+                    matInput
+                    placeholder="Име"
+                    formControlName="fullName"
+                    required
+                  />
+                </mat-form-field>
+              </ng-container>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Телефон</mat-label>
+                <input
+                  matInput
+                  placeholder="Телефон"
+                  formControlName="phone"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Имейл</mat-label>
+                <input
+                  matInput
+                  placeholder="Имейл"
+                  formControlName="email"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>ЕГН/ЕИК</mat-label>
+                <input
+                  matInput
+                  placeholder="ЕГН/ЕИК"
+                  formControlName="identifier"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field
+                appearance="fill"
+                *ngIf="!this.isPhysicalPersonForm"
+              >
+                <mat-label>Наименование на фирмата/организацията</mat-label>
+                <input
+                  matInput
+                  placeholder="Наименование на фирмата/организацията"
+                  formControlName="fullName"
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="section" formGroupName="supplierAddress">
+            <mat-form-field appearance="fill">
+              <mat-label>Държава</mat-label>
+              <mat-select formControlName="countryCode">
+                <mat-option
+                  *ngFor="let country of euCountries"
+                  [value]="country.code"
+                  >{{ country.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <!-- todo if countryCode !== 'BG' show this field -->
+
+            <mat-form-field
+              appearance="fill"
+              *ngIf="
+                this.applicationForm.get('supplierAddress')?.get('countryCode')
+                  ?.value !== 'BG'
+              "
+            >
+              <mat-label>Населено място NAME</mat-label>
+              <input
+                matInput
+                placeholder="Населено място"
+                formControlName="settlementName"
+                required
+              />
+            </mat-form-field>
+
+            <ng-container
+              *ngIf="
+                this.applicationForm.get('supplierAddress')?.get('countryCode')
+                  ?.value === 'BG'
+              "
+            >
+              <!-- todo if countryCode === 'BG' show this field -->
+              <mat-form-field
+                appearance="fill"
+                *ngIf="
+                  this.applicationForm
+                    .get('supplierAddress')
+                    ?.get('countryCode')?.value === 'BG'
+                "
+              >
+                <mat-label>Пълен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Адрес"
+                  formControlName="fullAddress"
+                  required
+                />
+              </mat-form-field>
+            </ng-container>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за карантинния пункт/съоръжението за задържане, одобрено
+            съгласно изискванията на чл. 61 от Регламент (ЕС) 2016/2031
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Наименование </mat-label>
+              <input
+                matInput
+                placeholder="Наименование "
+                formControlName="quarantineStationName"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Описание</mat-label>
+              <input
+                matInput
+                placeholder="Описание"
+                formControlName="quarantineStationDescription"
+                required
+              />
+            </mat-form-field>
+          </div>
+          <div class="section">
+            <div formGroupName="quarantineStationAddress">
+              <mat-form-field appearance="fill">
+                <mat-label>Пълен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Пълен адрес"
+                  formControlName="fullAddress"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни на лицето, отговарящо за карантинният пункт или съоръжението
+            за задържане
+          </div>
+
+          <div class="section" formGroupName="quarantineStationPerson">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="fullName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="identifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section" formGroupName="quarantineStationPerson">
+            <mat-form-field appearance="fill">
+              <mat-label>Телефон</mat-label>
+              <input
+                matInput
+                placeholder="Телефон"
+                formControlName="phone"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="email"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Научна - техническа степен</mat-label>
+              <input
+                matInput
+                placeholder="Научна - техническа степен"
+                formControlName="degree"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >С какви мерки ще се гарантира сигурното и безопасно съхранение
+                на материала по време на дейността, за която се заявява:
+                (текст)</mat-label
+              >
+              <input
+                matInput
+                placeholder="Мерки за безопасно съхранение на материала.."
+                formControlName="quarantineStationMaterialStorageMeasure"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Резюме на естеството и целите на заявяваната дейност</mat-label
+              >
+              <input
+                matInput
+                placeholder="Резюме на естеството и целите на заявяваната дейност"
+                formControlName="requestedActivitySummary"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Продължителност на заявяваната дейност
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Дата на първо въвеждане/движение</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker1"
+                formControlName="firstEntryDate"
+                (click)="picker1.open()"
+              />
+              <mat-datepicker #picker1></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Дата на очаквано приключване на дейността</mat-label>
+              <input
+                matInput
+                [matDatepicker]="picker2"
+                formControlName="expectedCompletionDate"
+                (click)="picker2.open()"
+              />
+              <mat-datepicker #picker2></mat-datepicker>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Крайно използване на материала</mat-label>
+              <mat-select formControlName="materialEndUseCode">
+                <mat-option
+                  *ngFor="let materialEndUse of materialEndUses"
+                  [value]="materialEndUse.code"
+                  >{{ materialEndUse.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>
+                Метод на унищожаване или третиране на материала след приключване
+                на дейността:</mat-label
+              >
+
+              <input
+                matInput
+                placeholder="Метод на унищожаване или третиране на материала след приключване на дейността:"
+                formControlName="materialDestructionMethod"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >С какви мерки ще се гарантира безопасното отлагане/третиране на
+                материала след приключване на дейността:</mat-label
+              >
+              <input
+                matInput
+                placeholder="Резюме на естеството и целите на заявяваната дейност"
+                formControlName="materialSafeMeasure"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Допълнителна информация
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label
+                >Заявителят предоставя и друга информация и разяснения при
+                поискване от компетентния орган, до когото е отправено
+                заявлението.</mat-label
+              >
+              <input
+                matInput
+                placeholder="Заявителят предоставя и друга информация и разяснения при
+                          поискване от компетентния орган, до когото е отправено
+                       заявлението."
+                formControlName="description"
+                required
+              />
+            </mat-form-field>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" (click)="closeDialog()">
+        Затвори
+      </button>
+    </div>
+  </mat-step>
+</mat-stepper>

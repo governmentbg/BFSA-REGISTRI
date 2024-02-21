@@ -1,0 +1,24 @@
+<div *ngIf="!nomenclatures" class="animate-pulse">Loading nomenclatures...</div>
+
+<div *ngIf="nomenclatures">
+  <div class="">
+    <div class="p-2">Types:</div>
+    <mat-card>
+      <mat-card-content>
+        <div *ngFor="let item of nomenclatures" class="truncate">
+          <a
+            [routerLink]="['/app/nomenclature', item.code]"
+            class="hover:underline text-base"
+            [title]="item.name"
+          >
+            {{ item.name }}
+          </a>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button (click)="addNomenclature()" mat-button>Add</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,579 @@
+<h1 class="text-center">
+  2274 - Издаване на разрешение за паралелна търговия на продукт за растителна
+  защита
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки свързвани със подаването на заявлението!
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <ol>
+        <li class="mat-form-field--inline">
+          <div
+            class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+            *ngIf="
+              this.isExpert && isApplicationStatusPaymentConfirmedOrEntered
+            "
+          >
+          <button mat-flat-button (click)="downloadOrder()">
+            Печатане на заповед
+          </button>
+  
+            <button mat-flat-button (click)="openApprovalDialog()">
+              Одобрение
+            </button>
+
+            <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+            <button mat-flat-button (click)="openCorrectionDialog()">
+              За корекция
+            </button>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Притежател на разрешението за пускане на пазара и употреба на ПРЗ:
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>ЕИК/Чужд. идентификатор</mat-label>
+              <input
+                matInput
+                placeholder="ЕИК/Чужд. идентификатор"
+                formControlName="permitHolderIdentifier"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Имейл</mat-label>
+              <input
+                matInput
+                placeholder="Имейл"
+                formControlName="permitHolderEmail"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Наименование на кирилица</mat-label>
+              <input
+                matInput
+                placeholder="Наименование на кирилица"
+                formControlName="permitHolderName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Седалище на кирилица</mat-label>
+              <input
+                matInput
+                placeholder="Седалище на кирилица"
+                formControlName="permitHolderHeadquarter"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Адрес на кирилица</mat-label>
+              <input
+                matInput
+                placeholder="Адрес на кирилица"
+                formControlName="permitHolderAddress"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Наименование на латиница</mat-label>
+              <input
+                matInput
+                placeholder="Наименование на латиница"
+                formControlName="permitHolderNameLat"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Седалище на латиница</mat-label>
+              <input
+                matInput
+                placeholder="Седалище на латиница"
+                formControlName="permitHolderHeadquarterLat"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Адрес на латиница</mat-label>
+              <input
+                matInput
+                placeholder="Адрес на латиница"
+                formControlName="permitHolderAddressLat"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Идентификация на продукта
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Търговско наименование на продукта</mat-label>
+              <input
+                matInput
+                placeholder="Търговско наименование на продукта"
+                formControlName="pppName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Продуктов код</mat-label>
+              <input
+                matInput
+                placeholder="Продуктов код"
+                formControlName="pppCode"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Вид на формулацията (GIFAP код)</mat-label>
+              <input
+                matInput
+                placeholder="Вид на формулацията (GIFAP код)"
+                formControlName="pppFormulationTypeName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Функция на продукта за растителна защита</mat-label>
+              <input
+                matInput
+                placeholder="Функция на продукта за растителна защита"
+                formControlName="pppFunctions"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Действие на продукта</mat-label>
+              <input
+                matInput
+                placeholder="Действие на продукта"
+                formControlName="pppActions"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Категория на употреба</mat-label>
+              <input
+                matInput
+                placeholder="Категория на употреба"
+                formControlName="pppCategoryName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="pppManufacturers">
+            <div
+              *ngFor="
+                let pppManufacturerForm of pppManufacturers?.controls;
+                let i = index
+              "
+            >
+              <div class="my-4 uppercase font-bold text-xs opacity-100">
+                Производител на продукта
+              </div>
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Наименование на кирилица</mat-label>
+                  <input
+                    matInput
+                    placeholder="Наименование на кирилица"
+                    formControlName="pppManufacturerCyrilic"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Наименование на латиница</mat-label>
+                  <input
+                    matInput
+                    placeholder="Наименование на латиница"
+                    formControlName="pppManufacturerLatin"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Идентификация на активните вещества
+          </div>
+
+          <div formArrayName="activeSubstances">
+            <div
+              *ngFor="
+                let pppManufacturerForm of activeSubstances?.controls;
+                let i = index
+              "
+            >
+              <div class="my-4 uppercase font-bold text-xs opacity-100">
+                Производител на продукта
+              </div>
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Активно вещество</mat-label>
+                  <input
+                    matInput
+                    placeholder="Активно вещество"
+                    formControlName="activeSubstanceName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Производител на АВ на кирилица</mat-label>
+                  <input
+                    matInput
+                    placeholder="Производител на АВ на кирилица"
+                    formControlName="manufacturer"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Производител на АВ на латиница</mat-label>
+                  <input
+                    matInput
+                    placeholder="Производител на АВ на латиница"
+                    formControlName="manufacturerLat"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Държава на производител на АВ</mat-label>
+                  <input
+                    matInput
+                    placeholder="Държава на производител на АВ"
+                    formControlName="manufacturerCountryName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Съдържание</mat-label>
+                  <input
+                    matInput
+                    placeholder="Съдържание"
+                    formControlName="substanceQuantity"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Мерна единица</mat-label>
+                  <input
+                    matInput
+                    placeholder="Мерна единица"
+                    formControlName="substanceQuantityUnitName"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Тип на активното вещество</mat-label>
+              <input
+                matInput
+                placeholder="Тип на активното вещество"
+                formControlName="pppActiveSubstanceTypes"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Забележки</mat-label>
+              <input
+                matInput
+                placeholder="Забележки"
+                formControlName="pppDescription"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div formArrayName="packages">
+            <div *ngFor="let packageForm of packages?.controls; let i = index">
+              <div class="my-4 uppercase font-bold text-xs opacity-100">
+                Характеристики на опаковката
+              </div>
+              <div [formGroupName]="i">
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Тип опаковка</mat-label>
+                    <input
+                      matInput
+                      placeholder="Тип опаковка"
+                      formControlName="type"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Материал на опаковката</mat-label>
+                    <input
+                      matInput
+                      placeholder="Материал на опаковката"
+                      formControlName="material"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Размер на опаковката</mat-label>
+                    <input
+                      matInput
+                      placeholder="Размер на опаковката"
+                      formControlName="size"
+                      required
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div formArrayName="quantities">
+                  <div
+                    *ngFor="
+                      let quantityForm of getProductQuantities(i)?.controls;
+                      let k = index
+                    "
+                  >
+                    <div class="my-4 uppercase font-bold text-xs opacity-100">
+                      Количества
+                    </div>
+                    <div [formGroupName]="k" class="section">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Количество</mat-label>
+                        <input
+                          matInput
+                          placeholder="Количество"
+                          formControlName="number"
+                          required
+                        />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Мерна единица</mat-label>
+                        <input
+                          matInput
+                          placeholder="Мерна единица"
+                          formControlName="name"
+                          required
+                        />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Допълнителна информация
+          </div>
+
+          <div formArrayName="euReferenceProducts">
+            <div
+              *ngFor="
+                let referenceProductForm of euReferenceProducts?.controls;
+                let i = index
+              "
+            >
+              <div class="my-4 uppercase font-bold text-xs opacity-100">
+                Информация за продукта от държавата членка по произход
+              </div>
+              <div [formGroupName]="i">
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Държава членка по произход</mat-label>
+                    <input
+                      matInput
+                      placeholder="Държава членка по произход"
+                      formControlName="countryName"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label
+                      >Търговско наименование на продукта в държавата-членка по
+                      произход</mat-label
+                    >
+                    <input
+                      matInput
+                      placeholder="Търговско наименование на продукта в държавата-членка по произход"
+                      formControlName="tradeName"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>No на разрешението</mat-label>
+                    <input
+                      matInput
+                      placeholder="No на разрешението "
+                      formControlName="permitNumber"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Дата на разрешаване</mat-label>
+                    <input
+                      matInput
+                      placeholder="No на разрешението "
+                      formControlName="permitDate"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Валидност на разрешението</mat-label>
+                    <input
+                      matInput
+                      placeholder="Валидност на разрешението"
+                      formControlName="permitValidUntilDate"
+                      required
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div formArrayName="bgReferenceProducts">
+            <div
+              *ngFor="
+                let referenceProductForm of bgReferenceProducts?.controls;
+                let i = index
+              "
+            >
+              <div class="my-4 uppercase font-bold text-xs opacity-100">
+                Информация за референтния продукт в България
+              </div>
+              <div [formGroupName]="i">
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Референтен продукт в България</mat-label>
+                    <input
+                      matInput
+                      placeholder="Референтен продукт в България"
+                      formControlName="bgReferenceProduct"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label
+                      >Търговско наименование на продукта в България</mat-label
+                    >
+                    <input
+                      matInput
+                      placeholder="Търговско наименование на продукта в България"
+                      formControlName="tradeName"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>No на разрешението</mat-label>
+                    <input
+                      matInput
+                      placeholder="No на разрешението "
+                      formControlName="permitNumber"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Дата на разрешаване</mat-label>
+                    <input
+                      matInput
+                      placeholder="No на разрешението "
+                      formControlName="permitDate"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Валидност на разрешението</mat-label>
+                    <input
+                      matInput
+                      placeholder="Валидност на разрешението"
+                      formControlName="permitValidUntilDate"
+                      required
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label
+                      >Притежател на разрешението за пускане на пазара и
+                      употреба</mat-label
+                    >
+                    <input
+                      matInput
+                      placeholder="Притежател на разрешението за пускане на пазара и употреба"
+                      formControlName="permitOwner"
+                      required
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+            Има грешки при финално действие: {{ finalActionErrors }}
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

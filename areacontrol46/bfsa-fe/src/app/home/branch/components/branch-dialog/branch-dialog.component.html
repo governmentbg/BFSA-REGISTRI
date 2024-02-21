@@ -1,0 +1,119 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>{{ data.isAdd ? "Add a" : "Edit the" }} branch</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="dialogForm.controls['name'].hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description"></textarea>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Населено място</mat-label>
+        <input
+          matInput
+          [matAutocomplete]="auto"
+          formControlName="settlementCode"
+          [readonly]="isReadOnly"
+        />
+        <button
+          *ngIf="dialogForm.controls['settlementCode'].value"
+          matSuffix
+          mat-icon-button
+          aria-label="Clear"
+          (click)="clearSelection()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          autoActiveFirstOption
+          (optionSelected)="onSelected($event.option.value)"
+        >
+          <mat-option *ngIf="isLoading" class="animate-pulse"
+            >Loading...</mat-option
+          >
+          <ng-container *ngIf="!isLoading">
+            <mat-option
+              *ngFor="let settlement of filteredSettlements"
+              [value]="settlement.id"
+              [title]="'обл.' + settlement.regionName"
+            >
+              <span *ngIf="settlement.placeType === 'CITY'"> гр. </span>
+              <span *ngIf="settlement.placeType === 'VILLAGE'"> с. </span>
+              <span *ngIf="settlement.placeType === 'RESORT'"> к.с. </span>
+              {{ settlement.name }}
+              <small>
+                , общ. {{ settlement.municipalityName }}, обл.
+                {{ settlement.regionName }}
+              </small>
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+        <mat-error
+          *ngIf="dialogForm.controls['settlementCode'].hasError('incorrect')"
+        >
+          Please type the valid settlement
+        </mat-error>
+        <mat-error
+          *ngIf="dialogForm.controls['settlementCode'].hasError('required')"
+        >
+          Settlement is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Address</mat-label>
+        <input matInput formControlName="address" />
+        <mat-error *ngIf="dialogForm.controls['address'].hasError('required')">
+          Address is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+        <mat-error *ngIf="dialogForm.controls['email'].hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Phone 1</mat-label>
+        <input matInput formControlName="phone1" />
+        <mat-error *ngIf="dialogForm.controls['phone1'].hasError('required')">
+          Phone is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Phone 2</mat-label>
+        <input matInput formControlName="phone2" />
+      </mat-form-field>
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Phone 3</mat-label>
+        <input matInput formControlName="phone3" />
+      </mat-form-field>
+      <div class="flex gap-6 mb-4">
+        <mat-slide-toggle color="primary" formControlName="main">
+          Main
+        </mat-slide-toggle>
+        <mat-slide-toggle color="primary" formControlName="enabled">
+          Enabled
+        </mat-slide-toggle>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      {{ data.isAdd ? "Add" : "Update" }}
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,130 @@
+<!-- s1590 -->
+<div *ngIf="applicant" class="w-full">
+  <mat-form-field class="w-full" appearance="fill">
+    <mat-label>Моля, изберете регистъра</mat-label>
+    <mat-icon class="opacity-50" matPrefix>filter_alt</mat-icon>
+    <mat-select [formControl]="registerControl">
+      <mat-option
+        *ngFor="let item of dataSourceFilter"
+        [value]="item.serviceType"
+        [title]="item.name"
+      >
+        {{ item.name }}
+      </mat-option>
+    </mat-select>
+    <button
+      mat-icon-button
+      matSuffix
+      *ngIf="registerControl.value"
+      aria-label="Clear"
+      (click)="clearSelection($event)"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
+<div class="overflow-auto" *ngIf="this.data?.length">
+  <table mat-table [dataSource]="dataSource" class="w-full">
+    <ng-container matColumnDef="notificationNumber">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Входящ №
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.notificationNumber ? element.notificationNumber : "n/a" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fullAddress">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Населено място
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{
+          element.seedTreatmentFacilityAddress
+            ? element.seedTreatmentFacilityAddress?.fullAddress
+            : element.warehouseAddress?.fullAddress || "n/a"
+        }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="address">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">Адрес</th>
+      <td mat-cell *matCellDef="let element">
+        {{
+          element.seedTreatmentFacilityAddress
+            ? element.seedTreatmentFacilityAddress?.address
+            : element.warehouseAddress?.address || "n/a"
+        }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="serviceType">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Вид услуга
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ element.serviceType }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="ch83CertifiedPerson">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Отговорно лице
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{
+          element.ch83CertifiedPerson
+            ? element.ch83CertifiedPerson?.fullName
+            : element.ch83CertifiedPerson?.fullName || "n/a"
+        }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+        Статус
+      </th>
+      <td mat-cell *matCellDef="let element">
+        {{ translateApprovalDocumentStatus(element.applicationStatus) }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef aria-label="row actions">
+        Действие
+      </th>
+      <td mat-cell *matCellDef="let element">
+        <div class="flex space-x-2">
+          <button mat-stroked-button (click)="edit(element)">
+            Редактиране
+          </button>
+
+          <button
+            *ngIf="element.serviceType === 'S2700'"
+            mat-stroked-button
+            (click)="viewConsultants(element.ch83CertifiedPersons)"
+          >
+            Преглед на консултанти
+          </button>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+      (dblclick)="edit(row)"
+    ></tr>
+  </table>
+</div>
+
+<mat-paginator
+  #paginator
+  [pageSize]="pageSize"
+  [pageSizeOptions]="[5, 10, 25, 100]"
+  showFirstLastButtons
+  aria-label="Select page"
+>
+</mat-paginator>

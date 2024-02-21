@@ -1,0 +1,26 @@
+  <div class="w-11/12 sm:w-96">
+    <div>
+  <mat-card class="">
+    <mat-card-content>
+        <app-logo heading="Изберете вид вход"></app-logo>
+        <mat-card-actions>
+          <div class="flex flex-col items-center">
+            <button (click)="router.navigate(['auth/login'])"
+              class="btn"
+              style="margin-bottom:10px"
+              mat-raised-button
+              color="primary"
+            > Вход вътрешни потребители
+            </button>
+
+            <button (click)="router.navigate(['auth/signin'])"
+            class="btn"
+            mat-raised-button
+            color="primary"
+          >Вход външни потребители
+          </button>
+          </div>
+        </mat-card-actions>
+    </mat-card-content>
+  </mat-card>
+</div>

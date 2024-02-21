@@ -1,0 +1,126 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  ApplicationS2170Controller # register
+POST {{host}}/api/s2170-applications/register
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "branchSequenceNumber": "01",
+  "contractorType": "PHYSICAL",
+  "requestorIdentifier": "string",
+  "requestorFullName": "string",
+  "requestorPhone": "string",
+  "requestorEmail": "string",
+  "requestorPowerAttorneyNumber": "string",
+  "requestorPowerAttorneyNotary": "string",
+  "requestorPowerAttorneyDate": "2023-09-05",
+  "requestorPowerAttorneyUntilDate": "2023-09-05",
+  "requestorAuthorTypeCode": "string",
+  "requestorAuthorTypeExternalCode": "string",
+  "requestorCorrespondenceAddress": {
+    "address": "Correspondence address",
+    "postCode": "1000",
+    "addressTypeCode": "00203",
+    "settlementCode": "02676"
+  },
+  "applicantIdentifier": "string",
+  "applicantFullName": "string",
+  "applicantEmail": "string",
+  "applicantPhone": "string",
+  "applicantLegalForm": "string",
+  "applicantCorrespondenceAddress": {
+    "addressLat": "string",
+    "enabled": true,
+    "mail": "string@has.ca",
+    "url": "string.com",
+    "phone": "0889099808",
+    "address": "Correspondence address",
+    "postCode": "1000",
+    "addressTypeCode": "00203",
+    "settlementCode": "02676"
+  },
+  "serviceType": "S2272",
+  "regDate": "2023-09-05",
+  "price": 100,
+  "recordStatus": "ENTERED",
+  "approvalDocumentStatus": "ENTERED",
+  "certificateImage": [ ],
+  "vehicles": [
+    {
+      "registrationPlate": "TX1010KH",
+      "entryNumber": "string",
+      "entryDate": "2023-09-05",
+      "certificateNumber": "string",
+      "certificateDate": "2023-09-05",
+      "load": 0,
+      "volume": 0,
+      "name": "string",
+      "description": "string",
+      "branchId": "string",
+      "enabled": true,
+      "revisionMetadata": {
+        "revisionNumber": 0,
+        "revisionInstant": "2023-09-05T11:46:51.856Z",
+        "revisionType": "string",
+        "createdBy": "string",
+        "createdDate": "2023-09-05T11:46:51.856Z",
+        "lastModifiedBy": "string",
+        "lastModifiedDate": "2023-09-05T11:46:51.856Z"
+      },
+      "registerCode": "string",
+      "vehicleTypeCode": "string",
+      "vehicleOwnershipTypeCode": "string",
+      "foodTypes": [
+        "string"
+      ]
+    }
+  ]
+}
+
+
+###  ApplicationS2170Controller # getApplicationS2170 by record id
+GET {{host}}/api/s2170-applications/1952
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2170Controller # approveApplicationS2170
+PUT {{host}}/api/s2170-applications/2402/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2170Controller # refuseApplicationS2170
+PUT {{host}}/api/s2170-applications/b9443a44-a698-4a0d-93e3-33247de385c1/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS2170Controller # forCorrectionApplicationS2170
+PUT {{host}}/api/s2170-applications/77fee257-715e-4fcb-a6e3-55977efa713b/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

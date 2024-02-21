@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="igi (generated)" id="0002-initial-data">
+        <sql>
+            CREATE EXTENSION IF NOT EXISTS pgcrypto;
+            CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        </sql>
+        <insert schemaName="public" tableName="roles">
+            <column name="id" valueComputed="uuid_generate_v4()"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+        <insert schemaName="public" tableName="roles">
+            <column name="id" valueComputed="uuid_generate_v4()"/>
+            <column name="role" value="USER"/>
+        </insert>
+
+        <insert schemaName="public" tableName="users">
+            <column name="id" valueComputed="uuid_generate_v4()"/>
+            <column name="email" value="admin@domain.xyz"/>
+            <column name="full_name" value="Admin Admin"/>
+            <column name="username" value="admin"/>
+            <column name="password" valueComputed="'{bcrypt}' || crypt('admin', gen_salt('bf'))"/>
+            <column name="enabled" value="true"/>
+            <column name="last_modified_date" value="now()"/>
+        </insert>
+        <insert schemaName="public" tableName="users">
+            <column name="id" valueComputed="uuid_generate_v4()"/>
+            <column name="email" value="user@domain.xyz"/>
+            <column name="full_name" value="User User"/>
+            <column name="username" value="user"/>
+            <column name="password" valueComputed="'{bcrypt}' || crypt('user', gen_salt('bf'))"/>
+            <column name="enabled" value="true"/>
+            <column name="last_modified_date" value="now()"/>
+        </insert>
+
+        <insert schemaName="public" tableName="user_role">
+            <column name="user_id" valueComputed="(SELECT id from users where username = 'admin')"/>
+            <column name="role_id" valueComputed="(SELECT id from roles where role = 'ADMIN')"/>
+        </insert>
+        <insert schemaName="public" tableName="user_role">
+            <column name="user_id" valueComputed="(SELECT id from users where username = 'admin')"/>
+            <column name="role_id" valueComputed="(SELECT id from roles where role = 'USER')"/>
+        </insert>
+        <insert schemaName="public" tableName="user_role">
+            <column name="user_id" valueComputed="(SELECT id from users where username = 'user')"/>
+            <column name="role_id" valueComputed="(SELECT id from roles where role = 'USER')"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

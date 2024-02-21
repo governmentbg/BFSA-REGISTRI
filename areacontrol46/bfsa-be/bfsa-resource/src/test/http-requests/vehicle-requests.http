@@ -1,0 +1,120 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  VehicleController # create
+POST {{host}}/api/vehicles/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "registrationPlate": "Е 00 43 ВС",
+  "entryNumber": "БЛ-ЗА-КХ-1717",
+  "entryDate": "2021-09-03",
+  "load": "1030",
+  "name": "ПЕЖО БОКСЕР",
+  "description": "12100054",
+  "branchId": "1",
+  "enabled": true
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("object_id", response.body["id"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  VehicleController # update
+PUT {{host}}/api/vehicles/a9532bd6-9527-4980-9cd0-d786ae027c35
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "a9532bd6-9527-4980-9cd0-d786ae027c35",
+  "registrationPlate": "Е 00 33 ВС_Updated-2",
+  "entryNumber": "БЛ-ЗА-КХ-1716_Updated-2",
+  "entryDate": "2022-08-05",
+  "load": "1050",
+  "name": "МЕРЦЕДЕС СПРИНТЕР_Updated-2",
+  "description": "12100054_Updated-2",
+  "branchId": "79fc9aad-4841-4a69-8d80-661cdff14270",
+  "enabled": true
+}
+
+
+###  VehicleController # findAll
+GET {{host}}/api/vehicles/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  VehicleController # findById
+GET {{host}}/api/vehicles/ee2d3219-b11d-4bab-946b-2a7cde067da7
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  VehicleController # search
+GET {{host}}/api/vehicles?q=МЕР
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  VehicleController # create inspection
+POST {{host}}/api/vehicles/72600255-8673-42ef-ae02-3bfc4b60d894/inspection
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": null,
+  "description": "Test inspection",
+  "users": [
+    "7531dfee-5613-406c-8857-42a0278806a4"
+  ],
+  "endDate": "2023-09-13",
+  "inspectionType": "EXTRAORDINARY",
+  "status": "PROCESSING",
+  "applicantIdentifier": null,
+  "applicantFullName": null,
+  "vehicleId": "72600255-8673-42ef-ae02-3bfc4b60d894",
+  "attachments": [ ],
+  "reasonsCodes": [
+    "02521",
+    "02521"
+  ]
+}
+
+
+###  VehicleController # update status
+PUT {{host}}/api/vehicles/1/update-status
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "1",
+  "status": "INSPECTION"
+}

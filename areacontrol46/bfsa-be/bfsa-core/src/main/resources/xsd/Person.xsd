@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://eform.e-gov.bg/dictionary/Person"
+        xmlns="http://eform.e-gov.bg/dictionary/Person"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:personalData="http://eform.e-gov.bg/dictionary/PersonalData"
+		xmlns:iddoc="http://eform.e-gov.bg/dictionary/IdentificationDocument"
+		xmlns:loc="http://eform.e-gov.bg/dictionary/Location"
+		xmlns:rep="http://eform.e-gov.bg/dictionary/Representation"
+		xmlns:authdoc="http://eform.e-gov.bg/dictionary/AuthorizationDocument">
+
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/PersonalData" schemaLocation="PersonalData.xsd"/>
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/IdentificationDocument" schemaLocation="IdentificationDocument.xsd"/>
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/Location" schemaLocation="Location.xsd"/>
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/Representation" schemaLocation="Representation.xsd"/>
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/AuthorizationDocument" schemaLocation="AuthorizationDocument.xsd"/>
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/AuthorizationDocument" schemaLocation="AuthorizationDocument.xsd"/>
+
+	<xsd:complexType name="Person">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="bg">
+		  Основни данни за физическо лице
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="personalData" type="personalData:PersonalData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="identificationDocument" type="iddoc:IdentificationDocument" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="permanentAddress" type="loc:Location" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="presentAddress" type="loc:Location" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="corrAddress" type="loc:Location" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="representation" type="rep:Representation" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Юридическо лице, от името на което действа автора (посредници, представители)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="authorizationDocument" type="authdoc:AuthorizationDocument" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Юридическо лице, от името на което действа автора (посредници, представители)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+  
+</xsd:schema>

@@ -1,0 +1,134 @@
+<form [formGroup]="inspectionForm">
+  <div class="mb-12 flex justify-left flex-col lg:flex-row lg:gap-12">
+    <mat-form-field>
+      <input matInput formControlName="applicantFullName" />
+      <mat-hint>Име</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput formControlName="applicantIdentifier" />
+      <mat-hint>ЕИК</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput formControlName="applicantEmail" />
+      <mat-hint>Имейл</mat-hint>
+    </mat-form-field>
+  </div>
+</form>
+
+<form [formGroup]="inspectionForm" novalidate (ngSubmit)="onSubmit()">
+  <mat-card class="lg:w-1/2">
+    <mat-card-content>
+      <div class="text-lg mb-6">Създаване на проверка</div>
+
+      <div class="flex flex-col gap-2">
+        <mat-form-field appearance="fill">
+          <mat-label>Тип проверка</mat-label>
+          <mat-select formControlName="inspectionType">
+            <mat-option
+              *ngFor="let type of inspectionTypes"
+              [value]="type[0]"
+              >{{ type[1] }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <ng-container *ngIf="f['inspectionType'].value === 'PLANNED'">
+          <mat-form-field appearance="fill">
+            <mat-label>Причина</mat-label>
+            <mat-select formControlName="reasonsCodes" multiple>
+              <mat-option
+                *ngFor="let reason of plannedInspectionReasons"
+                [value]="reason.code"
+                >{{ reason.name }}</mat-option
+              >
+            </mat-select>
+            <mat-error *ngIf="f['reasonsCodes'].hasError('required')">
+              Reason is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Риск</mat-label>
+            <mat-select formControlName="riskLevel">
+              <mat-option
+                *ngFor="let riskLevel of riskLevels | keyvalue"
+                [value]="riskLevel.value"
+                >{{ riskLevel.value }}</mat-option
+              >
+            </mat-select>
+            <mat-error *ngIf="f['riskLevel'].hasError('required')">
+              Risk Level is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </ng-container>
+        <ng-container *ngIf="f['inspectionType'].value === 'EXTRAORDINARY'">
+          <mat-form-field appearance="fill">
+            <mat-label>Причина</mat-label>
+            <mat-select formControlName="reasonsCodes" multiple>
+              <mat-option
+                *ngFor="let reason of extraordinaryInspectionReasons"
+                [value]="reason.code"
+                >{{ reason.name }}</mat-option
+              >
+            </mat-select>
+            <mat-error *ngIf="f['reasonsCodes'].hasError('required')">
+              Reason is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </ng-container>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Експерт</mat-label>
+          <mat-select formControlName="users" multiple>
+            <mat-option *ngFor="let user of users" [value]="user.id">{{
+              user.fullName
+            }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="f['users'].hasError('required')">
+            Field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Дата</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            formControlName="endDate"
+            (focus)="picker.open()"
+            [min]="minDate"
+            [matDatepickerFilter]="filterDate"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="picker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="f['endDate'].hasError('required')">
+            Date is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill" hintLabel="Max 300 characters">
+          <mat-label>No на заповед/писмо</mat-label>
+          <textarea matInput formControlName="description" maxlength="300">
+          </textarea>
+          <mat-hint align="end"
+            >{{ f["description"].value?.length }}/300</mat-hint
+          >
+          <mat-error *ngIf="f['description'].hasError('required')">
+            Field is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </mat-card-content>
+    <mat-card-actions align="end">
+      <a routerLink="/app/inspections" mat-button>Отказ</a>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="this.inspectionForm.invalid"
+      >
+        Създай
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>

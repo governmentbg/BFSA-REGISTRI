@@ -1,0 +1,111 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_ppp&password=expert_ppp
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ApplicationS1590Controller # register
+POST {{host}}/api/s1590-applications/register
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "requestorFullName": "RequestorFullName1",
+  "requestorIdentifier": 111311211111,
+  "requestorEmail": "requestor311@mail.com",
+  "requestorAuthorTypeCode": "01301",
+  "applicantType": "LEGAL",
+  "applicantFullName": "ApplicantFullName1",
+  "applicantIdentifier": 222223322222,
+  "applicantEmail": "applicant113@mail.com",
+  "applicantPostCode": "123",
+  "applicantAddress": "test",
+  "applicantPhoneNumber": "123-123-123",
+  "contractorType": "LEGAL",
+  "applicantHeadOfficeAddress": {
+    "address": "Applicant Head office address",
+    "postCode": "1000",
+    "addressTypeCode": "00201",
+    "settlementCode": "02676"
+  },
+  "applicantCorrespondenceAddress": {
+    "address": "Applicant Correspondence address",
+    "postCode": "1000",
+    "addressTypeCode": "00203",
+    "settlementCode": "02676"
+  },
+  "branchSequenceNumber": "01",
+  "serviceType": "S1590",
+  "warehouseSettlementCode": "02107",
+  "warehouseAddress": {
+    "phone": "123-123-123",
+    "mail": "wafehouse1@mail.com",
+    "url": "www.warehouse1.com",
+    "settlementCode": "02107",
+    "address": "Main warehouse address"
+  },
+  "fumigationProcessControlPerson": {
+    "name": "Control",
+    "surnameName": "Controlev",
+    "familyName": "Controlevski",
+    "identifier": "444444444443"
+  },
+  "fumigationPerformingPersonList": [
+    {
+      "name": "Perform",
+      "surnameName": "Performov",
+      "familyName": "Performevski",
+      "identifier": "6666666667366"
+    },
+    {
+      "name": "Second",
+      "surnameName": "Secondov",
+      "familyName": "Secondovski",
+      "identifier": "888888788883"
+    }
+  ]
+}
+
+
+###  ApplicationS1590Controller # getApplicationS1590 by record id
+GET {{host}}/api/s1590-applications/1a0b4d2c-fd81-497e-8653-57819b685cf7
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS1590Controller # approveApplicationS1590
+PUT {{host}}/api/s1590-applications/202/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS1590Controller # refuseApplicationS1590
+PUT {{host}}/api/s1590-applications/676317d6-3d5f-4237-b483-934344d32fc0/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS1590Controller # forCorrectionApplicationS1590
+PUT {{host}}/api/s1590-applications/77fee257-715e-4fcb-a6e3-55977efa713b/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

@@ -1,0 +1,43 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <h1 mat-dialog-title>{{ data.isAdd ? "Add a" : "Edit the" }} Food Type</h1>
+  <div mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" />
+        <mat-error *ngIf="dialogForm.controls['name'].hasError('required')">
+          Name is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Description</mat-label>
+        <input matInput formControlName="description" />
+        <mat-error *ngIf="dialogForm.controls['description'].hasError('required')">
+          Description is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <ng-container *ngIf="!data.isAdd">
+        <mat-slide-toggle
+          color="primary"
+          formControlName="enabled"
+          class="mb-2"
+        >
+          Enabled
+        </mat-slide-toggle>
+      </ng-container>
+    </div>
+  </div>
+  <div mat-dialog-actions [align]="'end'">
+    <button mat-button mat-dialog-close>Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      {{ data.isAdd ? "Add" : "Update" }}
+    </button>
+  </div>
+</form>

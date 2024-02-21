@@ -1,0 +1,17 @@
+
+###  ReportController # contractorInfo
+GET {{host}}/api/reports/contractor/5807026290/info
+accept: */*
+Accept-Language: bg
+
+
+###  ReportController # contractorVehicles
+GET {{host}}/api/reports/contractor/300400500/vehicles
+accept: */*
+Accept-Language: bg
+
+
+###  ReportController # contractorVehicles
+GET {{host}}/api/reports/contractor/7806047270/food-supplements
+accept: */*
+Accept-Language: bg

@@ -1,0 +1,70 @@
+<div *ngIf="!classifier" class="animate-pulse">Loading classifier...</div>
+
+<div *ngIf="classifier">
+  <div class="my-8">
+    <div class="flex gap-2 items-center">
+      <div class="">
+        <button
+          (click)="back()"
+          mat-icon-button
+          aria-label="Button with a arrow back icon"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="text-xl">
+        {{ classifier.name }}
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <div class="p-2">Description:</div>
+    <mat-card>
+      <mat-card-content>
+        <div class="mb-4 text-base">
+          {{ classifier.description }}
+        </div>
+        <div class="flex items-center gap-2 text-base">
+          Enabled
+          <mat-icon color="primary" *ngIf="classifier.enabled"
+            >check_circle</mat-icon
+          >
+          <mat-icon color="warn" *ngIf="!classifier.enabled"
+            >unpublished</mat-icon
+          >
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button mat-button (click)="editClassifier(classifier)">Edit</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div *ngIf="classifier.subClassifiers">
+    <div class="mb-8">
+      <div class="p-2">Groups:</div>
+      <mat-card>
+        <mat-card-content>
+          <div *ngFor="let item of classifier.subClassifiers" class="truncate">
+            <a
+              [routerLink]="['/app/classifier', item.code]"
+              class="hover:underline text-base"
+              [title]="item.name"
+            >
+              {{ item.name }}
+            </a>
+          </div>
+          <div *ngIf="!classifier.subClassifiers.length" class="">
+            No sub classifiers.
+          </div>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions>
+          <button (click)="addSubClassifier()" mat-button>Add</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

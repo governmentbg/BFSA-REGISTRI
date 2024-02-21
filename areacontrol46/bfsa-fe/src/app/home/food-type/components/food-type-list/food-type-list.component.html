@@ -1,0 +1,26 @@
+<div *ngIf="!foodTypes" class="animate-pulse">
+  Loading food types...
+</div>
+
+<div *ngIf="foodTypes">
+  <div class="">
+    <div class="p-2">Groups:</div>
+    <mat-card>
+      <mat-card-content>
+        <div *ngFor="let item of foodTypes" class="truncate">
+          <a
+            [routerLink]="['/app/food-type', item.code]"
+            class="hover:underline text-base"
+            [title]="item.name"
+          >
+            {{ item.name }}
+          </a>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button (click)="addFoodType()" mat-button>Add</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

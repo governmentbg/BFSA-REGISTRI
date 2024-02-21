@@ -1,0 +1,84 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  InspectionController # create
+#POST {{host}}/api/inspections/create
+#Content-Type: application/json
+#Authorization: Bearer {{access_token}}
+#
+#{
+#  "description": "Description Description Description",
+#  "users": [
+#    "f0783adb-0018-48ee-88d9-dc7c9dae7e12"
+#  ],
+#  "recordId": "7820de95-87b1-4de7-8be8-f25d30395389",
+#  "localDate": "2025-08-05"
+#}
+#
+#> {%
+#    client.test("Request executed successfully", function() {
+#        if (response.status === 200) {
+#            client.global.set("object_id", response.body["id"])
+#        }
+#        client.assert(response.status === 200, "Access is Denied");
+#    });
+#%}
+
+
+###  InspectionController # findAll
+GET {{host}}/api/inspections
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  InspectionController # findById
+GET {{host}}/api/inspections/50368546-ab43-488d-af92-e0a418607bc8
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  InspectionController # Attach
+POST {{host}}/api/inspections/025b4c9b-2fae-4b8c-8a0f-57674d1b08f2/attach
+Authorization: Bearer {{access_token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="Temlate_TechnicalData_Full.xlsx"
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+< Temlate_TechnicalData_Full.xlsx
+--WebAppBoundary--
+
+
+###  InspectionController # attachments
+GET {{host}}/api/inspections/025b4c9b-2fae-4b8c-8a0f-57674d1b08f2/attachments
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  InspectionController # update
+PUT {{host}}/api/inspections/1fef8bb0-b00c-4595-b9cf-f7245249475d
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "1fef8bb0-b00c-4595-b9cf-f7245249475d",
+  "description": "Това го промених 6x1 пъти",
+  "endDate": "2025-08-05"
+}

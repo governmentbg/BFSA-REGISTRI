@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://eform.e-gov.bg/dictionary/LegalEntity"
+        xmlns="http://eform.e-gov.bg/dictionary/LegalEntity"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:ident="http://eform.e-gov.bg/dictionary/Identifier"
+        xmlns:loc="http://eform.e-gov.bg/dictionary/Location"
+		xmlns:regix="http://eform.e-gov.bg/dictionary/RegixSync">
+
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/Identifier" schemaLocation="Identifier.xsd"/>
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/Location" schemaLocation="Location.xsd"/>
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/RegixSync" schemaLocation="RegixSync.xsd"/>
+
+	<xsd:complexType name="LegalEntity">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="bg">
+			  Основни данни за юридическо лице
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="legalData" type="LegalData" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+
+	<xsd:complexType name="LegalData">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="bg">
+				Основни данни за юридическо лице
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="identifier" type="ident:Identifier" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Уникален правен идентификатор, идентифициращ само едно юридическо лице (ЕИК, БУЛСТАТ)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="eik" type="xsd:string" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="name" type="xsd:string" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Юридическото наименование на лицето
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="nameLatin" type="xsd:string" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Търговско наименование или алтернативни форми на име на юридическо лице.
+						Свойството не е задължително и е приложимо в случай на нужда при вписване на данни за чужди юридически лица, които са признати от чужда юрисдикция
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="companyType" type="xsd:string" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Тип на дружество или ЮЛНЦ - правна форма, като АД, ООД, ЕООД и т.н. Номенклатура „Тип на дружество или ЮЛНЦ“
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="isLegal" type="xsd:boolean" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="regix" type="regix:RegixSync" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Данните за лицето са синхронизирани от RegiX
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

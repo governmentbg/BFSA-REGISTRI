@@ -1,0 +1,77 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  PlantProtectionProductsController # create
+POST {{host}}/api/plant-protection-products/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+	"quantity":199.1,
+	"name":"Name"
+}
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("object_id", response.body["id"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  PlantProtectionProductsController # update
+PUT {{host}}/api/plant-protection-products/{{object_id}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+	"id":"{{object_id}}",
+	"quantity":222.2,
+	"name":"Name_Updated-2"
+}
+
+
+###  PlantProtectionProductsController # findAll
+GET {{host}}/api/plant-protection-products/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  PlantProtectionProductsController # findById
+GET {{host}}/api/plant-protection-products/{{object_id}}
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  PlantProtectionProductsController # search
+GET {{host}}/api/plant-protection-products?q=199.1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  PlantProtectionProductsController # history
+GET {{host}}/api/plant-protection-products/{{object_id}}/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

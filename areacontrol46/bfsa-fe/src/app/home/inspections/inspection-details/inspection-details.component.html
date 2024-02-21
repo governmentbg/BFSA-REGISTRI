@@ -1,0 +1,374 @@
+<div
+  class="mb-14 flex justify-center flex-col lg:flex-row lg:gap-12"
+  *ngIf="inspectionDTO"
+>
+  <mat-form-field>
+    <input matInput [value]="inspectionDTO.applicantFullName" readonly />
+    <mat-hint>Име</mat-hint>
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput [value]="inspectionDTO.applicantIdentifier" readonly />
+    <mat-hint>ЕИК</mat-hint>
+  </mat-form-field>
+</div>
+
+<div class="flex flex-col lg:flex-row gap-4 items-start">
+  <ng-container *ngIf="inspection">
+    <form
+      [formGroup]="inspectionForm"
+      class="w-full"
+      novalidate
+      (ngSubmit)="onSubmit()"
+    >
+      <mat-card>
+        <mat-card-content>
+          <div class="text-lg mb-6">
+            {{ inspection.status === "PROCESSING" ? "Редактиране" : "Преглед" }}
+            на проверка
+          </div>
+          <div class="flex flex-col gap-2">
+            <!-- <ng-container *ngIf="inspection.status === 'PROCESSING'"> -->
+            <!--   <mat-form-field appearance="fill"> -->
+            <!--     <mat-label>Тип проверка</mat-label> -->
+            <!--     <mat-select formControlName="type"> -->
+            <!--       <mat-option -->
+            <!--         *ngFor="let type of inspectionTypes | keyvalue" -->
+            <!--         [value]="type.value" -->
+            <!--         >{{ type.value }}</mat-option -->
+            <!--       > -->
+            <!--     </mat-select> -->
+            <!--   </mat-form-field> -->
+            <!-- </ng-container> -->
+            <ng-container>
+              <mat-form-field class="mb-3">
+                <input matInput [value]="f['inspectionType'].value" readonly />
+                <mat-hint>Тип проверка</mat-hint>
+              </mat-form-field>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                f['inspectionType'].value === inspectionTypes.PLANNED &&
+                inspection.status === 'PROCESSING'
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Причина</mat-label>
+                <mat-select formControlName="reasonsCodes" multiple>
+                  <mat-option
+                    *ngFor="let reason of plannedInspectionReasons"
+                    [value]="reason.code"
+                    >{{ reason.name }}</mat-option
+                  >
+                </mat-select>
+                <mat-error *ngIf="f['reasonsCodes'].hasError('required')">
+                  Reason is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                f['inspectionType'].value === inspectionTypes.PLANNED &&
+                inspection.status === 'COMPLETED'
+              "
+            >
+              <mat-form-field>
+                <input
+                  matInput
+                  [title]="
+                    normalizePlannedInspectionReasons(f['reasonsCodes'].value)
+                  "
+                  [value]="
+                    normalizePlannedInspectionReasons(f['reasonsCodes'].value)
+                  "
+                  readonly
+                />
+                <mat-hint>Причина</mat-hint>
+              </mat-form-field>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                f['inspectionType'].value === inspectionTypes.EXTRAORDINARY &&
+                inspection.status === 'PROCESSING'
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Причина</mat-label>
+                <mat-select formControlName="reasonsCodes" multiple>
+                  <mat-option
+                    *ngFor="let reason of extraordinaryInspectionReasons"
+                    [value]="reason.code"
+                    >{{ reason.name }}</mat-option
+                  >
+                </mat-select>
+                <mat-error *ngIf="f['reasonsCodes'].hasError('required')">
+                  Reason is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                f['inspectionType'].value === inspectionTypes.EXTRAORDINARY &&
+                inspection.status === 'COMPLETED'
+              "
+            >
+              <mat-form-field>
+                <input
+                  matInput
+                  [title]="
+                    normalizeExtraordinaryInspectionReasons(
+                      f['reasonsCodes'].value
+                    )
+                  "
+                  [value]="
+                    normalizeExtraordinaryInspectionReasons(
+                      f['reasonsCodes'].value
+                    )
+                  "
+                  readonly
+                />
+                <mat-hint>Причина</mat-hint>
+              </mat-form-field>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                f['inspectionType'].value === inspectionTypes.PLANNED &&
+                inspection.status === 'PROCESSING'
+              "
+            >
+              <mat-form-field appearance="fill">
+                <mat-label>Риск</mat-label>
+                <mat-select formControlName="riskLevel">
+                  <mat-option
+                    *ngFor="let riskLevel of riskLevels | keyvalue"
+                    [value]="riskLevel.value"
+                    >{{ riskLevel.value }}</mat-option
+                  >
+                </mat-select>
+                <mat-error *ngIf="f['riskLevel'].hasError('required')">
+                  Risk Level is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container
+              *ngIf="
+                f['inspectionType'].value === inspectionTypes.PLANNED &&
+                inspection.status === 'COMPLETED'
+              "
+            >
+              <mat-form-field>
+                <input matInput [value]="f['riskLevel'].value" readonly />
+                <mat-hint>Риск</mat-hint>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="inspection.status === 'PROCESSING'">
+              <mat-form-field appearance="fill">
+                <mat-label>Експерт</mat-label>
+                <mat-select formControlName="users" multiple>
+                  <mat-option *ngFor="let user of users" [value]="user.id">{{
+                    user.fullName
+                  }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="f['users'].hasError('required')">
+                  Users is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="inspection.status === 'COMPLETED'">
+              <mat-form-field>
+                <input matInput [value]="normalizeUsers(users)" readonly />
+                <mat-hint>Експерт</mat-hint>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="inspection.status === 'PROCESSING'">
+              <mat-form-field appearance="fill">
+                <mat-label>Дата</mat-label>
+                <input
+                  matInput
+                  [matDatepicker]="picker"
+                  formControlName="endDate"
+                  (focus)="picker.open()"
+                  [min]="minDate"
+                  [matDatepickerFilter]="filterDate"
+                />
+                <mat-datepicker-toggle
+                  matSuffix
+                  [for]="picker"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="f['endDate'].hasError('required')">
+                  Date is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="inspection.status === 'COMPLETED'">
+              <mat-form-field>
+                <input matInput [value]="formatDate(endDate.value)" readonly />
+                <mat-hint>Дата</mat-hint>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="inspection.status === 'PROCESSING'">
+              <mat-form-field appearance="fill" hintLabel="Max 300 characters">
+                <mat-label>No на заповед/писмо</mat-label>
+                <textarea
+                  matInput
+                  formControlName="description"
+                  maxlength="300"
+                >
+                </textarea>
+                <mat-hint align="end"
+                  >{{ f["description"].value?.length }}/300</mat-hint
+                >
+                <mat-error *ngIf="f['description'].hasError('required')">
+                  Field is <strong>required</strong>
+                </mat-error>
+              </mat-form-field>
+            </ng-container>
+            <ng-container *ngIf="inspection.status === 'COMPLETED'">
+              <mat-form-field>
+                <textarea
+                  matInput
+                  [value]="f['description'].value"
+                  readonly
+                ></textarea>
+                <mat-hint>No на заповед/писмо</mat-hint>
+              </mat-form-field>
+            </ng-container>
+          </div>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions>
+          <div class="flex justify-between">
+            <button routerLink="/app/inspections" type="button" mat-button>
+              {{ inspection.status === "PROCESSING" ? "Отказ" : "Назад" }}
+            </button>
+            <div class="space-x-2">
+              <button
+                *ngIf="inspection.status === 'PROCESSING'"
+                mat-button
+                type="submit"
+                [disabled]="inspectionForm.invalid || inspectionForm.pristine"
+              >
+                Обнови
+              </button>
+              <button
+                *ngIf="inspection.status === 'PROCESSING'"
+                (click)="complete()"
+                type="button"
+                mat-flat-button
+                [disabled]="inspectionForm.invalid"
+                color="primary"
+              >
+                Приключи
+              </button>
+            </div>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </ng-container>
+
+  <ng-container *ngIf="attachments">
+    <mat-card class="w-full lg:w-1/3">
+      <mat-card-content>
+        <div class="text-lg mb-6">Прикачен файл</div>
+        <ng-container *ngIf="!attachments.length">
+          <div class="flex items-center justify-center p-4">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-28 opacity-10"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+              />
+            </svg>
+          </div>
+
+          <ng-container *ngIf="inspection.status === 'PROCESSING'">
+            <mat-form-field appearance="fill" class="w-full mb-4">
+              <mat-label>Вид документ</mat-label>
+              <mat-select [formControl]="inspectionResultDocumentTypeControl">
+                <mat-option
+                  *ngFor="let docType of inspectionResultDocumentTypes"
+                  [value]="docType.code"
+                  [title]="docType.name"
+                  >{{ docType.name }}</mat-option
+                >
+              </mat-select>
+              <mat-hint>Избери вид документ</mat-hint>
+            </mat-form-field>
+
+            <div class="flex justify-end">
+              <button
+                type="button"
+                mat-flat-button
+                color="primary"
+                (click)="fileInput.click()"
+                [disabled]="!inspectionResultDocumentTypeControl.value"
+              >
+                Прикачи
+              </button>
+              <input
+                hidden
+                (change)="onFileSelect($event)"
+                #fileInput
+                type="file"
+              />
+            </div>
+          </ng-container>
+        </ng-container>
+        <ng-container *ngIf="attachments.length">
+          <mat-form-field class="w-full mb-4">
+            <input
+              matInput
+              [title]="
+                getInspectionResultDocumentTypeNameByCode(
+                  inspectionResultDocumentTypeControl.value
+                )
+              "
+              [value]="
+                getInspectionResultDocumentTypeNameByCode(
+                  inspectionResultDocumentTypeControl.value
+                )
+              "
+              readonly
+            />
+            <mat-hint>Вид документ</mat-hint>
+          </mat-form-field>
+
+          <div *ngFor="let item of attachments">
+            <div
+              class="hover:cursor-pointer hover:underline mb-4"
+              (click)="downloadFile(item)"
+              matTooltip="Свали"
+            >
+              {{ item.fileName }}
+            </div>
+            <div class="flex gap-2">
+              <button
+                *ngIf="inspection.status === 'PROCESSING'"
+                mat-stroked-button
+                type="button"
+                (click)="delete(item)"
+              >
+                Изтрий
+              </button>
+              <button
+                mat-stroked-button
+                type="button"
+                (click)="downloadFile(item)"
+              >
+                Свали
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

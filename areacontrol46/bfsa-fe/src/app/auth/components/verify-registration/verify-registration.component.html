@@ -1,0 +1,14 @@
+<mat-card>
+  <app-logo heading="Verify Registration"></app-logo>
+  <mat-card-content>
+    <p class="text-center pb-4" *ngIf="message === 'VALID'">
+      {{ "varifyRegistrationSuccessMessage" | translate }}
+    </p>
+    <p class="text-center pb-4" *ngIf="message !== 'VALID'">
+      {{ "varifyRegistrationUnsuccessMessage" | translate }}
+    </p>
+  </mat-card-content>
+  <mat-card-footer class="text-center pb-6">
+    <a routerLink="/auth/signin" class="mat-caption"> Go to Login Page </a>
+  </mat-card-footer>
+</mat-card>

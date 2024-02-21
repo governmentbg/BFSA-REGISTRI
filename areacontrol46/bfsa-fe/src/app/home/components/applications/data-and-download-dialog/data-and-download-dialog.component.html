@@ -1,0 +1,19 @@
+<h1 mat-dialog-title>Данни за одобрение</h1>
+<div class="field-box">
+  <mat-form-field appearance="fill" class='w-full'>
+    <mat-label>Дата</mat-label>
+    <input matInput [formControl]="regDate" />
+  </mat-form-field>
+</div>
+<div class="field-box">
+  <mat-form-field appearance="fill" class='w-full'>
+    <mat-label>Регистрационен номер</mat-label>
+    <input matInput [formControl]="regNumber" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button cdkFocusInitial color="primary" (click)="discard()">
+    Затвори
+  </button>
+  <button mat-raised-button color="primary" (click)="confirm()">Изтегли</button>
+</div>

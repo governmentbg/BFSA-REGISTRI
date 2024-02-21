@@ -1,0 +1,104 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  TaskController # findAll
+GET {{host}}/api/tasks/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+
+    client.test("totalCount option exists", function() {
+        client.assert(response.body.hasOwnProperty("totalCount"), "Cannot find 'totalCount' option in response");
+    });
+
+    client.test("totalCount value is 1", function() {
+        client.log('The value of totalCount is: [' + response.body.totalCount + ']');
+        client.assert(response.body.totalCount >= 1, "totalCount must be >= 1");
+    });
+%}
+
+
+###  TaskController # getById
+GET {{host}}/api/tasks/f89757df-bbc2-475e-990f-9ccc7a0ff602
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  TaskController # create
+POST {{host}}/api/tasks/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "name": "Test task rest api",
+  "description": "This is a new task user from rest api test.",
+  "role": "ADMIN"
+}
+
+
+###  TaskController # update
+PUT {{host}}/api/tasks/3d5185cd-f4e7-47c8-bfae-dcbfb7110d45
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "3d5185cd-f4e7-47c8-bfae-dcbfb7110d45",
+  "name": "Updated new - test task rest api",
+  "description": "Update a task from rest api test. - 3d5185cd-f4e7-47c8-bfae-dcbfb7110d45",
+  "role": "USER"
+}
+
+
+###  TaskController # claimTask
+PUT {{host}}/api/tasks/claim/7df8baeb-be00-4854-b1c8-99f62e8b99dc
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  TaskController # cancelTask
+PUT {{host}}/api/tasks/cancel/7df8baeb-be00-4854-b1c8-99f62e8b99dc
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  TaskController # findAllTasksByCurrentUserRoles
+GET {{host}}/api/tasks/current-user
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  TaskController # findAllTasksByUserId
+GET {{host}}/api/tasks/current-user/b26fe427-94f8-456a-954d-0937c333bf97
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

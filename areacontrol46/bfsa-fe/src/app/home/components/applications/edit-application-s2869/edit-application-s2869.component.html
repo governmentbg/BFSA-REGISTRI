@@ -1,0 +1,194 @@
+<h1 class="text-center">
+  2869 - Издаване на разрешение за оператори на хранителни банки
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+          Запази
+        </button> -->
+
+        <!-- <button
+          [disabled]="!applicationForm.valid"
+          mat-flat-button
+          (click)="updateApplication()"
+        >
+          Запази
+        </button> -->
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.facilities.length > 0"
+          >
+            Данни за обекта/ите *:
+          </div>
+
+          <div formArrayName="facilities" *ngIf="this.facilities.length > 0">
+            <div
+              *ngFor="let facilityForm of facilities?.controls; let i = index"
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Дейности</mat-label>
+                  <mat-select formControlName="activityTypes" multiple>
+                    <mat-option
+                      *ngFor="let activityType of activityTypes"
+                      [value]="activityType.code"
+                      >{{ activityType.name }}</mat-option
+                    >
+                  </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Регистрационен номер на обекта</mat-label>
+                  <input
+                    matInput
+                    placeholder="Регистрационен номер на обекта"
+                    formControlName="regNumber"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.ch50Vehicles.length > 0"
+          >
+            Специфични данни за МПС чл.50
+          </div>
+
+          <div
+            formArrayName="ch50Vehicles"
+            *ngIf="this.ch50Vehicles.length > 0"
+          >
+            <div
+              *ngFor="let vehicleForm of ch50Vehicles?.controls; let i = index"
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field>
+                  <mat-label> Стикер No </mat-label>
+                  <input
+                    matInput
+                    placeholder="Регистрационен номер"
+                    formControlName="certificateNumber"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.ch52Vehicles.length > 0"
+          >
+            Специфични данни за МПС чл.52
+          </div>
+
+          <div
+            formArrayName="ch52Vehicles"
+            *ngIf="this.ch52Vehicles.length > 0"
+          >
+            <div
+              *ngFor="let vehicleForm of ch52Vehicles?.controls; let i = index"
+            >
+              <div [formGroupName]="i">
+                <div class="section">
+                  <mat-form-field>
+                    <mat-label>Собственост на МПС</mat-label>
+                    <mat-select formControlName="vehicleOwnershipTypeCode">
+                      <mat-option
+                        *ngFor="let vehicleOwnership of vehicleOwnerships"
+                        [value]="vehicleOwnership.code"
+                        >{{ vehicleOwnership.name }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Вид превозно средство</mat-label>
+                    <mat-select formControlName="vehicleTypeCode">
+                      <mat-option
+                        *ngFor="let vehicleType of vehicleTypes"
+                        [value]="vehicleType.code"
+                        >{{ vehicleType.name }}</mat-option
+                      >
+                    </mat-select>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Марка и модел</mat-label>
+                    <input
+                      matInput
+                      placeholder="Марка и модел"
+                      formControlName="brandModel"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Регистрационен номер</mat-label>
+                    <input
+                      matInput
+                      placeholder="Регистрационен номер"
+                      formControlName="registrationPlate"
+                    />
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </div>
+          <mat-form-field appearance="fill" class="date-holder">
+            <mat-label>Дата</mat-label>
+            <input matInput formControlName="commencementActivityDate" />
+          </mat-form-field>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+        <!-- <button mat-flat-button color="primary" matStepperNext>Продължи</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

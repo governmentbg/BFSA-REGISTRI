@@ -1,0 +1,59 @@
+<mat-card>
+  <mat-card-content>
+    <div class="w-full flex gap-3 items-center">
+      <mat-form-field appearance="fill" class="w-full">
+        <mat-label>Търсене в регистри</mat-label>
+        <!-- <mat-icon class="opacity-50" matPrefix>search</mat-icon> -->
+        <input
+          matInput
+          placeholder="1234567890"
+          [matAutocomplete]="auto"
+          #trigger="matAutocompleteTrigger"
+          [formControl]="registerControl"
+          (keyup.enter)="search(inputEl)"
+          #inputEl
+        />
+        <button
+          mat-icon-button
+          matSuffix
+          *ngIf="registerControl.value"
+          aria-label="Clear"
+          (click)="clearSelection()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+        <mat-autocomplete
+          #auto="matAutocomplete"
+          (optionSelected)="onSelected($event.option.value)"
+        >
+          <mat-option *ngIf="isLoading" class="animate-pulse"
+            >Loading...</mat-option
+          >
+          <ng-container *ngIf="!isLoading">
+            <mat-option
+              [value]="contractor.id"
+              *ngFor="let contractor of contractors"
+              [title]="contractor.identifier"
+            >
+              {{ contractor.fullName }}, {{ contractor.email }},
+              {{ contractor.identifier }}
+            </mat-option>
+          </ng-container>
+        </mat-autocomplete>
+        <mat-hint>ID, name or email</mat-hint>
+        <mat-error *ngIf="registerControl.hasError('required')">
+          Моля, въведете идентификатора за търсене
+        </mat-error>
+      </mat-form-field>
+      <button
+        title="Search"
+        mat-fab
+        [disabled]="!registerControl.value"
+        (click)="search(inputEl); $event.stopPropagation(); trigger.openPanel()"
+        color="primary"
+      >
+        <mat-icon>search</mat-icon>
+      </button>
+    </div>
+  </mat-card-content>
+</mat-card>

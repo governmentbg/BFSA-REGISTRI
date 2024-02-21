@@ -1,0 +1,68 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  MessageController # findByCode
+GET {{host}}/api/message-resources/global.yes
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+###  MessageController # findByCode
+GET {{host}}/api/message-resources/global.yes/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  MessageController # findAll
+GET {{host}}/api/message-resources/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  MessageController # findAll (localized)
+GET {{host}}/api/message-resources
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+
+###  MessageController # update
+PUT {{host}}/api/message-resources
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language:bg
+
+[
+  {
+    "code": "global.yes",
+    "languageId": "bg",
+    "message": "Да да да"
+  },
+  {
+    "code": "global.yes",
+    "languageId": "en",
+    "message": "Yes yes yes"
+  },
+  {
+    "code": "global.yes",
+    "languageId": "de",
+    "message": "Ya ya ya"
+  },
+  {
+    "code": "global.yes",
+    "languageId": "fr",
+    "message": "Ui ui ui"
+  }
+]

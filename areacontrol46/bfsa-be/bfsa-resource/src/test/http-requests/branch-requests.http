@@ -1,0 +1,91 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  BranchController # findAll
+GET {{host}}/api/branches/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+    });
+
+    client.test("Response content-type is json", function() {
+        var type = response.contentType.mimeType;
+        client.assert(type === "application/json", "Expected 'application/json' but received '" + type + "'");
+    });
+
+    client.test("totalCount option exists", function() {
+        client.assert(response.body.hasOwnProperty("totalCount"), "Cannot find 'totalCount' option in response");
+    });
+
+    client.test("totalCount value is 1", function() {
+        client.log('The value of totalCount is: [' + response.body.totalCount + ']');
+        client.assert(response.body.totalCount >= 1, "totalCount must be >= 1");
+    });
+%}
+
+
+###  BranchController # getById
+GET {{host}}/api/branches/14f81493-2a60-4636-9d8d-3328237c8202
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  BranchController # create
+POST {{host}}/api/branches/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "settlementCode": "00789",
+  "sequenceNumber": "30",
+  "email": "test@email.xyz",
+  "phone1": "123456",
+  "phone2": "123321",
+  "phone3": "44332211",
+  "name": "Test Branch rest api",
+  "address": "Test Branch address",
+  "description": "This is a new Branch from rest api test.",
+  "enabled": "true"
+}
+
+
+###  BranchController # update
+PUT {{host}}/api/branches/75419faa-0180-4425-a87f-99a629ac263d
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "75419faa-0180-4425-a87f-99a629ac263d",
+  "settlementCode": "00271",
+  "sequenceNumber": "31",
+  "email": "test_updatet@email.xyz",
+  "phone1": "123456_updated",
+  "phone2": "123321_updated",
+  "phone3": "44332211_updated",
+  "name": "Test Branch rest api_ updated",
+  "address": "Test Branch address_updated",
+  "description": "This is a new Branch from rest api test._updated",
+  "main": "true",
+  "enabled": "true"
+}

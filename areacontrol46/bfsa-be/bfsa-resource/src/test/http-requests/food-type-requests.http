@@ -1,0 +1,95 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  FoodTypeController # findAll
+GET {{host}}/api/food-types/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodTypeController # findAllByParentWithoutSubs
+GET {{host}}/api/food-types/types
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodTypeController # findById
+GET {{host}}/api/food-types/fc7d9241-aa28-487a-ae65-f80edb5b57be
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FoodTypeController # create
+POST {{host}}/api/food-types/be06ae48-aaa3-4b76-ae4e-b5d3c5b415ad/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name":"Fruits Bulgaria Test sub-foodType",
+  "description":"Desc fruits from Bulgaria",
+  "enabled": true
+}
+
+
+
+###  FoodTypeController # create
+POST {{host}}/api/food-types/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name":"Fruits Bulgaria",
+  "description":"Desc fruits from Bulgaria",
+  "enabled": true,
+  "subFoods": [
+    {
+      "name":"Pear",
+      "description":"Desc Pear",
+      "enabled": true,
+      "subFoods":[
+        {
+          "name":"Peter's Pear",
+          "description":"Desc Peter's pear",
+          "enabled": true,
+          "subFoods":[]
+        }
+      ]
+    }
+  ]
+}
+
+###  FoodTypeController # update
+PUT {{host}}/api/food-types/1e6e3a75-473a-49a3-9d5a-39bd5260d5b7
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name": "Watermelon",
+  "description": "Nice and tasty watermelon."
+}
+
+
+###  FoodTypeController # history
+GET {{host}}/api/food-types/fc7d9241-aa28-487a-ae65-f80edb5b57be/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg

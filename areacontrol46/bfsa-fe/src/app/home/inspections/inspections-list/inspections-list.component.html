@@ -1,0 +1,113 @@
+<div [hidden]="!inspections">
+  <mat-card>
+    <mat-card-content>
+      <div
+        class="flex flex-col md:flex-row md:justify-between md:items-start mb-6 md:mb-0"
+      >
+        <mat-form-field appearance="fill">
+          <mat-label>Търсене</mat-label>
+          <mat-icon class="opacity-50" matPrefix>search</mat-icon>
+          <input
+            matInput
+            (keyup)="applyFilter($event)"
+            placeholder="Ex. global"
+            #input
+          />
+        </mat-form-field>
+        <!-- <button mat-flat-button color="primary" (click)="add()"> -->
+        <!--   Създаване на проверка -->
+        <!-- </button> -->
+      </div>
+
+      <div class="overflow-auto">
+        <table mat-table [dataSource]="dataSource" class="w-full">
+          <ng-container matColumnDef="id">
+            <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+              Входящ номер
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.id }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="applicantIdentifier">
+            <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+              ЕГН/ЛНЧ/ЕИК
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.applicantIdentifier }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="applicantFullName">
+            <th mat-header-cell *matHeaderCellDef>Бизнес оператор</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.applicantFullName }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Описание</th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.description }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef class="whitespace-nowrap">
+              Крайна дата
+            </th>
+            <td mat-cell *matCellDef="let element">
+              {{ element.endDate | date : "dd.MM.yyyy" }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="inspectionType">
+            <th mat-header-cell *matHeaderCellDef>Тип</th>
+            <td mat-cell *matCellDef="let element">
+              {{ translateInspection(element.inspectionType) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <th mat-header-cell *matHeaderCellDef>Действие</th>
+            <td mat-cell *matCellDef="let element">
+              <div class="flex gap-2">
+                <button
+                  mat-stroked-button
+                  class="w-full"
+                  (click)="edit(element)"
+                >
+                  {{
+                    element.status === "PROCESSING" ? "Редактиране" : "Преглед"
+                  }}
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr
+            mat-row
+            (dblclick)="edit(row)"
+            *matRowDef="let row; columns: displayedColumns"
+          ></tr>
+
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="7">
+              No data matching the filter "{{ input.value }}"
+            </td>
+          </tr>
+        </table>
+      </div>
+      <mat-paginator
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25, 100]"
+        showFirstLastButtons
+        aria-label="Select page"
+      >
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -1,0 +1,76 @@
+.mat-form-field--inline {
+  align-items: center;
+}
+
+.mat-form-field--inline .mat-form-field {
+  display: inline-block;
+  width: 100%;
+  vertical-align: middle;
+}
+
+.mat-form-field--inline .mat-form-field:nth-child(n) {
+  margin-right: 10px;
+}
+
+.section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.section > * {
+  flex: 1 1 250px;
+}
+
+.btn {
+  margin-right: 5px;
+}
+
+.row {
+  display: inline-table;
+}
+
+::ng-deep .mat-option-text > svg {
+  height: 64px;
+  //width: 64px;
+}
+
+.radio-btn-box {
+  margin: 15px 0 10px 0;
+}
+
+.close-btn {
+  margin-right: 10px;
+}
+
+.checkbox {
+  white-space: pre-line;
+}
+
+.date-holder {
+  min-width: 300px;
+  margin-top: 10px;
+}
+
+.facilityAdress {
+  min-width: 300px;
+  margin: 3px 10px 0 0;
+}
+
+.mat-raised-button {
+  max-width: 70px;
+  max-height: 40px;
+}
+
+.errors-container {
+  font-weight: bold;
+  color: red;
+  text-align: right;
+}
+
+.errors-container-final {
+  margin-top: 15px;
+  font-size: large;
+  font-weight: bold;
+  color: red;
+  text-align: right;
+}

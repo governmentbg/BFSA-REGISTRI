@@ -1,0 +1,240 @@
+<div class="m-4 pb-20">
+  <h1>{{ "registers.contractor.title" | translate }}</h1>
+
+  <mat-card>
+    <mat-card-content>
+      <div
+        class="mb-14 flex justify-center flex-col lg:flex-row lg:gap-12"
+        *ngIf="applicant"
+      >
+        <mat-form-field>
+          <input matInput [value]="applicant.fullName" readonly />
+          <mat-hint>Име</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput [value]="applicant.identifier" readonly />
+          <mat-hint>ЕИК</mat-hint>
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput [value]="applicant.email" readonly />
+          <mat-hint>Email</mat-hint>
+        </mat-form-field>
+      </div>
+
+      <mat-tab-group
+        animationDuration="0ms"
+        (selectedTabChange)="tabChanged($event)"
+      >
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_FOOD_CONTROL_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Обекти">
+            <ng-template matTabContent>
+              <ng-container *ngIf="facilities; else noData">
+                <app-contractor-facilities-table
+                  [options]="facilities"
+                  [applicant]="applicant"
+                ></app-contractor-facilities-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_FOOD_CONTROL_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Автомобили">
+            <ng-template matTabContent>
+              <ng-container *ngIf="vehicles; else noData">
+                <app-contractor-vehicles-table
+                  [applicant]="applicant"
+                  [options]="vehicles"
+                ></app-contractor-vehicles-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            user.directorateCode ===
+            directorateCode.CLASSIFIER_REGISTER_FOOD_CONTROL_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Наематели - Търговци">
+            <ng-template matTabContent>
+              <ng-container *ngIf="seeds; else noData">
+                <app-contractor-seeds-table
+                  [options]="seeds"
+                  [applicant]="applicant"
+                ></app-contractor-seeds-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_FOOD_CONTROL_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Търговия от разстояние">
+            <ng-template matTabContent>
+              <ng-container *ngIf="distanceTrading; else noData">
+                <app-contractor-distance-trading-table
+                  [options]="distanceTrading"
+                  [applicant]="applicant"
+                ></app-contractor-distance-trading-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_PLANT_PROTECTION_PRODUCT_DIRECTORATE_CODE ||
+            isExpertPhytosanitary
+          "
+        >
+          <mat-tab label="Сертификати/Разрешения">
+            <ng-template matTabContent>
+              <ng-container *ngIf="papers; else noData">
+                <app-contractor-certificates83-table
+                  [options]="papers"
+                  [applicant]="applicant"
+                ></app-contractor-certificates83-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_PLANT_PROTECTION_PRODUCT_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Адюванти">
+            <ng-template matTabContent>
+              <ng-container *ngIf="adjuvants; else noData">
+                <app-adjuvant-table
+                  [options]="adjuvants"
+                  [applicant]="applicant"
+                ></app-adjuvant-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_PLANT_PROTECTION_PRODUCT_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Растителнозащитни услуги">
+            <ng-template matTabContent>
+              <ng-container *ngIf="plantProtectionServices; else noData">
+                <app-contractor-plant-protection-services-table
+                  [options]="plantProtectionServices"
+                  [applicant]="applicant"
+                ></app-contractor-plant-protection-services-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_FOOD_CONTROL_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Хранителни добавки">
+            <ng-template matTabContent>
+              <ng-container *ngIf="foodAditives; else noData">
+                <app-contractor-food-additives-table
+                  [options]="foodAditives"
+                  [applicant]="applicant"
+                ></app-contractor-food-additives-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_PLANT_PROTECTION_PRODUCT_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Торове">
+            <ng-template matTabContent>
+              <ng-container *ngIf="fertilizers; else noData">
+                <app-contractor-fertilizers-table
+                  [options]="fertilizers"
+                  [applicant]="applicant"
+                ></app-contractor-fertilizers-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+
+        <ng-container
+          *ngIf="
+            isAdmin ||
+            user.directorateCode ===
+              directorateCode.CLASSIFIER_REGISTER_PHYTOSANITARY_CONTROL_DIRECTORATE_CODE
+          "
+        >
+          <mat-tab label="Семена">
+            <ng-template matTabContent>
+              <ng-container *ngIf="seeds; else noData">
+                <app-contractor-seeds-table
+                  [options]="seeds"
+                  [applicant]="applicant"
+                ></app-contractor-seeds-table>
+              </ng-container>
+            </ng-template>
+          </mat-tab>
+        </ng-container>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+</div>
+
+<ng-template #noData>
+  <div class="flex flex-col gap-2 items-center justify-center p-8">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="w-28 opacity-10"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+      />
+    </svg>
+    Няма данни
+  </div>
+</ng-template>

@@ -1,0 +1,41 @@
+<form [formGroup]="dialogForm" novalidate (ngSubmit)="onSubmit()">
+  <div mat-dialog-title>Edit the message</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" readonly />
+      </mat-form-field>
+    </div>
+    <div formArrayName="messages">
+      <div
+        *ngFor="let item of data.messages; index as i"
+        [formGroupName]="i"
+        class="flex flex-col"
+      >
+        <mat-form-field class="mb-2" appearance="fill">
+          <mat-label
+            >Message in
+            <span class="font-bold uppercase">{{ item.languageId }}</span>
+            language</mat-label
+          >
+          <textarea matInput formControlName="message"></textarea>
+          <mat-error *ngIf="dialogForm.controls['messages']">
+            Message is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      Update
+    </button>
+  </mat-dialog-actions>
+</form>

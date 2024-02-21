@@ -1,0 +1,37 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ContractorPaperController # get contractor paper by id
+GET {{host}}/api/contractor-papers/{contractor-paper-id}
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ContractorPaperController # get all contractor papers
+GET {{host}}/api/contractor-papers/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ContractorPaperController # getByContractorIdAndServiceTypeAndApprovalDocumentStatusIsActive
+GET {{host}}/api/contractor-papers/ab85c2b5-40bf-473e-a911-724f8db771b6/S2701
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+

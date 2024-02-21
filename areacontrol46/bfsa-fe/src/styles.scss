@@ -1,0 +1,68 @@
+@use "@angular/material" as mat;
+
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;700&display=swap");
+
+$typography: mat.define-typography-config(
+  $font-family: "Noto Sans",
+);
+
+$bfsa-fe-primary: mat.define-palette(mat.$light-green-palette, 700);
+$bfsa-fe-accent: mat.define-palette(mat.$light-green-palette);
+$bfsa-fe-warn: mat.define-palette(mat.$red-palette);
+
+$bfsa-fe-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $bfsa-fe-primary,
+      accent: $bfsa-fe-accent,
+      warn: $bfsa-fe-warn,
+    ),
+  )
+);
+
+@include mat.core($typography);
+@include mat.all-component-themes($bfsa-fe-theme);
+
+.dark {
+  $bfsa-fe-primary-dark: mat.define-palette(mat.$light-green-palette, 700);
+  $bfsa-fe-accent-dark: mat.define-palette(mat.$light-green-palette);
+  $bfsa-fe-warn-dark: mat.define-palette(mat.$red-palette);
+
+  $bfsa-fe-theme-dark: mat.define-dark-theme(
+    (
+      color: (
+        primary: $bfsa-fe-primary-dark,
+        accent: $bfsa-fe-accent-dark,
+        warn: $bfsa-fe-warn-dark,
+      ),
+    )
+  );
+  @include mat.all-component-colors($bfsa-fe-theme-dark);
+}
+
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.login-page-bg {
+  background-image: url("https://images.unsplash.com/photo-1516594798947-e65505dbb29d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.custom-dialog-container .mat-dialog-container {
+  max-height: fit-content;
+  width: 90vw;
+  height: fit-content;
+}

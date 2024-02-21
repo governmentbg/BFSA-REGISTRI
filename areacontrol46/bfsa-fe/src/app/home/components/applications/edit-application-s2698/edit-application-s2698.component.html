@@ -1,0 +1,280 @@
+<h1 class="text-center">
+  2698 - Вписване в регистър на адювантите, които се пускат на пазара и се
+  употребяват.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <ng-template matStepLabel>Основни данни</ng-template>
+
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <!-- енд хере -->
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="this.isExpert && isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="downloadOrder()">
+          Печатане на заповед
+        </button>
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Специфична част
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Търговско наименование на адюванта</mat-label>
+              <input
+                matInput
+                placeholder="Търговско наименование на адюванта"
+                formControlName="adjuvantName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Производител на адюванта
+          </div>
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Наименование</mat-label>
+              <input
+                matInput
+                placeholder="Наименование"
+                formControlName="manufacturerName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕИК</mat-label>
+              <input
+                matInput
+                placeholder="ЕИК"
+                formControlName="manufacturerIdentifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Лице, което пуска продукта на пазара:
+          </div>
+
+          <ng-container formGroupName="supplier">
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Име/Наименование</mat-label>
+                <input
+                  matInput
+                  placeholder="Име/Наименование"
+                  formControlName="fullName"
+                  required
+                />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>ЕГН/ЕИК</mat-label>
+                <input
+                  matInput
+                  placeholder="ЕГН/ЕИК"
+                  formControlName="identifier"
+                  required
+                />
+              </mat-form-field>
+            </div>
+
+            <div class="section">
+              <mat-form-field appearance="fill">
+                <mat-label>Пълен адрес</mat-label>
+                <input
+                  matInput
+                  placeholder="Пълен адрес"
+                  formControlName="fullAddress"
+                  required
+                />
+              </mat-form-field>
+            </div>
+          </ng-container>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Действия на адюванта</mat-label>
+              <input
+                matInput
+                placeholder="Действия на адюванта"
+                formControlName="effects"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Адюванта се употребява с ПРЗ с функция </mat-label>
+              <mat-select formControlName="pppFunctionCodes" multiple>
+                <mat-option
+                  *ngFor="let pppFunction of pppFunctionCodes"
+                  [value]="pppFunction.code"
+                  >{{ pppFunction.name }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Вид на продукта (формулация)</mat-label>
+              <input
+                matInput
+                placeholder="Вид на продукта (формулация)"
+                formControlName="adjuvantProductFormulationTypeName"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.ingredients.length > 0"
+          >
+            Състав на адюванта – химическо наименование на отделните компоненти
+            и съдържанието им (г/л или г/кг) в готовия продукт:
+          </div>
+
+          <div formArrayName="ingredients" *ngIf="this.ingredients.length > 0">
+            <div
+              *ngFor="
+                let ingredientForm of ingredients?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>CAS №</mat-label>
+                  <input
+                    matInput
+                    placeholder="Марка и модел"
+                    formControlName="ingredientCasNumber"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Химическо наименование</mat-label>
+                  <input
+                    matInput
+                    placeholder="Марка и модел"
+                    formControlName="ingredientChemName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Съдържание</mat-label>
+                  <input
+                    matInput
+                    placeholder="Съдържание"
+                    formControlName="ingredientContent"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Мерна единица</mat-label>
+                  <input
+                    matInput
+                    placeholder="Регистрационен номер"
+                    formControlName="unitTypeName"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="my-4 uppercase font-bold text-xs opacity-100"
+            *ngIf="this.applications.length > 0"
+          >
+            Начин на приложение (култури и доза на приложение в г/дка или
+            мл/дка):
+          </div>
+
+          <div
+            formArrayName="applications"
+            *ngIf="this.applications.length > 0"
+          >
+            <div
+              *ngFor="
+                let applicationForm of applications?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Култура</mat-label>
+                  <input
+                    matInput
+                    placeholder="Култура"
+                    formControlName="applicationGrainCultureName"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Доза на приложение</mat-label>
+                  <input
+                    matInput
+                    placeholder="Доза на приложение"
+                    formControlName="applicationDose"
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label> Мерна единица </mat-label>
+                  <input
+                    matInput
+                    placeholder="Мерна единица"
+                    formControlName="unitTypeName"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

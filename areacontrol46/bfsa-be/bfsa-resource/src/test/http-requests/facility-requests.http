@@ -1,0 +1,166 @@
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successf ully", function () {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  FacilityController # create facility
+POST {{host}}/api/facilities/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "email" : "stesst-22@mail.bv",
+  "phone1" : "00-88-99-77-22",
+  "phone2" : "00-88-99-33-33",
+  "enabled" : true,
+  "addressId": "4e65e14f-386b-49bb-a638-49c11e48d0c1",
+  "contractorId" : "84eceefc-a57e-4da5-a302-80fb76a8ea29",
+  "description" : "Тест чрез заявка 222",
+  "name" : "Тест 1",
+  "registerCode" : "0002001"
+}
+
+
+###  FacilityController # update facility
+PUT {{host}}/api/facilities/bce57b7e-543a-4b08-9395-c2f9b8187088
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "bce57b7e-543a-4b08-9395-c2f9b8187088",
+  "email" : "stesst-2@mail.bv_updateds",
+  "phone1" : "hello",
+  "phone2" : "00-88-99-33-33_updated",
+  "enabled" : true,
+  "addressId": "ad6ba633-3a61-439f-b614-d8a0107b2417",
+  "contractorId" : "56ae8613-086a-48bf-ab91-ca6956f6046c",
+  "foodBankLicenseId": "b0d923e5-18b3-4ce5-aafa-fb41f3122d32",
+  "description" : "Тест чрез заявка 22_updated",
+  "name" : "Тест",
+  "registerCode" : "0002001"
+}
+
+
+###  FacilityController # findById
+GET {{host}}/api/facilities/1
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # findAll
+GET {{host}}/api/facilities/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # history
+GET {{host}}/api/facilities/1698b743-abe5-44f8-aa4d-e81da3ff9da5/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # change facility Owner
+PUT {{host}}/api/facilities/935f88c3-62b5-4839-b734-7a18537b2138/new-facility-owner/72184187-0044-4315-8716-a3300f7f8824
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # findAllByGroupId
+GET {{host}}/api/facilities/groups/6edfbd80-4fe2-4c45-b308-83b5d5b95a37
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  FacilityController # findAllByParentGroupId
+GET {{host}}/api/facilities/groups-parent/4d415034-fd94-4848-8eb0-b5c07d3e0087
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  FacilityController # find by register-code
+GET {{host}}/api/facilities/register-code/0002001
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # find by register-code-and-branch
+GET {{host}}/api/facilities/register-code-and-branch/0002001
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # findByContractorId
+GET {{host}}/api/facilities/contractor-id/a9738666-fced-4e8e-b697-18c18cc0e17c
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # find by division-code-and-branch
+GET {{host}}/api/facilities/division-code-and-branch/0002001
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # create inspection
+POST {{host}}/api/facilities/a9035c20-29ac-49b4-98da-6a89799212df/inspection
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": null,
+  "description": "Test inspection",
+  "users": [
+    "7531dfee-5613-406c-8857-42a0278806a4",
+    "4032cebe-0ce3-4b1d-a2f1-668442f310f3"
+  ],
+  "facilityId": "a9035c20-29ac-49b4-98da-6a89799212df",
+  "endDate": "2023-09-13",
+  "inspectionType": "EXTRAORDINARY",
+  "status": "PROCESSING",
+  "attachments": [ ],
+  "reasonsCodes": [
+    "02521",
+    "02521"
+  ]
+}
+
+
+###  FacilityController # findAllByContractorIdAndServiceType
+GET {{host}}/api/facilities/contractor-id/e6696e46-db9c-4533-a63c-384ec89a37f8/service-type/S3182
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  FacilityController # update facility status
+PUT {{host}}/api/facilities/1/update-status
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "1",
+  "status": "INSPECTION"
+}

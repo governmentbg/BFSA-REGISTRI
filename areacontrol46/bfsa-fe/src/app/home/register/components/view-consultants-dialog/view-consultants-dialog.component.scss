@@ -1,0 +1,34 @@
+
+  
+  .mat-form-field--inline .mat-form-field:nth-child(n) {
+	margin-right: 10px;
+  }
+  
+  .section {
+	display: flex;
+	flex-wrap: wrap;
+  }
+  
+  .section > * {
+	flex: 1 1 200px;
+  }
+  
+  .btn {
+	margin-right: 5px;
+	max-width: 150px;
+  }
+  
+  .row {
+	display: inline-table;
+  }
+ 
+  .close-btn {
+	margin-right: 10px;
+  }
+  
+  .errors-container {
+	font-weight: bold;
+	color: red;
+	text-align: right;
+  }
+  

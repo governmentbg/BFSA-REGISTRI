@@ -1,0 +1,264 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #drawer
+    class="sidenav"
+    fixedInViewport
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
+    [opened]="(isHandset$ | async) === false"
+  >
+    <div class="p-8 flex flex-col items-center">
+      <img
+        src="assets/images/bfsa-logo.svg"
+        class="mb-3 w-32"
+        alt="Logo BFSA"
+      />
+      <div class="text-center">БАБХ Единен регистър</div>
+    </div>
+
+    <mat-divider></mat-divider>
+    <div class="flex flex-col gap-8 p-4">
+      <div>
+        <div class="font-bold uppercase text-xs opacity-50 mb-4">
+          {{ "nav.category.management" | translate }}
+        </div>
+        <div class="flex flex-col gap-2 pl-3">
+          <a
+            routerLinkActive="active"
+            routerLink="dashboard"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> home </mat-icon>
+            <div>
+              {{ "nav.dashboard" | translate }}
+            </div>
+          </a>
+          <!-- <a -->
+          <!--   routerLinkActive="active" -->
+          <!--   routerLink="task" -->
+          <!--   class="flex items-center gap-2 hover:underline" -->
+          <!-- > -->
+          <!--   <mat-icon class="opacity-50 flex-shrink-0"> task </mat-icon> -->
+          <!--   {{ "nav.tasks" | translate }} -->
+          <!-- </a> -->
+          <a
+            routerLinkActive="active"
+            routerLink="applications"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> feed </mat-icon>
+            {{ "nav.applications" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="inspections"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> schedule </mat-icon>
+            {{ "nav.inspections" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="task"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50"> archive </mat-icon>
+            {{ "nav.archive" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="task"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> help </mat-icon>
+            {{ "nav.references" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="registers"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> task </mat-icon>
+            {{ "nav.registers" | translate }}
+          </a>
+        </div>
+      </div>
+      <!-- <div> -->
+      <!--   <div class="font-bold uppercase text-xs opacity-50 mb-4"> -->
+      <!--     {{ "nav.category.registers" | translate }} -->
+      <!--   </div> -->
+      <!--   <div class="flex flex-col gap-2 pl-3"> -->
+      <!--     <a -->
+      <!--       routerLinkActive="active" -->
+      <!--       routerLink="task" -->
+      <!--       class="flex items-center gap-2 hover:underline" -->
+      <!--     > -->
+      <!--       <mat-icon class="opacity-50 flex-shrink-0"> task </mat-icon> -->
+      <!--       {{ "nav.foodControl" | translate }} -->
+      <!--     </a> -->
+      <!--     <a -->
+      <!--       routerLinkActive="active" -->
+      <!--       routerLink="task" -->
+      <!--       class="flex items-center gap-2 hover:underline" -->
+      <!--     > -->
+      <!--       <mat-icon class="opacity-50 flex-shrink-0"> task </mat-icon> -->
+      <!--       {{ "nav.plantProtectionQualityControl" | translate }} -->
+      <!--     </a> -->
+      <!--     <a -->
+      <!--       routerLinkActive="active" -->
+      <!--       routerLink="task" -->
+      <!--       class="flex items-center gap-2 hover:underline" -->
+      <!--     > -->
+      <!--       <mat-icon class="opacity-50 flex-shrink-0"> task </mat-icon> -->
+      <!--       {{ "nav.plantProtectionProducts" | translate }} -->
+      <!--     </a> -->
+      <!--   </div> -->
+      <!-- </div> -->
+      <div *ngIf="isAdmin">
+        <div class="font-bold uppercase text-xs opacity-50 mb-4">
+          {{ "nav.category.administration" | translate }}
+        </div>
+        <div class="flex flex-col gap-2 pl-3">
+          <a
+            routerLinkActive="active"
+            routerLink="nomenclature"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> list_alt </mat-icon>
+            <div>
+              {{ "nav.nomenclatures" | translate }}
+            </div>
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="classifier"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> account_tree </mat-icon>
+            <div>
+              {{ "nav.classifiers" | translate }}
+            </div>
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="settlement"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> map </mat-icon>
+            <div>
+              {{ "nav.settlements" | translate }}
+            </div>
+          </a>
+          <a
+            class="flex items-center gap-2 hover:underline"
+            routerLinkActive="active"
+            routerLink="activity-group"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> inventory </mat-icon>
+            {{ "nav.activityGroups" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="message-resource"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50"> chat </mat-icon>
+            {{ "nav.messageResources" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="language"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> language </mat-icon>
+            {{ "nav.languages" | translate }}
+          </a>
+          <a
+            routerLinkActive="active"
+            routerLink="user"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0">
+              verified_user
+            </mat-icon>
+            {{ "nav.users" | translate }}
+          </a>
+          <!-- <a -->
+          <!--   routerLinkActive="active" -->
+          <!--   routerLink="applicant" -->
+          <!--   class="flex items-center gap-2 hover:underline" -->
+          <!-- > -->
+          <!--   <mat-icon class="opacity-50 flex-shrink-0"> group </mat-icon> -->
+          <!--   {{ "nav.contractors" | translate }} -->
+          <!-- </a> -->
+          <a
+            routerLinkActive="active"
+            routerLink="branch"
+            class="flex items-center gap-2 hover:underline"
+          >
+            <mat-icon class="opacity-50 flex-shrink-0"> content_copy </mat-icon>
+            {{ "nav.branches" | translate }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button
+        *ngIf="drawer.opened"
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+      >
+        <mat-icon aria-label="Side nav toggle icon">
+          keyboard_double_arrow_left
+        </mat-icon>
+      </button>
+
+      <button
+        *ngIf="!drawer.opened"
+        type="button"
+        aria-label="Toggle sidenav"
+        mat-icon-button
+        (click)="drawer.toggle()"
+      >
+        <mat-icon aria-label="Side nav toggle icon">
+          keyboard_double_arrow_right
+        </mat-icon>
+      </button>
+
+      <span class="flex-auto"></span>
+
+      <div *ngIf="userToken" class="mr-3 font-normal">
+        {{ userToken?.fullName }}
+      </div>
+
+      <button
+        mat-icon-button
+        [matMenuTriggerFor]="menu"
+        aria-label="Toggle menu"
+      >
+        <img
+          src="https://randomuser.me/api/portraits/men/1.jpg"
+          class="mb-2 rounded-full"
+          alt="User"
+        />
+      </button>
+      <mat-menu #menu="matMenu" xPosition="before">
+        <button mat-menu-item routerLink="profile">
+          <mat-icon>person</mat-icon>
+          {{ "profile" | translate }}
+        </button>
+
+        <button mat-menu-item (click)="logout()">
+          <mat-icon>logout</mat-icon>
+          {{ "signOut" | translate }}
+        </button>
+      </mat-menu>
+    </mat-toolbar>
+    <!-- Add Content Here -->
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

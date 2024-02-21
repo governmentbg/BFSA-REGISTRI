@@ -1,0 +1,268 @@
+<h1 class="text-center">
+  3201 - Вписване в Официален регистър на професионалните оператори
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки свързвани при създаване на заявлението!
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm" *ngIf="this.applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="
+          this.isExpert &&
+          isApplicationStatusPaymentConfirmedEnteredOrProcessing
+        "
+      >
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни за местата на провеждане на дейност на територията на друга
+            ОДБХ (описание на обектите, данни за контакт, вкл. адрес)
+          </div>
+
+          <div formArrayName="activityAddresses">
+            <ng-container
+              *ngFor="
+                let activityAddressForm of activityAddresses.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Описание </mat-label>
+                  <input
+                    matInput
+                    placeholder="Описание "
+                    formControlName="description"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълен адрес</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълен адрес"
+                    formControlName="fullAddress"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Пощенски код</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пощенски код "
+                    formControlName="postCode"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field
+                  appearance="fill"
+                  *ngIf="activityAddressForm.get('countryName')?.value"
+                >
+                  <mat-label>Държава</mat-label>
+                  <input
+                    matInput
+                    placeholder="Държава"
+                    formControlName="countryName"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+
+          <mat-form-field appearance="fill">
+            <mat-label>Вид на дейността</mat-label>
+            <input
+              matInput
+              placeholder="Вид на дейността"
+              formControlName="activityTypes"
+              required
+            />
+          </mat-form-field>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Описание по категории и групи култури
+          </div>
+
+          <div formArrayName="plantProducts" *ngIf="plantProducts.length > 0">
+            <ng-container
+              *ngFor="
+                let plantProductForm of plantProducts.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>Oписание по категории и групи култури</mat-label>
+                  <input
+                    matInput
+                    placeholder="Oписание по категории и групи култури "
+                    formControlName="cultureGroupName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label
+                    >Наименование на растенията, растителните продукти и другите
+                    обекти, предмет на дейност
+                  </mat-label>
+                  <input
+                    matInput
+                    placeholder="Наименование на растенията, растителните продукти и другите обекти, предмет на дейност "
+                    formControlName="productName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Произход</mat-label>
+                  <input
+                    matInput
+                    placeholder="Произход"
+                    formControlName="originName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>№ на растителен паспорт</mat-label>
+                  <input
+                    matInput
+                    placeholder="№ на растителен паспорт "
+                    formControlName="productPassport"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+
+          <mat-checkbox formControlName="plantPassportIssue"
+            >Заяваване за издаване на растителни паспорти
+          </mat-checkbox>
+
+          <mat-checkbox formControlName="markingIssue"
+            >Заяваване за Разрешение за поставяне на маркировка върху дървен
+            опаковъчен материал, дървесина или други обекти и за поправка на
+            дървен опаковъчен материал
+          </mat-checkbox>
+
+          <!-- Към таблицата  -->
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Данни на лицата за контакт
+          </div>
+
+          <div formArrayName="contactPersons" *ngIf="contactPersons.length > 0">
+            <ng-container
+              *ngFor="
+                let contactPersonForm of contactPersons.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i" class="section">
+                <mat-form-field appearance="fill">
+                  <mat-label>ЕГН/ЕИК</mat-label>
+                  <input
+                    matInput
+                    placeholder=" "
+                    formControlName="identifier"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълно име </mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълно име"
+                    formControlName="fullName"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълен адрес</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълен адрес"
+                    formControlName="fullAddress"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Електронна поща</mat-label>
+                  <input
+                    matInput
+                    placeholder="Електронна поща"
+                    formControlName="email"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Телефон</mat-label>
+                  <input
+                    matInput
+                    placeholder="Телефон"
+                    formControlName="phone"
+                    required
+                  />
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                  <mat-label>Тип лице за контакт</mat-label>
+                  <input
+                    matInput
+                    placeholder="Тип лице за контакт"
+                    formControlName="contactPersonTypeName"
+                    required
+                  />
+                </mat-form-field>
+              </div>
+            </ng-container>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

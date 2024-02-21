@@ -1,0 +1,166 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  ApplicationS3180Controller # register
+POST {{host}}/api/s3180-applications/register
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "requestorIdentifier": "322332323",
+  "requestorFullName": "RequestorFullName0",
+  "requestorPhone": "123456789",
+  "requestorEmail": "requ12es2323tor443230@mail.com",
+  "requestorPowerAttorneyNumber": "123132132",
+  "requestorPowerAttorneyNotary": "13132123",
+  "requestorPowerAttorneyDate": "2023-08-09",
+  "requestorPowerAttorneyUntilDate": "2023-08-09",
+  "requestorAuthorTypeCode": "01301",
+  "applicantIdentifier": "8178318972",
+  "applicantFullName": "Applicant3FullName5",
+  "applicantEmail": "a231xcv4512licant35@mail.com",
+  "applicantPhone": "2134324",
+  "applicantLegalForm": "string",
+  "applicantHeadOfficeSettlementCode": "02676",
+  "applicantHeadOfficeAddress": {
+    "address": "Head office address",
+    "postCode": "1000",
+    "addressTypeCode": "00201",
+    "settlementCode": "02676"
+  },
+  "applicantCorrespondenceSettlementCode": "02676",
+  "applicantCorrespondenceAddress": {
+    "address": "Correspondence addredss",
+    "postCode": "1000",
+    "addressTypeCode": "00203",
+    "settlementCode": "02676"
+  },
+  "branchSequenceNumber": "01",
+  "recordId": "string",
+  "recordIdentifier": "string",
+  "serviceType": "S3180",
+  "regNumber": "string",
+  "regDate": "2023-08-09",
+  "price": 0,
+  "recordStatus": "ENTERED",
+  "approvalDocumentStatus": "ENTERED",
+  "contractorType" : "PHYSICAL",
+  "facility" : {
+    "name": "Facility Nameddd",
+    "settlementCode": "02676",
+    "address": "facility address",
+    "postcode": "1000",
+    "phone1": "1122334455",
+    "phone2": "1222334455",
+    "email": "string@mdddail.zxc",
+    "description": "Facility description",
+    "activityTypeCode": "01802",
+    "facilityTypeCode": "02002",
+    "waterSupplyTypeCode": "02401",
+    "activityDescription": "string",
+    "disposalWasteWater": "string",
+    "permission177": "1234",
+    "enabled": true,
+    "branchId": "3cb29b3f-8836-4b71-bfbf-6adfa52f5510",
+    "facilityStatus": "INACTIVE",
+    "sectionGroupId": null,
+    "activityGroupId": null,
+    "foodTypeDescription": "Манджоре",
+    "relatedActivityCategories": [
+    ],
+    "associatedActivityCategories": [
+    ],
+    "animalSpecies": [
+    ],
+    "remarks": [
+    ],
+    "pictograms": [
+  ],
+    "foodTypes": [
+      "0001064"
+  ],
+    "facilityCapacities": [
+      {
+        "product": "чаши",
+        "quantity": 2,
+        "materialCode": "02302",
+        "unitCode": "01905",
+        "rawMilkTypeCode" : "02901",
+        "fridgeCapacity" : "22.5"
+      }
+    ],
+    "measuringUtilCode" : "01905",
+    "periodCode" : "01906",
+    "capacity" : "2000.50",
+    "typeWarehouseCode" :"01102"
+  },
+  "vehicles": [
+    {
+      "registrationPlate": "E3157KX",
+      "name": "BMW",
+      "vehicleTypeCode": "01701",
+      "vehicleOwnershipTypeCode": "01601"
+    }
+  ],
+  "vehiclePaperRegNumbers": [
+  ],
+  "commencementActivityDate": "2023-08-17T08:54:09.032Z",
+  "address": {
+    "address": "strin2222222g",
+    "postCode": "string22",
+    "addressLat": "strin222g",
+    "addressTypeCode": "string",
+    "enabled": true,
+    "settlementCode": "02676",
+    "mail": "string",
+    "url": "string",
+    "phone": "string"
+  }
+}
+
+
+###  ApplicationS3180Controller # getApplicationS3180 by record id
+GET {{host}}/api/s3180-applications/2502
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+
+###  ApplicationS3180Controller # approveApplicationS3180
+PUT {{host}}/api/s3180-applications/2302/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS3180Controller # refuseApplicationS3180
+PUT {{host}}/api/s3180-applications/{record-id}/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS3180Controller # forCorrectionApplicationS3180
+PUT {{host}}/api/s3180-applications/{record-id}/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

@@ -1,0 +1,96 @@
+server:
+  port: ${SERVER_PORT:8080}
+  compression.enabled: true
+  servlet.context-path: /bfsa-be/api
+
+management.endpoints.web.exposure.include: "*"
+
+logging:
+  level:
+    org.springframework:
+      boot.autoconfigure: INFO
+      security: WARN
+      web: INFO
+    bg.bulsi.bfsa: INFO
+
+spring:
+  jackson.default-property-inclusion: non_null
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 20MB
+      max-request-size: 20MB
+  mail:
+    host: mail.bul-si.bg
+    port: 465
+    protocol: smtp
+    username: crc-test@bul-si.bg
+    password: 1y2t3r4e5w6q
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.ssl.enable: true
+      mail.smtp.ssl.trust: '*'
+      mail.smtp.sendpartial: true
+      mail.smtp.starttls.required: true
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.debug: true
+  liquibase:
+    # enable it at the second stage of the project
+    # when the schema and tables plus initial data are almost clear
+    # to enable you should disable defer-datasource-initialization and set ddl-auto: validate
+    enabled: false
+    change-log: classpath:/db/db.changelog-master.xml
+
+support.email: crc-test@bul-si.bg
+
+jwt:
+  secret: secretPFwciNdvrrPc5E3kTTJaqg4iCiQ
+  # Access token lifespan milliseconds (3600000 = 60 min)
+  jwtExp: 3600000
+  # Refresh token lifespan milliseconds (86400000 = 24 hours)
+  refreshExp: 86400000
+  # FE verify new user registration URL
+  registerUserVerifyTokenUrl: 'http://localhost:4200/auth/user-registration?token='
+  # FE verify forgot password URL
+  forgotPasswordVerifyTokenUrl: 'http://localhost:4200/auth/forgot-password?token='
+
+bfsa:
+  bootstrap:
+    message-resource-library: message-resource-library.tsv
+    settlements-library: settlements-library.tsv
+    branches-library: branches-library.tsv
+    countries-library: countries-library.tsv
+    nomenclatures-library: nomenclatures-library.tsv
+    activity-groups-library: activity-groups-library.tsv
+    classifiers-library: classifiers-library.tsv
+  file-store:
+    base-path: /home/bfsa/storage
+    single-backup: true
+  e-payment:
+    base-url: https://integr-test.egov.bg
+    token-port: 5050
+    token-endpoint: /token
+    grant-type: client_credentials
+    client-id: test_BABH_client_BULSI
+    scope: /ep*
+    register-scope: /ep
+    register-connector: /connector
+    register-version: /v1
+    register-endpoint: /registerPayment
+    register-port: 5051
+    keystore: bfsa-core/src/main/resources/daeu/daeu.jks
+    keystore-password: 123456
+    truststore: bfsa-core/src/main/resources/daeu/daeu.jks
+    truststore-password: 123456
+    bank-account:
+      iban: BG45UBBS88883127198301
+      bank: "ОББ клон МИЛЕНИУМ"
+      bank-bic: UBBSBGSF
+      name: "Е-Форми – Българска агенция по безопасност на храните"
+      bulstat: 176040023
+      currency: BGN
+  record-keeping-system:
+    base-url: "https://demo.indexbg.bg/BabhWS/api/deloWeb"
+  app-sync:
+    find-all-new-apps-fixed-delay: 60000
+    mark-all-finished-fixed-delay: 300000

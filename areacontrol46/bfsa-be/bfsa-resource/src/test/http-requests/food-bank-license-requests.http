@@ -1,0 +1,77 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  FoodBankLicense # findAll
+GET {{host}}/api/food-bank-licenses/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+
+###  FoodBankLicense # findById
+GET {{host}}/api/food-bank-licenses/84ec2bd0-469d-4024-8c73-c9a32acb9d67
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+
+###  FoodBankLicense # create
+POST {{host}}/api/food-bank-licenses/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name": "Test 2",
+  "description": "Test 2 from http requests",
+  "enabled": true,
+  "contractorId": "72184187-0044-4315-8716-a3300f7f8824",
+  "entryPermitDate" : "2023-02-25",
+  "decisionNumber" : "001",
+  "decisionDate" : "2023-03-25",
+  "changePermitNumber" : "001-1",
+  "changePermitDate" : "2023-02-25",
+  "validDate" : "2024-02-25",
+  "facilities": [
+    {
+     "address" : {
+       "id": "e0ab04df-d882-4eeb-b443-64324caac235",
+       "address": "Бело поле, ул. Струма 38",
+       "addressLat": "Belo pole, Struma 38 str.",
+       "enabled": true
+     }
+    }
+  ]
+}
+
+
+###  FoodBankLicense # update
+PUT {{host}}/api/food-bank-licenses/84ec2bd0-469d-4024-8c73-c9a32acb9d67
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "id" : "84ec2bd0-469d-4024-8c73-c9a32acb9d67",
+  "description": "Nice and tasty watermelon."
+}
+
+
+###  FoodBankLicense # history
+GET {{host}}/api/food-bank-licenses/84ec2bd0-469d-4024-8c73-c9a32acb9d67/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: en

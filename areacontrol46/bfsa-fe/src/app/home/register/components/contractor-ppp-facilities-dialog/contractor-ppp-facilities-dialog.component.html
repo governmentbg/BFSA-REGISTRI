@@ -1,0 +1,64 @@
+<form
+  *ngIf="dialogForm"
+  [formGroup]="dialogForm"
+  novalidate
+  (ngSubmit)="onSubmit()"
+>
+  <div mat-dialog-title>Редактиране</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Нормативен акт № </mat-label>
+        <input matInput formControlName="legalActNumber" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Вид нормативен акт </mat-label>
+        <input matInput formControlName="legalActType" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Вид на обекта </mat-label>
+        <input matInput formControlName="objectType" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Адрес на обекта </mat-label>
+        <input matInput formControlName="address" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Лице, отговорно за дейността в обекта </mat-label>
+        <input matInput formControlName="person" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> ЕГН/ЛНЧ </mat-label>
+        <input matInput formControlName="identifier" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Статус </mat-label>
+        <mat-select formControlName="status">
+          <mat-option
+            *ngFor="let status of facilityStatusObj | keyvalue"
+            [value]="status.value"
+          >
+            {{ status.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Затвори</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      Обнови
+    </button>
+  </mat-dialog-actions>
+</form>

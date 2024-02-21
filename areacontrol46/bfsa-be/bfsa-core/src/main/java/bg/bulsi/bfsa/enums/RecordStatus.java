@@ -1,0 +1,14 @@
+package bg.bulsi.bfsa.enums;
+
+public enum RecordStatus {
+    ENTERED,
+    PAYMENT_CONFIRMATION,
+    PAYMENT_CONFIRMED,
+    PAYMENT_REJECTED,
+    PROCESSING,
+    FOR_CORRECTION,
+    INSPECTION,
+    INSPECTION_COMPLETED,
+    FINAL_APPROVED,
+    FINAL_REJECTED
+}

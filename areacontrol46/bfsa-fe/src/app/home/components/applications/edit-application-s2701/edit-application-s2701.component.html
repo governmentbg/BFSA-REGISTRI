@@ -1,0 +1,138 @@
+<h1 class="text-center">
+  2701 - Издаване на сертификат за работа с продукти за растителна защита от
+  професионална категория на употреба.
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step>
+    <ng-template matStepLabel>Специфични данни</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="this.isExpert && isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <!-- <button mat-flat-button (click)="this.updateApplication()">
+          Запази
+        </button> -->
+
+        <!-- <button
+          [disabled]="!applicationForm.valid"
+          mat-flat-button
+          (click)="updateApplication()"
+        >
+          Запази
+        </button> -->
+
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            No на диплома/документ за обучение
+          </div>
+
+          <mat-radio-group
+            aria-label="Тип на документ"
+            formControlName="educationalDocumentType"
+            class="radio-box"
+          >
+            <mat-radio-button class="radio-btn" value="DIPLOMA"
+              >Диплома за висше образование в областта на аграрните науки с
+              професионално направление "Растителна защита" или
+              "Растениевъдство"</mat-radio-button
+            >
+            <mat-radio-button class="radio-btn" value="TRAINING"
+              >Документ за преминато обучение в БАБХ, висше училище или
+              институция в системата на професионалното образование по програма,
+              одобрена от изпълнителния директор на БАБХ</mat-radio-button
+            >
+          </mat-radio-group>
+
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>No на документ</mat-label>
+              <input
+                matInput
+                placeholder="No на документ"
+                formControlName="educationalDocumentNumber"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label>Учебно заведение</mat-label>
+              <input
+                matInput
+                placeholder="Учебно заведение"
+                formControlName="educationalInstitution"
+                required
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="section">
+            <mat-form-field appearance="fill" class="date-holder">
+              <mat-label>Дата</mat-label>
+              <input matInput formControlName="educationalDocumentDate" />
+            </mat-form-field>
+          </div>
+
+          <!--
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>No на документ за обучение</mat-label>
+              <input
+                matInput
+                placeholder="diploma document number"
+                formControlName="educationalEstablishmentDiplomaNumber"
+                required
+              />
+            </mat-form-field>
+            <mat-form-field appearance="fill">
+              <mat-label> Обучаваща институция </mat-label>
+              <input
+                matInput
+                placeholder="institution name"
+                formControlName="educationalEstablishment"
+                required
+              />
+            </mat-form-field>
+          </div> -->
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <div class="flex gap-2">
+        <button mat-flat-button color="warn" (click)="closeDialog()">
+          Затвори
+        </button>
+        <!-- <button mat-flat-button color="primary" matStepperNext>Продължи</button> -->
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>

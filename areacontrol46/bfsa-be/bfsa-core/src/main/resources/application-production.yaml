@@ -1,0 +1,12 @@
+app:
+  api:
+    swagger:
+      enable: false
+
+logging.level:
+  root: INFO
+  org.springframework:
+    web: INFO
+    security: INFO
+  org.hibernate: ERROR
+  bg.bulsi.bfsa: DEBUG

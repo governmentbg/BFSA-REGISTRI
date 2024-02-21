@@ -1,0 +1,41 @@
+<div class="min-width">
+    <div class="row">
+      <div class="col-sm-12">
+        <h3>Add/edit nomenclature</h3>
+      </div>
+    </div>
+    <div class="row m-t-20">
+      <div class="col-sm-12">
+        <mat-dialog-content class="mat-typography">
+          <form [formGroup]="nomenclatureForm">
+            <div class="row m-t-10">
+              <div class="col-sm-6">
+                <mat-form-field appearance="outline" class="form-field" >
+                  <mat-label>Name</mat-label>
+                  <input
+                  type="text"
+                  matInput formControlName="name"
+                />
+                </mat-form-field>
+              </div>
+              <div class="col-sm-6">
+                <mat-form-field appearance="outline" class="form-field">
+                  <mat-label>Description</mat-label>
+                 <input  matInput type="text"  formControlName="description"> 
+                </mat-form-field>
+              </div>
+            </div>
+          </form>
+        </mat-dialog-content>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div mat-dialog-actions align="end" class="search-actions">
+          <button mat-raised-button color="warn" (click)="closeDialog()">Close</button>
+          <button mat-raised-button color="primary" (click)="saveNomenclatureCategory()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  

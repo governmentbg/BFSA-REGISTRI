@@ -1,0 +1,187 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  NomenclatureController # findByCode
+GET {{host}}/api/noms/02904
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+###  NomenclatureController # findByExternalCode
+GET {{host}}/api/noms/1006-020004/external-code
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+###  NomenclatureController # findAllByParentCodeVO
+GET {{host}}/api/noms/01200/sub-nomenclatures
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  NomenclatureController # findAllParentsNomenclatureVO
+GET {{host}}/api/noms
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  NomenclatureController # findAllParents
+GET {{host}}/api/noms/
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  NomenclatureController # createNext
+POST {{host}}/api/noms/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name": "00100-en",
+  "description": "The code should be 00100 if nomenclature table is empty"
+}
+
+###  NomenclatureController # createNext
+POST {{host}}/api/noms/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "name": "00100-bg",
+  "description": "Кодът би следвало да е 00100, ако таблицата с номенклатуре е празна"
+}
+
+###  NomenclatureController # addNext
+POST {{host}}/api/noms/00100/add-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "code": "00100",
+  "name": "00100-bg",
+  "description": "Добавя номенклатура с код 00100 за език bg"
+}
+
+###  NomenclatureController # createNext
+POST {{host}}/api/noms/00100/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name": "00101-en",
+  "description": "The code should be 00101"
+}
+
+###  NomenclatureController # addNext
+POST {{host}}/api/noms/00101/add-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "code": "00101",
+  "name": "00101-bg",
+  "description": "Добавя номенклатура с код 00101 за език bg"
+}
+
+###  NomenclatureController # createNext
+POST {{host}}/api/noms/00100/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "name": "00102",
+  "description": "Кода би следвало да е 00102"
+}
+
+###  NomenclatureController # createNext
+POST {{host}}/api/noms/create-next
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "name": "Зодия",
+  "description": "Всички зодии по дати",
+  "subNomenclatures": [
+    {
+      "name": "Овен",
+      "description": "са хората родени между дати 21 март и 20 Април"
+    },
+    {
+      "name": "Телец",
+      "description": "са хората родени между дати 21 април и 20 май"
+    },
+    {
+      "name": "Близнаци",
+      "description": "са хората родени между дати 21 май и 20 юни"
+    },
+    {
+      "name": "Рак",
+      "description": "са хората родени между дати 21 юни и 21 юли"
+    },
+    {
+      "name": "Лъв",
+      "description": "са хората родени между дати 22 юли и 22 август"
+    },
+    {
+      "name": "Дева",
+      "description": "са хората родени между дати 23 август и 22 септември"
+    },
+    {
+      "name": "Везни",
+      "description": "са хората родени между дати 23 септември и 22 октомври"
+    },
+    {
+      "name": "Скорпион",
+      "description": "са хората родени между дати 23 октомври и 21 ноември"
+    },
+    {
+      "name": "Стрелец",
+      "description": "са хората родени между дати 22 ноември и 21 декември"
+    },
+    {
+      "name": "Козирог",
+      "description": "са хората родени между дати 22 декември и 19 януари"
+    },
+    {
+      "name": "Водолей",
+      "description": "са хората родени между дати 20 януари и 18 февруари"
+    },
+    {
+      "name": "Риби",
+      "description": "са хората родени между дати 19 февруари и 20 март"
+    }
+  ]
+}
+
+###  NomenclatureController # update
+PUT {{host}}/api/noms/00100
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: en
+
+{
+  "name": "XXX ZZZ",
+  "description": "XXX XXX ZZZ"
+}

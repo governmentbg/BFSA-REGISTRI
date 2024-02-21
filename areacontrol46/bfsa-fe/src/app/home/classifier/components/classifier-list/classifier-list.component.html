@@ -1,0 +1,24 @@
+<div *ngIf="!classifiers" class="animate-pulse">Loading classifiers...</div>
+
+<div *ngIf="classifiers">
+  <div class="">
+    <div class="p-2">Types:</div>
+    <mat-card>
+      <mat-card-content>
+        <div *ngFor="let item of classifiers" class="truncate">
+          <a
+            [routerLink]="['/app/classifier', item.code]"
+            class="hover:underline text-base"
+            [title]="item.name"
+          >
+            {{ item.name }}
+          </a>
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button (click)="addClassifier()" mat-button>Add</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,174 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_food&password=expert_food
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  RecordController # register-application-S3180
+POST {{host}}/api/records/register-application-S3180
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "recordIdentifier": "1x1x1x",
+  "serviceType": "S3180",
+  "regNumber": "2222",
+  "regDate": "2023-05-12",
+  "applicantIdentifier": "2x2x2x2",
+  "applicantFullName": "Vladimir Angelov",
+  "applicantEmail": "v.angelov@bul-si.bg",
+  "applicantAuthorTypeCode": "01301",
+  "contractorType": "PHYSICAL",
+  "contractorIdentifier": "9999",
+  "contractorFullName": "Vladimir Angelov",
+  "contractorEmail": "v.angelov@bul-si.bg",
+  "contractorSettlementCode": "04279",
+  "contractorAddress": "с. Бело поле, ул. 'Струма' №38, общ. Благоевград",
+  "contractorPostCode": "04279",
+  "contractorPhoneNumber": "0888-88-88-88",
+  "facilitySettlementCode": "04279",
+  "facilityAddress": "с. Бело поле, ул. 'Струма' №38, общ. Благоевград",
+  "facilityPostCode": "2709",
+  "facilityPhoneNumber": "0889-88-88-88",
+  "facilityBranchSequenceNumber": "02",
+  "facilityDescription": "Тестов",
+  "facilityStatus": "ACTIVE",
+  "relatedActivityCategories": [],
+  "associatedActivityCategories": [],
+  "animalSpecies": [],
+  "remarks": [],
+  "pictograms": [],
+  "foodTypes": []
+}
+
+
+###  RecordController # getApplicationFC1
+GET {{host}}/api/records/88d3f685-b9b9-4339-9c6e-dd0afa1ccace/application-fc1
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+####  RecordController # create
+#POST {{host}}/api/records/create
+#Content-Type: application/json
+#Authorization: Bearer {{access_token}}
+#Accept-Language: bg
+#
+#{
+#  "registrationPlate": "Е 00 33 ВС",
+#  "entryNumber": "БЛ-ЗА-КХ-1716",
+#  "entryDate": "2021-09-03",
+#  "load": "1030",
+#  "name": "МЕРЦЕДЕС СПРИНТЕР",
+#  "description": "12100054",
+#  "ownerId": "d1fa671c-4ce2-4f64-828b-e05141bff8ea",
+#  "branchId": "d7f015a5-604a-4dbf-af38-aef0e865027e",
+#  "enabled": true
+#}
+#
+#> {%
+#    client.test("Request executed successfully", function() {
+#        if (response.status === 200) {
+#            client.global.set("object_id", response.body["id"])
+#        }
+#        client.assert(response.status === 200, "Access is Denied");
+#    });
+#%}
+
+
+
+###  RecordController # update
+PUT {{host}}/api/records/{{object_id}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "{{object_id}}",
+  "registrationPlate": "Е 00 33 ВС_Updated-2",
+  "entryNumber": "БЛ-ЗА-КХ-1716_Updated-2",
+  "entryDate": "2022-08-05",
+  "load": "1050",
+  "name": "МЕРЦЕДЕС СПРИНТЕР_Updated-2",
+  "description": "12100054_Updated-2",
+  "ownerId": "dcf0361e-240e-4091-ac10-65dbd1507556",
+  "foodTypeId": "7cfd3e93-f08a-4d73-a6f9-690b7c130711",
+  "branchId": "4766f7c4-632a-45b9-895b-a747686ebfcd",
+  "enabled": true
+}
+
+
+###  RecordController # findAllApplicationFC1VO
+GET {{host}}/api/records
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  RecordController # findAllByBranch
+GET {{host}}/api/records/branch/{branchId}
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  RecordController # findAll
+GET {{host}}/api/records/802
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  RecordController # findById
+GET {{host}}/api/records/branch/48306e6b-4fa4-4eda-9c08-09fd4434bdd3
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  RecordController # search
+GET {{host}}/api/records?q=sdcsdcsd&recordStatus=FINAL_D&date=2023-06-12
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  RecordController # history
+GET {{host}}/api/records/dce7a979-1524-4489-b264-7e05de9a0567/history
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  RecordController # sendForPayment
+PUT {{host}}/api/records/bffaaab6-c41f-4292-8967-a43615d3d036/send-for-payment
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  RecordController # confirmPayment
+PUT {{host}}/api/records/ae412fa2-775a-4cae-81bc-4f8c3a1f4709/confirm-payment
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  RecordController # completeInspection
+PUT {{host}}/api/records/7820de95-87b1-4de7-8be8-f25d30395389/complete-inspection
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "recordId": "7820de95-87b1-4de7-8be8-f25d30395389",
+  "id": "1fef8bb0-b00c-4595-b9cf-f7245249475d",
+  "description": "Това го промених 6x1 пъти",
+  "endDate": "2025-08-05"
+}

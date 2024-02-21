@@ -1,0 +1,64 @@
+<form
+  *ngIf="dialogForm"
+  [formGroup]="dialogForm"
+  novalidate
+  (ngSubmit)="onSubmit()"
+>
+  <div mat-dialog-title>Редактиране</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Регистрационен номер </mat-label>
+        <input matInput formControlName="regNumber" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Наименование </mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Тип </mat-label>
+        <input matInput formControlName="type" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Състав </mat-label>
+        <input matInput formControlName="ingredients" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Предназначение </mat-label>
+        <input matInput formControlName="purpose" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Дата на пускане на пазара </mat-label>
+        <input matInput formControlName="releaseDate" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Статус </mat-label>
+        <mat-select formControlName="status">
+          <mat-option
+            *ngFor="let status of data.facilityStatusList | keyvalue"
+            [value]="status.key"
+          >
+            {{ status.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Затвори</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      Обнови
+    </button>
+  </mat-dialog-actions>
+</form>

@@ -1,0 +1,60 @@
+<p>adjuvant-dialog works!</p>
+<form
+  *ngIf="dialogForm"
+  [formGroup]="dialogForm"
+  novalidate
+  (ngSubmit)="onSubmit()"
+>
+  <div mat-dialog-title>Редактиране</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Наименование</mat-label>
+        <input matInput formControlName="adjuvantName" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Формулация </mat-label>
+        <input matInput formControlName="adjuvantProductFormulationTypeName" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label>Производител</mat-label>
+        <input matInput formControlName="manufacturerName" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Пуснат на пазара от</mat-label>
+        <input matInput formControlName="supplierFullName" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Заповед No</mat-label>
+        <input matInput formControlName="orderNumber" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Статус </mat-label>
+        <mat-select formControlName="applicationStatus">
+          <mat-option
+            *ngFor="let status of applicationStatuses"
+            [value]="status[0]"
+          >
+            {{ status[1] }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Затвори</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      Обнови
+    </button>
+  </mat-dialog-actions>
+</form>

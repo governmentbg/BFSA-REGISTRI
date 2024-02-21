@@ -1,0 +1,7 @@
+<h3>Грешки към дата на регистрация на заявлението:</h3>
+
+<div *ngFor="let error of this.data; let i = index">
+  <p style="font-weight: bold">{{ i + 1 + ". " + error }}</p>
+</div>
+
+<button mat-raised-button color="primary" (click)="discard()">Затвори</button>

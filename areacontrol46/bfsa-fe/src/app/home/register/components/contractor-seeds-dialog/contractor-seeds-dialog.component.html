@@ -1,0 +1,59 @@
+<form
+  *ngIf="dialogForm"
+  [formGroup]="dialogForm"
+  novalidate
+  (ngSubmit)="onSubmit()"
+>
+  <div mat-dialog-title>Редактиране</div>
+  <mat-dialog-content>
+    <div class="flex flex-col">
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Заявление No </mat-label>
+        <input matInput formControlName="regNumber" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Дата </mat-label>
+        <input matInput formControlName="regDate" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Вид на семената </mat-label>
+        <input matInput formControlName="seedName" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Количество </mat-label>
+        <input matInput formControlName="seedQuantity" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Третирани с ПРЗ </mat-label>
+        <input matInput formControlName="seedTradeName" />
+      </mat-form-field>
+
+      <mat-form-field class="mb-2" appearance="fill">
+        <mat-label> Статус </mat-label>
+        <mat-select formControlName="applicationStatus">
+          <mat-option
+            *ngFor="let status of applicationStatuses | keyvalue"
+            [value]="status.key"
+          >
+            {{ status.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Затвори</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      [disabled]="dialogForm.invalid || dialogForm.pristine"
+    >
+      Обнови
+    </button>
+  </mat-dialog-actions>
+</form>

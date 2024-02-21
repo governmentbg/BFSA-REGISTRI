@@ -1,0 +1,54 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+###  LanguageController # findById
+GET {{host}}/api/langs/bg
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  LanguageController # findAll
+GET {{host}}/api/langs/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  LanguageController # create
+POST {{host}}/api/langs/
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "languageId": "fr",
+  "name": "French",
+  "locale": "fr_FR.UTF-8",
+  "description": "French",
+  "main": false,
+  "enabled": true
+}
+
+###  LanguageController # update
+PUT {{host}}/api/langs/bg
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language:bg
+
+{
+  "languageId": "bg",
+  "name": "Bulgarian-test",
+  "locale": "bg_BG.UTF-8",
+  "description": "Bulgarian-test",
+  "main": true,
+  "enabled": true
+}

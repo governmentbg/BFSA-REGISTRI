@@ -1,0 +1,168 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=expert_ppp&password=expert_ppp
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  ApplicationS2702Controller # register
+POST {{host}}/api/s2702-applications/register
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "branchSequenceNumber": "01",
+  "contractorType": "LEGAL",
+  "requestorIdentifier": "1111111111",
+  "requestorFullName": "RequestorFullName",
+  "requestorPhone": "12345678",
+  "requestorEmail": "requestor@mail.com",
+  "requestorAuthorTypeCode": "01301",
+  "requestorCorrespondenceAddress": {
+    "address": "Requestor correspondence office address",
+    "postCode": "1000",
+    "addressTypeCode": "00201",
+    "settlementCode": "02676"
+  },
+  "applicantIdentifier": "222222222",
+  "applicantFullName": "ApplicantFullName",
+  "applicantEmail": "applicant@mail.com",
+  "applicantPhone": "98765432",
+  "applicantCorrespondenceAddress": {
+    "address": "Applicant correspondence office address",
+    "postCode": "1000",
+    "addressTypeCode": "00201",
+    "settlementCode": "02676"
+  },
+  "serviceType": "S1590",
+  "activityResponsiblePersons": [
+    {
+      "name": "Activity1",
+      "surname": "Responsible1",
+      "familyName": "Person1",
+      "identifier": "3423578434",
+      "degree": "Degree",
+      "email": "person1@mai.com",
+      "phone": "999999999",
+      "enabled": true
+    },
+    {
+      "name": "Activity2",
+      "surname": "Responsible2",
+      "familyName": "Person2",
+      "degree": "Degree",
+      "identifier": "88888888",
+      "email": "person2@mail.com",
+      "phone": "88888888",
+      "enabled": true
+    }
+  ],
+  "materialType": "Type of the material",
+  "materialName": "Name of the material",
+  "materialTotalAmount": 5,
+  "materialMeasuringUnitCode": "01905",
+  "materialMovements": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "materialMovementSummary": "10",
+  "materialOriginCountryCode": "BG",
+  "materialExportCountryCode": "AD",
+  "materialPackingCondition": "excellent",
+  "supplier": {
+    "name": "Supplier",
+    "surname": "Supplier",
+    "familyName": "Supplier",
+    "identifier": "9999999999",
+    "email": "supplier@mail.com",
+    "phone": "1234623434",
+    "enabled": true,
+    "contractorActivityTypeCode": "03202"
+  },
+  "supplierAddress": {
+    "address": "Това е адреса",
+    "addressTypeCode": "00206",
+    "enabled": true,
+    "settlementCode": "02676",
+    "settlementName": "Varna",
+    "mail": "supplier_addres@mail.com",
+    "url": "www.supplierAddress.com",
+    "phone": "3456345734",
+    "countryCode": "BG"
+  },
+  "quarantineStationName": "quarantineStationName",
+  "quarantineStationDescription": "quarantineStationDescription",
+  "quarantineStationAddress": {
+    "address": "quarantineStation address",
+    "settlementCode": "02676"
+  },
+  "quarantineStationPerson": {
+    "name": "Quarantine",
+    "surname": "Station",
+    "familyName": "Person",
+    "degree": "master degree",
+    "email": "quarantine_person@mail.com",
+    "phone": "234623412468",
+    "identifier": "4455336666",
+    "enabled": true
+  },
+  "quarantineStationMaterialStorageMeasure": "quarantineStationMaterialStorageMeasure",
+  "requestedActivitySummary": "requestedActivitySummary",
+  "firstEntryDate": "2023-09-12T08:45:14.209Z",
+  "expectedCompletionDate": "2023-09-14T08:45:14.209Z",
+  "materialEndUseCode": "03301",
+  "materialDestructionMethod": "materialDestructionMethod",
+  "materialSafeMeasure": "materialSafeMeasure",
+  "description": "description"
+}
+
+###  ApplicationS2702Controller # getApplicationS2702 by record id
+GET {{host}}/api/s2702-applications/applicant/9aa65ee7-8c34-4998-b2f2-ca098703c910
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2702Controller # getApplicationS2702 by record id
+GET {{host}}/api/s2702-applications/e7d2555c-5caf-4675-ad3f-2cc67659c240
+accept: */*
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2702Controller # approveApplicationS2702
+PUT {{host}}/api/s2702-applications/d5e8bee1-26ba-45e0-bbb5-8eadbed3867e/approve
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+
+###  ApplicationS2702Controller # refuseApplicationS2702
+PUT {{host}}/api/s1590-applications/676317d6-3d5f-4237-b483-934344d32fc0/refuse
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  ApplicationS2702Controller # forCorrectionApplicationS2702
+PUT {{host}}/api/s1590-applications/77fee257-715e-4fcb-a6e3-55977efa713b/for-correction
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+Accept-Language: bg
+
+{
+  "id": "77fee257-715e-4fcb-a6e3-55977efa713b",
+  "description": "За корекция, поради нвалиден адрес за коренспонденция."
+}

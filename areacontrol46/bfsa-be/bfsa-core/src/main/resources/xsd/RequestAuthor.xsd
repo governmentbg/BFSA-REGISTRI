@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        targetNamespace="http://eform.e-gov.bg/dictionary/RequestAuthor"
+        xmlns="http://eform.e-gov.bg/dictionary/RequestAuthor"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:channel="http://eform.e-gov.bg/dictionary/CommunicationChannels"
+        xmlns:person="http://eform.e-gov.bg/dictionary/Person">
+
+
+    <xsd:import namespace="http://eform.e-gov.bg/dictionary/Person" schemaLocation="Person.xsd"/>
+	<xsd:import namespace="http://eform.e-gov.bg/dictionary/CommunicationChannels" schemaLocation="CommunicationChannels.xsd"/>
+
+	<xsd:complexType name="RequestAuthor">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="bg">
+                Автор на заявлението
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="person" type="person:Person" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Автор на заявлението - физическо лице
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="communicationChannels" type="channel:CommunicationChannels" minOccurs="0" maxOccurs="1">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="bg">
+						Юридическо лице, от името на което действа автора (посредници, представители)
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+  
+</xsd:schema>

@@ -1,0 +1,12 @@
+<div class="text-base">
+  <div *ngFor="let foodType of foodTypesMap | keyvalue">
+    <span>
+      {{ this.foodType.key }}
+    </span>
+    <app-nested-food-types-list
+      (nestedFoodTypes)="selectedFoodType($event)"
+      [foodTypes]="foodType.value"
+      [areFoodTypesEnabled]="areFoodTypesEnabled"
+    ></app-nested-food-types-list>
+  </div>
+</div>

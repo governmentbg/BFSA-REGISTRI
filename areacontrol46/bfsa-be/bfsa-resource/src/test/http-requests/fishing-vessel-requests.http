@@ -1,0 +1,91 @@
+### POST login (Set access_token to the global variables)
+POST {{host}}/api/auth/login
+Content-Type: application/x-www-form-urlencoded
+
+username=admin&password=admin
+
+> {%
+    client.test("Request executed successfully", function() {
+        if (response.status === 200) {
+            client.global.set("access_token", response.body["token"])
+            client.global.set("refresh_token", response.body["refreshToken"])
+        }
+        client.assert(response.status === 200, "Access is Denied");
+    });
+%}
+
+
+###  FishingVesselController # create
+POST {{host}}/api/fishing-vessels/create
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "date": "2023-02-25",
+  "regNumber": "02-003",
+  "externalMarking": "Сз-305",
+  "enabled": true,
+  "entryNumber": "003",
+  "hullLength": 8.4,
+  "assignmentTypeCode": "999",
+  "branchId": "1"
+}
+
+
+###  FishingVesselController # findAll
+GET {{host}}/api/fishing-vessels/
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # findById
+GET {{host}}/api/fishing-vessels/{id}
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # findByRegNumber
+GET {{host}}/api/fishing-vessels/registration-number/{regNumber}
+accept: */*
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # findByExternalMarking
+GET {{host}}/api/fishing-vessels/external-marking/{{externalMarking}}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # search
+GET {{host}}/api/fishing-vessels/hull-length/{hullLength}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # findByEntryNumber
+GET {{host}}/api/fishing-vessels/entry-number/{entryNumber}
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # findByBranch
+GET {{host}}/api/fishing-vessels/branch/1
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # findByAssigmentTypeCode
+GET {{host}}/api/fishing-vessels/assignment-type/999
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+
+###  FishingVesselController # history
+GET {{host}}/api/users/2ac9d258-2035-4945-9b0f-f64a9058f481/history
+accept: */*
+Authorization: Bearer {{access_token}}
+
+###  FishingVesselController # findByDate
+GET {{host}}/api/fishing-vessels/date/?start=2023-02-20&end=2023-02-27
+Content-Type: application/json
+Authorization: Bearer {{access_token}}

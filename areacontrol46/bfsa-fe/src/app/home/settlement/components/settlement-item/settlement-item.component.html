@@ -1,0 +1,87 @@
+<div *ngIf="!settlement" class="animate-pulse">Loading settlement...</div>
+
+<div *ngIf="settlement">
+  <div class="my-8">
+    <div class="flex gap-2 items-center">
+      <div class="">
+        <button
+          (click)="back()"
+          mat-icon-button
+          aria-label="Button with a arrow back icon"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="text-xl">
+        {{ settlement.name }}
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-8">
+    <div class="p-2">Description:</div>
+    <mat-card>
+      <mat-card-content>
+        District:
+        <div class="mb-4 text-base">
+          {{ settlement.district }}
+        </div>
+        Municipality:
+        <div class="mb-4 text-base">
+          {{ settlement.municipality }}
+        </div>
+        Place Type:
+        <div class="mb-4 text-base">
+          {{ settlement.placeType }}
+        </div>
+        TSB:
+        <div class="mb-4 text-base">
+          {{ settlement.tsb }}
+        </div>
+        Country Code:
+        <div class="mb-4 text-base">
+          {{ settlement.countryCode }}
+        </div>
+        <div class="flex items-center gap-2 text-base">
+          Enabled
+          <mat-icon color="primary" *ngIf="settlement.enabled"
+            >check_circle</mat-icon
+          >
+          <mat-icon color="warn" *ngIf="!settlement.enabled"
+            >unpublished</mat-icon
+          >
+        </div>
+      </mat-card-content>
+      <mat-divider></mat-divider>
+      <mat-card-actions>
+        <button mat-button (click)="editSettlement(settlement)">Edit</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+
+  <div *ngIf="settlement.subSettlements">
+    <div class="mb-8">
+      <div class="p-2">Sub Settlements:</div>
+      <mat-card>
+        <mat-card-content>
+          <div *ngFor="let item of settlement.subSettlements" class="truncate">
+            <a
+              [routerLink]="['/app/settlement', item.code]"
+              class="hover:underline text-base"
+              [title]="item.name"
+            >
+              {{ item.name }}
+            </a>
+          </div>
+          <div *ngIf="!settlement.subSettlements.length" class="">
+            No sub settlements.
+          </div>
+        </mat-card-content>
+        <mat-divider></mat-divider>
+        <mat-card-actions>
+          <button (click)="addSubSettlement()" mat-button>Add</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+<form [formGroup]="ch83PersonsForm">
+  <div class="my-4 uppercase font-bold text-xs opacity-100">
+    Лица извършващи консултантски услуги
+  </div>
+  <ol>
+    <li class="mat-form-field--inline">
+      <div
+        formArrayName="ch83CertifiedPersons"
+        *ngIf="ch83CertifiedPersons.length > 0"
+      >
+        <ng-container
+          *ngFor="
+            let ch83CertifiedPersonForm of ch83CertifiedPersons.controls;
+            let i = index
+          "
+        >
+          <div [formGroupName]="i" class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Пълно име</mat-label>
+              <input
+                matInput
+                placeholder="Пълно име"
+                formControlName="fullName"
+                required
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>ЕГН</mat-label>
+              <input
+                matInput
+                placeholder="ЕГН"
+                formControlName="identifier"
+                required
+              />
+            </mat-form-field>
+          </div>
+        </ng-container>
+      </div>
+    </li>
+  </ol>
+
+  <div class='flex justify-end'>
+    <button type="button" mat-flat-button color="warn" (click)="closeDialog()">
+      Затвори
+    </button>
+  </div>
+</form>

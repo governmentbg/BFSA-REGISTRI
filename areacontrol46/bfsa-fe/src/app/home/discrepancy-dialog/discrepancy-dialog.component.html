@@ -1,0 +1,40 @@
+<h1 mat-dialog-title>Потвърждаване на несъответствие ?</h1>
+<form [formGroup]="discrepancyForm">
+  <div>
+    <mat-form-field appearance="fill">
+      <mat-label>Срок</mat-label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="discrepancyUntilDate"
+        (click)="picker.open()"
+      />
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+  </div>
+
+  <div>
+    <mat-form-field appearance="fill">
+      <mat-label>Oписание</mat-label>
+      <input
+        matInput
+        placeholder="educational establishment"
+        formControlName="description"
+        required
+      />
+    </mat-form-field>
+  </div>
+</form>
+
+<div mat-dialog-actions>
+  <button mat-raised-button color="primary" (click)="discard()">Не</button>
+  <button
+    [disabled]="!this.discrepancyForm.valid"
+    mat-raised-button
+    cdkFocusInitial
+    color="primary"
+    (click)="confirm()"
+  >
+    Да
+  </button>
+</div>

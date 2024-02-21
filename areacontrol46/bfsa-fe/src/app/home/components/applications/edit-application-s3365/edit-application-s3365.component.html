@@ -1,0 +1,149 @@
+<h1 class="text-center">
+  3365 - за регистрация в регистъра на лицата, които извършват интегрирано
+  производство на растения и растителни продукти (по чл. 6, ал. 1, т. 10 от
+  Закона за защита на растенията)
+</h1>
+<div *ngIf="this.data?.errors?.length" class="errors-container">
+  Има грешки при създаване на заявлението
+  <button mat-raised-button color="primary" (click)="openErrorsDialog()">
+    Преглед
+  </button>
+</div>
+
+<mat-stepper orientation="horizontal" #stepper>
+  <mat-step [stepControl]="applicationForm" errorMessage="Name is required.">
+    <ng-template matStepLabel>Основни данни</ng-template>
+
+    <app-application-common-part [commonPartData]="data">
+    </app-application-common-part>
+  </mat-step>
+
+  <mat-step [stepControl]="applicationForm">
+    <ng-template matStepLabel>Специфична част</ng-template>
+    <form [formGroup]="applicationForm">
+      <div
+        class="p-4 bg-lime-600 sticky top-0 z-10 flex gap-4 justify-end my-5"
+        *ngIf="isApplicationStatusPaymentConfirmedOrEntered"
+      >
+        <button mat-flat-button (click)="openApprovalDialog()">
+          Одобрение
+        </button>
+
+        <button mat-flat-button (click)="openRefusalDialog()">Отказ</button>
+
+        <button mat-flat-button (click)="openCorrectionDialog()">
+          За корекция
+        </button>
+      </div>
+
+      <div *ngIf="finalActionErrors !== ''" class="errors-container-final">
+        Има грешки при финално действие: {{ finalActionErrors }}
+      </div>
+      <ol>
+        <li class="mat-form-field--inline">
+          <div class="section">
+            <mat-form-field appearance="fill">
+              <mat-label>Отглеждам култури от следния тип</mat-label>
+              <input
+                matInput
+                placeholder="Култура"
+                formControlName="cropTypeName"
+              />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+              <mat-label>Под тип</mat-label>
+              <input
+                matInput
+                placeholder="Под тип"
+                formControlName="cropName"
+              />
+            </mat-form-field>
+          </div>
+
+          <div class="my-4 uppercase font-bold text-xs opacity-100">
+            Местонахождение на площите, върху които ще се извършва интегрираното
+            производство:
+          </div>
+
+          <div
+            formArrayName="productionLocations"
+            *ngIf="this.productionLocations.length > 0"
+          >
+            <div
+              *ngFor="
+                let productionLocation of productionLocations?.controls;
+                let i = index
+              "
+            >
+              <div [formGroupName]="i">
+                
+                <mat-form-field appearance="fill">
+                  <mat-label>Пълен адрес</mat-label>
+                  <input
+                    matInput
+                    placeholder="Пълен адрес"
+                    formControlName="fullAddress"
+                  />
+                </mat-form-field>
+
+                <div class="section">
+                  <mat-form-field appearance="fill">
+                    <mat-label>Площ в ха</mat-label>
+                    <input
+                      matInput
+                      placeholder="Площ в ха"
+                      formControlName="land"
+                    />
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill">
+                    <mat-label>Кадастрален № на имота</mat-label>
+                    <input
+                      matInput
+                      placeholder="Кадастрален № на имота"
+                      formControlName="cadastreNumber"
+                    />
+                  </mat-form-field>
+                </div>
+
+                <div formArrayName="productions">
+                  <div
+                    *ngFor="
+                      let pest of getNestedProductionsAtIndex(i).controls;
+                      let j = index
+                    "
+                  >
+                    <div [formGroupName]="j" class="section">
+                      <mat-form-field appearance="fill">
+                        <mat-label>Година</mat-label>
+                        <input
+                          matInput
+                          placeholder="Година"
+                          formControlName="year"
+                        />
+                      </mat-form-field>
+
+                      <mat-form-field appearance="fill">
+                        <mat-label>Тип на култура</mat-label>
+                        <input
+                          matInput
+                          placeholder="Тип на култура"
+                          formControlName="plantTypeName"
+                        />
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </form>
+    <div class="flex justify-between">
+      <button mat-raised-button matStepperPrevious>Назад</button>
+      <button mat-flat-button color="warn" mat-dialog-close>Затвори</button>
+    </div>
+  </mat-step>
+</mat-stepper>

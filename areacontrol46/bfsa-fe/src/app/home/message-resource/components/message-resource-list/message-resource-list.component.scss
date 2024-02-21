@@ -1,0 +1,8 @@
+table th,
+table td {
+  @apply border p-2;
+}
+
+.mat-column-message {
+  min-width: 200px !important;
+}
