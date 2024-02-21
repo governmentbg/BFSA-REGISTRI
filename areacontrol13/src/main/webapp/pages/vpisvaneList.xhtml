@@ -1,0 +1,479 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+<style>
+.viewedRow {
+	background-color: var(--surface-c) !important;
+}
+</style>
+
+<h:form id="formSFList">
+
+	<div class="container #{guestPreferences.containerPosition}">
+
+		<!-- FILTER -->
+		<h:panelGroup id="panelFilter">
+
+			<div class="card">
+
+				<div class="p-grid ui-fluid">
+
+					<!-- Вид регистър -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-8 p-xl-8  ui-fluid">
+						<h:outputText value="#{labels['docu.register']}"
+							styleClass="form-label" />
+						<h:panelGroup styleClass="input-group">
+							<ibg:selectOneModalA id="idReg"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_REGISTRI}"
+								styleAutoComp="" selectedCode="#{vpisvaneList.vs.registerId}"
+								emptyMessage="#{labels['vpisvane.vidRegisturEmptyMessage']}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								minQueryLength="3" dopInfoAutoComp="true" modalPosition="top"
+								dopInfoTitleAutoComp="Избор на регистър" />
+						</h:panelGroup>
+					</div>
+
+					<!-- Статус на вписване -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4  ui-fluid">
+						<h:outputText value="#{labels['compReg.statusVpisvane']}"
+							styleClass="form-label" />
+						<p:selectCheckboxMenu id="statusVpis" multiple="true"
+							filter="true" filterMatchMode="startsWith"
+							value="#{vpisvaneList.vs.statusList}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, now, vpisvaneList.currentLang)}"
+								var="itemSc" itemLabel="#{itemSc.tekst}"
+								itemValue="#{itemSc.code}" />
+						</p:selectCheckboxMenu>
+					</div>
+
+
+					<!-- Период на статус -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{labels['mmsCL.periodStatus']}"
+							styleClass="form-label" style="white-space: nowrap;" />
+						<p:selectOneMenu id="periodStatus"
+							value="#{vpisvaneList.periodStatus}">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, vpisvaneList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSFList:periodStatus formSFList:statusFrom formSFList:statusTo"
+								listener="#{vpisvaneList.changePeriodStatus}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}"
+							styleClass="form-label" />
+						<p:datePicker id="statusFrom" pattern="dd.MM.yyyy" mask="true"
+							showIcon="true" locale="bg"
+							value="#{vpisvaneList.vs.statDateFrom}" styleClass="form-control">
+							<p:ajax event="change" update="formSFList:periodStatus"
+								listener="#{vpisvaneList.changeDateStatus}" />
+							<p:ajax event="dateSelect" update="formSFList:periodStatus"
+								listener="#{vpisvaneList.changeDateStatus}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}"
+							styleClass="form-label" />
+						<p:datePicker id="statusTo" pattern="dd.MM.yyyy" mask="true"
+							showIcon="true" locale="bg" value="#{vpisvaneList.vs.statDateTo}"
+							styleClass="form-control">
+							<p:ajax event="change" update="formSFList:periodStatus"
+								listener="#{vpisvaneList.changeDateStatus}" />
+							<p:ajax event="dateSelect" update="formSFList:periodStatus"
+								listener="#{vpisvaneList.changeDateStatus}" />
+						</p:datePicker>
+					</div>
+
+
+					<!-- лиценизант -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="Тип Лицензиант" styleClass="form-label" />
+						<ibg:selectOneModalA id="idLicenziant"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_OBEKT_LICENZIRANE}"
+							styleAutoComp="" selectedCode="#{vpisvaneList.vs.licenziantType}"
+							emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+							saveStateTree="false" withBtnClear="true" compType="2"
+							minQueryLength="3" dopInfoAutoComp="true" modalPosition="top"
+							dopInfoTitleAutoComp="Избор на лицензиант" />
+						<!-- <div jsf:id="refCorr">
+										<ibg:selectReferents id="findCoresp" update="@form"
+											typeSearch="EIK"
+											dateClassif="#{now}"
+											corespCompCommand="PF('mCorrD').show();"
+											selectedCode="#{vpisvaneList.vs.idLicenziant}"
+											searchWord="#{vpisvaneList.licText}" />
+										 Разширено търсене на кореспондент
+										<p:commandButton id="btnCorrS"
+											icon="fas fa-list-ul" partialSubmit="true"
+											process="formSFList:dpCorrSearch @this"
+											update="formSFList:dpCorrSearch"
+											oncomplete="PF('mCorrS').show(); "
+											title="#{labels['search.extendRef']}" />
+										</div> -->
+					</div>
+
+					<!-- заявител  -->
+					<div class="p-col-12 p-sm-12 p-md-8 p-lg-6 p-xl-4  ui-fluid">
+						<h:outputText value="#{labels['babhZaiavList.zaiavitelLong']}"
+							styleClass="form-label" />
+						<p:inputText value="#{vpisvaneList.vs.licenziant}" id="name"
+							title="ЕГН/ЕИК/Име" />
+					</div>
+					
+					<!-- САМО ВПИСВАНИЯ С АКТИВНИ ПРОЦЕДУРИ-->
+					<div class="p-col-12 ui-fluid">
+						<p:selectBooleanCheckbox value="#{vpisvaneList.vs.onlyActiveProc}"
+							styleClass="form-label"
+							itemLabel="#{labels['vpisvaneList.aktivniProc']}" />
+					</div>
+
+					<!-- ВИД НА ДОКУМЕНТА-->
+					<div class="p-col-12  ui-fluid">
+						<h:outputText value="#{labels['nastrObjList.vidZaiav']}"
+							styleClass="form-label" />
+						<ibg:selectManyModalA id="vidDoc" compType="2" maxResults="50"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_ZAIAVLENIA}"
+							selectedCodes="#{vpisvaneList.vs.docVidList}"
+							selectedClassifs="#{vpisvaneList.docVidList}" filtered="false"
+							modalPosition="top" saveStateTree="false" showRadioBtn="true"
+							styleAutoComp="width:990%;" withBtnClear="true" />
+
+					</div>
+
+					<!--ДЕЛОВОДЕН НОМЕР НА ЗАЯВЛЕНИЕТО ЗА РЕГИСТРАЦИЯ -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="#{labels['vpisvaneList.regNumDoc']}"
+							styleClass="form-label" />
+						<p:inputText id="regNum" value="#{vpisvaneList.vs.rnDocZaiav}" />
+					</div>
+
+					<!-- ПЕРИОД НА ЗАЯВЛЕНИЕТО ЗА РЕГИСТРАЦИЯ-->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="#{labels['vpisvaneList.regNumPeriod']}"
+							styleClass="form-label" />
+						<p:selectOneMenu id="periodDoc" value="#{vpisvaneList.periodDoc}">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, vpisvaneList.currentLang)}"
+								var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+							<p:ajax event="change" update="periodDoc dateOtDoc dateDoDoc"
+								listener="#{vpisvaneList.changePeriodDoc}" />
+						</p:selectOneMenu>
+					</div>
+
+					<!-- ДАТА ОТ НА ЗАЯВЛЕНИЕТО ЗА РЕГИСТРАЦИЯ -->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}"
+							styleClass="form-label" />
+						<p:datePicker id="dateOtDoc" mask="true" showIcon="true"
+							locale="bg" pattern="dd.MM.yyyy"
+							value="#{vpisvaneList.vs.docDateFromZaiav}">
+							<p:ajax event="change" update="periodDoc"
+								listener="#{vpisvaneList.changeDateDoc}" />
+							<p:ajax event="dateSelect" update="periodDoc"
+								listener="#{vpisvaneList.changeDateDoc}" />
+						</p:datePicker>
+					</div>
+
+					<!-- ДАТА ДО НА ЗАЯВЛЕНИЕТО ЗА РЕГИСТРАЦИЯ-->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}"
+							styleClass="form-label" />
+						<p:datePicker id="dateDoDoc" mask="true" showIcon="true"
+							locale="bg" pattern="dd.MM.yyyy"
+							value="#{vpisvaneList.vs.docDateToZaiav}">
+							<p:ajax event="change" update="periodDoc"
+								listener="#{vpisvaneList.changeDateDoc}" />
+							<p:ajax event="dateSelect" update="periodDoc"
+								listener="#{vpisvaneList.changeDateDoc}" />
+						</p:datePicker>
+					</div>
+
+					<!-- номер на удостоверителен документ -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Номер на УД" styleClass="form-label" />
+						<p:inputText value="#{vpisvaneList.vs.rnDocUdost}"
+							title="Номер на удостоверителен документ" />
+					</div>
+
+					<!-- период на издаване на удост. документ -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Период на издаване на УД"
+							styleClass="form-label" />
+						<p:selectOneMenu id="periodStVpisvane"
+							value="#{vpisvaneList.periodStVpisvane}"
+							title="Период на зидаване на удостоверителен документ">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, vpisvaneList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSFList:periodStVpisvane formSFList:fromStatusVpis formSFList:toStatusVpis"
+								listener="#{vpisvaneList.changePeriodStVpisvane}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}"
+							styleClass="form-label" />
+						<p:datePicker id="fromStatusVpis" pattern="dd.MM.yyyy" mask="true"
+							showIcon="true" locale="bg"
+							value="#{vpisvaneList.vs.docDateFromUdost}"
+							styleClass="form-control">
+							<p:ajax event="change" update="formSFList:periodStVpisvane"
+								listener="#{vpisvaneList.changeDateStVpisvane}" />
+							<p:ajax event="dateSelect" update="formSFList:periodStVpisvane"
+								listener="#{vpisvaneList.changeDateStVpisvane}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}"
+							styleClass="form-label" />
+						<p:datePicker id="toStatusVpis" pattern="dd.MM.yyyy" mask="true"
+							showIcon="true" locale="bg"
+							value="#{vpisvaneList.vs.docDateToUdost}"
+							styleClass="form-control">
+							<p:ajax event="change" update="formSFList:periodStVpisvane"
+								listener="#{vpisvaneList.changeDateStVpisvane}" />
+							<p:ajax event="dateSelect" update="formSFList:periodStVpisvane"
+								listener="#{vpisvaneList.changeDateStVpisvane}" />
+						</p:datePicker>
+					</div>
+
+					<c:if test="#{!vpisvaneList.ud.limitedAccess}">
+
+						<!-- РЕГИСТРАТУРА, В КОЯТО Е РЕГИСТРИРАН ДОКУМЕНТА-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6 ui-fluid">
+							<h:outputText value="#{labels['vpisvaniaList.registratura']}"
+								styleClass="form-label" />
+							<p:selectCheckboxMenu id="docRegistratura"
+								value="#{vpisvaneList.vs.registraturaList}" multiple="true"
+								filter="true" filterMatchMode="startsWith">
+								<f:selectItems value="#{vpisvaneList.registraturiList}" />
+							</p:selectCheckboxMenu>
+						</div>
+
+						<!-- СЛУЖИТЕЛ-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6 ui-fluid">
+							<h:outputText value="#{labels['babhZaiavList.user']}"
+								styleClass="form-label" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_ADMIN_STR}"
+								selectedCode="#{vpisvaneList.vs.codeRef}" filtered="false"
+								withBtnClear="true" saveStateTree="true" showRadioBtn="true"
+								modalPosition="top" styleAutoComp="width:99%;" compType="2" />
+						</div>
+					</c:if>
+
+				</div>
+
+				<div class="filter-buttons">
+
+					<p:commandButton icon="fas fa-search"
+						value="#{ui_labels['general.search']}" id="btnSearchSF"
+						update="resultTable panelFilter" partialSubmit="true"
+						process="@this panelFilter resultTable"
+						actionListener="#{vpisvaneList.search()}" styleClass="p-mr-3" />
+					<p:defaultCommand target="btnSearchSF" scope="panelFilter" />
+
+					<p:commandButton icon="fas fa-eraser"
+						value="#{ui_labels['general.clear']}" id="btnClear"
+						update="resultTable panelFilter" partialSubmit="true"
+						process="@this panelFilter resultTable"
+						actionListener="#{vpisvaneList.actionClear}"
+						styleClass="ui-button-warning" />
+				</div>
+
+			</div>
+
+		</h:panelGroup>
+
+	</div>
+	<h:panelGroup id="resultTable" layout="block" styleClass="margin-top">
+
+		<h:panelGroup layout="block" styleClass="card"
+			rendered="#{vpisvaneList.vpisvaniaList != null}">
+
+			<div class="table-toolbar">
+
+				<h:outputText
+					value="#{ui_labels['general.reportResult']}: #{vpisvaneList.vpisvaniaList.rowCount}"
+					styleClass="form-label"
+					rendered="#{vpisvaneList.vpisvaniaList.rowCount > 0}" />
+
+			</div>
+
+			<p:dataTable id="tblSFList" var="row"
+				value="#{vpisvaneList.vpisvaniaList}" lazy="true"
+				rendered="#{vpisvaneList.vpisvaniaList != null}" rowIndexVar="idx"
+				emptyMessage="#{ui_labels['general.norows']}" rows="15"
+				sortMode="single" reflow="true" styleClass="ui-datatable-gridlines"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+				rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+				paginatorAlwaysVisible="true" paginator="true"
+				rowStyleClass="#{vpisvaneList.viewedRows eq row[0] ? 'viewedRow' : ' '}">
+
+				<f:facet name="{Exporters}">
+
+					<div style="float: left">
+
+						<p:commandLink id="excel" update="tblSFList" process="tblSFList"
+							partialSubmit="true">
+							<h:graphicImage library="images" name="excel2.png" />
+							<p:dataExporter type="xls" target="tblSFList"
+								fileName="vpListXls"
+								postProcessor="#{vpisvaneList.postProcessXLS}" />
+						</p:commandLink>
+
+						<p:commandLink id="pdf" update="tblSFList" process="tblSFList"
+							partialSubmit="true">
+							<h:graphicImage library="images" name="pdf.png" />
+							<p:dataExporter type="pdf" target="tblSFList"
+								fileName="vpListPdf" encoding="windows-1251"
+								preProcessor="#{vpisvaneList.preProcessPDF}"
+								options="#{vpisvaneList.pdfOptions()}" />
+						</p:commandLink>
+
+						<p:commandLink id="csv" update="tblSFList" process="tblSFList"
+							partialSubmit="true">
+							<h:graphicImage library="images" name="csv.png" />
+							<p:dataExporter type="csv" target="tblSFList"
+								fileName="vpListCsv" encoding="CP1251" />
+						</p:commandLink>
+
+					</div>
+
+				</f:facet>
+
+				<p:column width="20" exportable="false"
+					headerText="#{ui_labels['general.No-symbol']}">
+					<h:outputText value="#{idx + 1}" />
+				</p:column>
+
+				<p:column width="30" exportable="false">
+					<p:commandButton icon="fas fa-edit"
+						action="#{vpisvaneList.actionGoto(row[0],  row[13], row[16])}"
+						ajax="false" styleClass="btn-new" rendered="#{isView eq null}"
+						title="Редактиране на вписване">
+						<f:param name="isView" value="2" />
+					</p:commandButton>
+
+					<p:button icon="fas fa-eye"
+						href="#{vpisvaneList.actionGoto(row[0], row[13], row[16])}"
+						target="_blank" rendered="#{isView eq 1}"
+						title="Разглеждане на вписване">
+						<f:param name="isView" value="1" />
+					</p:button>
+
+
+				</p:column>
+
+				<p:column width="200" sortBy="#{row.licenziant}"
+					headerText="Заявител (лицензиант) ">
+					<h:outputText value="#{row[12]}" />
+				</p:column>
+
+				<p:column width="100" headerText="Статус">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[8], vpisvaneList.currentLang, now)}" />
+				</p:column>
+
+				<p:column width="75" sortBy="#{row.date_status}"
+					headerText="От дата">
+					<h:outputText value="#{row[9]}">
+						<f:convertDateTime pattern="dd.MM.yyyy"
+							timeZone="#{vpisvaneList.timeZone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column width="115" sortBy="#{row.reg_nom_result}"
+					headerText="Номер на УД">
+					<h:outputText value="#{row[10]}"
+						title="Номер на актуалния удостоверителен документ" />
+				</p:column>
+
+				<p:column width="170" sortBy="#{row.date_result}"
+					headerText="Дата на актуален УД">
+					<h:outputText value="#{row[11]}"
+						title="Дата на удостоверителен документ">
+						<f:convertDateTime pattern="dd.MM.yyyy"
+							timeZone="#{vpisvaneList.timeZone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column width="100" sortBy="#{row.reg_nom_zaqvl_vpisvane}"
+					headerText="Рег.№ на з.">
+					<h:outputText value="#{row[17]}"
+						title="Рег. номер на заявление за първоначално вписване" />
+				</p:column>
+
+				<p:column width="90" sortBy="#{row.date_zaqvl_vpis}"
+					headerText="Дата на з.">
+					<h:outputText value="#{row[18]}"
+						title="Дата на заявление за първоначално вписване">
+						<f:convertDateTime pattern="dd.MM.yyyy"
+							timeZone="#{vpisvaneList.timeZone}" />
+					</h:outputText>
+				</p:column>
+
+
+				<p:column headerText="#{labels['users.registratura']}" width="120">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_REGISTRATURI, row[19], vpisvaneList.currentLang, now)}" />
+				</p:column>
+
+				<p:column headerText="#{labels['nastrObjList.vidZaiav']}"
+					width="250">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[20], vpisvaneList.currentLang, now)}" />
+				</p:column>
+
+				<p:column headerText="#{labels['docu.register']}" width="250">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, row[1], vpisvaneList.currentLang, now)}" />
+				</p:column>
+
+
+			</p:dataTable>
+
+		</h:panelGroup>
+
+	</h:panelGroup>
+
+	<h:panelGroup id="dpCorrSearch">
+
+		<p:dialog appendTo="@form" closeOnEscape="true"
+			header="#{labels['docu.titleExtSrchCoresp']}" fitViewport="true"
+			responsive="true" resizable="true" position="top" widgetVar="mCorrS"
+			dynamic="true" id="modalCorrS" modal="true">
+			<div class="container #{guestPreferences.containerPosition}">
+
+				<ibg:refCorrespSearch id="mCorrS1" myId="mCS1"
+					codeRef="#{vpisvaneList.vs.idLicenziant}"
+					searchTxt="#{vpisvaneList.licText}" dateClassif="#{now}"
+					modal="true" refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+					update="formSFList"
+					onComplete="PF('mCorrS').hide();#{testSvilen.someActionAfterSelection()};" />
+
+			</div>
+
+		</p:dialog>
+	</h:panelGroup>
+
+</h:form>
+
+</html>

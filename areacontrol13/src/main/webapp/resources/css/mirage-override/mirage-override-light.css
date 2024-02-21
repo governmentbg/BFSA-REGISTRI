@@ -1,0 +1,121 @@
+.login-body .login-content .login-panel .login-panel-content .logo img {
+  width: 130px;
+}
+
+@media (max-width: 991px) {
+  .layout-wrapper .layout-topbar .layout-topbar-wrapper .layout-topbar-left .layout-topbar-logo-wrapper .layout-topbar-logo img {
+    height: 45px;
+    width: 58px;
+  }
+}
+.layout-sidebar .sidebar-logo img {
+  height: 45px;
+  width: 58px;
+}
+
+.layout-breadcrumb {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.layout-content {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.layout-topbar .layout-topbar-wrapper {
+  height: 60px;
+}
+.layout-topbar .layout-topbar-wrapper .layout-topbar-right .layout-topbar-actions > li > ul {
+  top: 60px;
+}
+.layout-topbar .layout-topbar-wrapper .layout-topbar-right .layout-topbar-actions > li > ul > li {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+@media (min-width: 992px) {
+  .layout-wrapper.layout-horizontal .layout-sidebar {
+    top: 60px;
+    height: 42px;
+  }
+  .layout-wrapper.layout-horizontal .layout-sidebar .layout-menu-container .layout-menu > li > a {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+  .layout-wrapper.layout-horizontal .layout-main {
+    padding-top: 102px;
+  }
+  .layout-wrapper.layout-horizontal .layout-topbar .layout-topbar-logo-wrapper .layout-topbar-logo img {
+    height: 45px;
+    width: 58px;
+  }
+}
+body .ui-inputfield {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+body .ui-fluid .ui-trigger-calendar .ui-datepicker-trigger.ui-button .ui-button-text {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+body .ui-fluid .ui-selectonemenu-label {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+body .ui-fluid .ui-selectonemenu .ui-selectonemenu-label {
+  min-height: calc(1.5rem + 3px);
+}
+
+body .ui-autocomplete .ui-autocomplete-multiple-container .ui-autocomplete-input-token {
+  padding: 0;
+}
+
+body .ui-button.ui-button-icon-only .ui-button-text {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+body .ui-button.ui-button-text-icon-left .ui-button-text {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  padding: 0.25rem 0.5rem 0.25rem 2rem;
+}
+
+body .ui-selectcheckboxmenu .ui-selectcheckboxmenu-multiple-container.ui-inputfield {
+  padding: 0.25rem 0.75rem;
+}
+
+.layout-footer {
+  height: 75px;
+}
+
+body .ui-toolbar {
+  padding: 0.5rem 1rem;
+}
+
+body .ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+body .ui-selectonemenu-panel .ui-selectonemenu-filter-container {
+  padding: 0.5rem 1rem;
+}
+body .ui-selectonemenu-panel .ui-selectonemenu-filter-container .ui-selectonemenu-filter.ui-inputfield {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.card {
+  padding: 13px;
+}
+
+body .ui-dialog .ui-dialog-titlebar {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+body .ui-dialog .ui-dialog-content {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}

@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	<div class="content-wrapper register-page">
+		<h:form id="search-form">
+		
+			<div class="p-grid" jsf:id="results">
+				<div class="p-col-12 ui-fluid">
+					<p:inputText id="input-filter" styleClass="input-filter" value="#{backingBean.filterText}" placeholder="#{labels['general.search']}">
+						<p:ajax event="keyup" delay="500" listener="#{backingBean.onFilterText}"
+							update="results" oncomplete="highlightMatches()" />
+					</p:inputText>
+				</div>
+	
+				<div class="p-col-12">
+					<h3 class="title">#{labels['ext.register.registarNa']}:</h3>
+				</div>
+
+				<div class="p-col-12">
+					<div class="rectangles">
+		
+						<ui:repeat value="#{backingBean.registriFiltered}" var="reg">
+							<p:link href="registers/#{reg.value[1]}">
+								<div class="rectangle">
+									<div class="rectangle-icon"/>
+									<div class="rectangle-content">
+										<div>#{reg.value[0]}</div>
+									</div>
+								</div>
+							</p:link>
+						</ui:repeat>
+			
+					</div>
+				</div>
+			</div>
+     
+		</h:form>
+	</div>
+        
+	<script type="text/javascript">
+		function highlightMatches() {
+		
+			let inputField = $("#search-form\\:input-filter")[0];
+			
+			if(inputField) {
+				let value = inputField.value;
+				if(!value || value.length &lt; 3) {
+					return;
+				}
+				value = value.trim();
+				
+				let rectangles = $(".rectangle div.rectangle-content > div");
+				rectangles.each((_, r) => {
+					let html = $(r).html();
+					let index = html.toUpperCase().indexOf(value.toUpperCase());
+					while(index > -1) {
+						html = html.substring(0, index) 
+							+ '<span class="match">' 
+							+ html.substring(index, index + value.length) 
+							+ "</span>" 
+							+ html.substring(index + value.length);
+						$(r).html(html);
+						index = html.toUpperCase().indexOf(value.toUpperCase(), index + 27 + value.length);
+					}
+				});
+			}
+		}
+	</script>
+
+</html>

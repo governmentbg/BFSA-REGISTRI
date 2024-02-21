@@ -1,0 +1,118 @@
+<ui:composition
+		xmlns="http://www.w3.org/1999/xhtml"
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:p="http://primefaces.org/ui"
+		xmlns:pm="http://primefaces.org/mirage"
+		xmlns:o="http://omnifaces.org/ui">
+
+	<p:importConstants type="com.ib.babhregs.system.BabhConstants" /> 
+		
+    <div class="layout-sidebar">
+        <div class="sidebar-logo">
+            <a href="#" class="sidebar-pin" title="Toggle Menu">
+                <i class="fas fa-thumbtack"></i>
+            </a>
+            <a href="index.xhtml">
+            	<p:graphicImage name="images/logo-nvms.png" library="mirage-layout" />
+                <span class="app-name">#{labels['general.systemNameShort']}</span>
+            </a>
+        </div>
+
+		<div class="layout-menu-container">
+			<h:form id="menuform">
+				<o:cache time="3600" key="docuMenuCache">
+	                <pm:menu>
+	               
+	                   <p:menuitem id="plot" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 119, userData.getCurrentLang(), now)}" icon="fas fa-fw fa-home" outcome="index.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 66, userData.getCurrentLang(), now)}" />
+	                    
+	                    <ui:remove>  <p:menuitem id="home" value="" icon="fas fa-fw fa-home" outcome="index.xhtml@clear@?faces-redirect=true" ajax="false" title="Начало" /> </ui:remove>
+
+	                    <p:submenu id="doc" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,17)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 17, userData.getCurrentLang(), now)}" icon="fas fa-fw fa-files-o">	                    
+	                    	 <p:menuitem id="docAktualiz"  rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,65)}"   value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 65, userData.getCurrentLang(), now)}" outcome="babhZaiavList.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-edit" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 65, userData.getCurrentLang(), now)}"/>
+	                    	 <p:menuitem id="docVpis"  rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,109)}"   value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 109, userData.getCurrentLang(), now)}" outcome="vpisvaneListEdit.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-file" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 65, userData.getCurrentLang(), now)}"/>
+	                    	 <p:menuitem id="unpaidDocs"  rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,111)}"   value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 111, userData.getCurrentLang(), now)}" outcome="unpaidZaivListEdit.xhtml@clear@?faces-redirect=true" ajax="false" icon="far fa-credit-card" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 111, userData.getCurrentLang(), now)}"/>
+	                    	 <p:menuitem id="inpDocMigr" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,117)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 117, userData.getCurrentLang(), now)}" outcome="inpDocMigr.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-edit"  title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 117, userData.getCurrentLang(), now)}" />
+	                    </p:submenu>
+	                   
+	              
+	                   
+	                  
+	                    <p:submenu id="spravki" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,64)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 64, userData.getCurrentLang(), now)}" icon="fas fa-th-list">
+	                                             	                           	
+	                    	
+	                    	<p:menuitem id="spravkiJurnal" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,49)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 49, userData.getCurrentLang(), now)}" outcome="journal.xhtml@clear@?faces-redirect=true" ajax="false"  icon="fas fa-fw fa-eye" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 49, userData.getCurrentLang(), now)}" />
+	                
+             				<p:menuitem id="publicRegs" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,110)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 110, userData.getCurrentLang(), now)}" outcome="publicRegisters.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-boxes" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 110, userData.getCurrentLang(), now)}" />
+             					<p:submenu id="spravkiSpec" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,20)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 20, userData.getCurrentLang(), now)}" icon="fas fa-file-alt">
+             						<p:menuitem id="spravkiLica" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,116)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 116, userData.getCurrentLang(), now)}" outcome="correspListSpr.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 116, userData.getCurrentLang(), now)}" icon="fab fa-buromobelexperte"/>
+             						<p:menuitem id="spravkiOEZ" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,113)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 113, userData.getCurrentLang(), now)}" outcome="specialReportsOEZList.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-chart-line" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 113, userData.getCurrentLang(), now)}" />						
+									<p:menuitem id="spravkiVLP" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,114)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 114, userData.getCurrentLang(), now)}" outcome="specialReportsVLPList.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-chart-line" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 114, userData.getCurrentLang(), now)}" />						
+									<p:menuitem id="spravkiFuraji" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,115)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 115, userData.getCurrentLang(), now)}" outcome="specialReportsFurajiList.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-chart-line" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 115, userData.getCurrentLang(), now)}" />						
+             					</p:submenu>
+	                         
+                         	<p:submenu id="spravkiUni" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,10)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 10, userData.getCurrentLang(), now)}" icon="fas fa-file-alt">
+								<p:menuitem id="spravkiInfModel" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,11)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 11, userData.getCurrentLang(), now)}" outcome="aisList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 11, userData.getCurrentLang(), now)}" icon="fab fa-buromobelexperte"/>
+								<p:menuitem id="spravkiUnivers" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,12)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 12, userData.getCurrentLang(), now)}" outcome="uReportList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 12, userData.getCurrentLang(), now)}" icon="fas fa-file-alt"/>
+								<p:menuitem id="spravkiStatTabl" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,13)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 13, userData.getCurrentLang(), now)}" outcome="statisticsList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 13, userData.getCurrentLang(), now)}" icon="fas fa-fw fa-table"/>
+								<p:menuitem id="spravkiStat" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,14)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 14, userData.getCurrentLang(), now)}" outcome="reportList.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-chart-line" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 14, userData.getCurrentLang(), now)}" />						
+							</p:submenu>	
+                      	</p:submenu>
+	                    
+						<p:submenu id="admin" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,1)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 1, userData.getCurrentLang(), now)}" icon="fas fa-fw fa-cog">
+	                      	<p:submenu id="adminUchastniciProces" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,31)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 31, userData.getCurrentLang(), now)}" icon="fas fa-fw fa-users">
+	                      		<p:menuitem id="adminAdmStrukt" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,32)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 32, userData.getCurrentLang(), now)}" outcome="admStruct.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 32, userData.getCurrentLang(), now)}" 
+	                      			icon="fas fa-building"/>
+	                      		<p:menuitem id="adminKoresp" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,33)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 33, userData.getCurrentLang(), now)}" outcome="correspList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 33, userData.getCurrentLang(), now)}" 
+	                      			icon="fas fa-address-book"/>
+	                                                	   
+	               
+	                      	    <p:menuitem id="adminUser" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,7)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 7, userData.getCurrentLang(), now)}" outcome="userList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 7, userData.getCurrentLang(), now)}" 
+	                      	    	icon="fas fa-user"/>
+	                      	    	
+	                           <p:menuitem id="adminGrupiUser" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,8)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 8, userData.getCurrentLang(), now)}" outcome="groupsList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 8, userData.getCurrentLang(), now)}"  
+	                           		icon="fas fa-user-friends"/>
+	                           
+	                           <p:menuitem id="adminUserAktiv" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,9)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 9, userData.getCurrentLang(), now)}" outcome="activeUserList.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-fw fa-child" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 9, userData.getCurrentLang(), now)}" />
+	                      	</p:submenu>
+	                      	<p:submenu id="adminRegDanni" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,91)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 91, userData.getCurrentLang(), now)}" icon="fas fa-toolbox">
+	                      		<p:menuitem id="adminRegistr" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,40)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 40, userData.getCurrentLang(), now)}" outcome="registraturiList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 40, userData.getCurrentLang(), now)}" 
+	                      			icon="fas fa-map-signs"/>
+	                      	
+	                           <p:menuitem id="adminOtkliuchObekt" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,43)}"  value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 43, userData.getCurrentLang(), now)}" outcome="unLockObjects.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 43, userData.getCurrentLang(), now)}" 
+	                           		icon="fas fa-lock-open"/>
+	           	                      			
+	                      		<p:menuitem id="adminNastrObj"  rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU, 108)}"  value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 108, userData.getCurrentLang(), now)}" outcome="nastrScreenFormsList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 108, userData.getCurrentLang(), now)}" 
+	                      			icon="fas fa-object-group"/>
+	                      		<p:menuitem id="adminShabloniFill" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU, 112)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 112, userData.getCurrentLang(), now)}" outcome="shabloniFill.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 112, userData.getCurrentLang(), now)}"
+	                      			icon="fas fa-file-code" />
+	                       	</p:submenu>
+	                      	<p:submenu id="adminSysNastroiki" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,38)}" label="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 38, userData.getCurrentLang(), now)}" icon="fas fa-tools">
+                      			<p:menuitem id="adminKlassif" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,2)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 2, userData.getCurrentLang(), now)}" outcome="systemClassifList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 2, userData.getCurrentLang(), now)}" 
+	                      			icon="fas fa-tree"/>
+	                      		<ui:remove><!-- Нужно ли е това ?????  --></ui:remove>	
+	                           	<p:menuitem id="adminEkatte" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,39)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 39, userData.getCurrentLang(), now)}" outcome="ekatte.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 39, userData.getCurrentLang(), now)}" 
+	                           		icon="fas fa-map"/>
+	                           		
+	                           	<p:menuitem id="adminLogSpisaci" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,3)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 3, userData.getCurrentLang(), now)}" outcome="syslogicListOpis.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 3, userData.getCurrentLang(), now)}" 
+	                           		icon="fas fa-list"/>
+	                           	<p:menuitem id="adminSysNastr" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,4)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 4, userData.getCurrentLang(), now)}" outcome="systemOptions.xhtml@clear@?faces-redirect=true" ajax="false" icon="fas fa-screwdriver" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 4, userData.getCurrentLang(), now)}" />
+	                           	<p:menuitem id="adminSysProcesi" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,5)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 5, userData.getCurrentLang(), now)}" outcome="quartzInfo.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 5, userData.getCurrentLang(), now)}" 
+	                           		icon="fas fa-wrench"/>
+
+	                           	<p:menuitem id="adminDefProcesi" rendered="#{request.userPrincipal.hasAccess(BabhConstants.CODE_CLASSIF_MENU,45)}" value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_MENU, 45, userData.getCurrentLang(), now)}" outcome="procDefList.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_MENU, 45, userData.getCurrentLang(), now)}" 
+	                           		icon="fas fa-thumbtack"/>
+	                           		
+	                           	<p:menuitem id="adminPraznici" rendered="#{request.userPrincipal.hasAccess(DocuConstants.CODE_CLASSIF_MENU,118)}" value="#{systemData.decodeItem(DocuConstants.CODE_CLASSIF_MENU, 118, userData.getCurrentLang(), now)}" outcome="praznici.xhtml@clear@?faces-redirect=true" ajax="false" title="#{systemData.decodeItemDopInfo(DocuConstants.CODE_CLASSIF_MENU, 118, userData.getCurrentLang(), now)}" 
+	                           		icon="fas fa-calendar"/>
+	                
+							</p:submenu>
+	                      		
+	   					</p:submenu>
+	 					
+					</pm:menu>
+              	</o:cache>
+			</h:form>
+		</div>
+	</div>
+</ui:composition>

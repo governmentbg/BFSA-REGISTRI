@@ -1,0 +1,100 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" template="/template/template.xhtml"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<ui:define name="title">Test Desi</ui:define>
+
+
+	<ui:define name="viewname">
+		<li>Test Desi</li>
+
+	</ui:define>
+
+	<ui:define name="head">
+
+
+	</ui:define>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+		</f:metadata>
+
+		<h:form id="testForm">
+
+			<div class="page-title-wrapper">
+
+				<div class="container title">
+
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-6 p-xl-6 ui-fluid">
+
+						<h:outputText value="ID - Наименование на обект на дейност" styleClass="form-label" />
+						
+						<div class="selectModalA-with-buttons">
+						
+						<h:panelGroup id="obDeinInp" layout="block" styleClass="koresp-input">
+						
+						<p:inputText value="#{testDesi.idObDein}  #{testDesi.naimenovanie}" readonly="true"/>
+						
+						</h:panelGroup>
+						
+						<div jsf:id="obDeinosts">		
+						
+							<p:commandButton id="btnObDeinS"
+								onmousemove="document.getElementById('testForm:btnObDeinS').focus();"
+								rendered="#{testDesi.vidObektDein ne null}"
+								icon="fas fa-list-ul" partialSubmit="true"
+								process="testForm:panelObektDein @this"
+								update="testForm:panelObektDein"
+								oncomplete="PF('obDS').show(); "
+								title="#{labels['compObektDeinSearch.title']}" />
+								
+							</div>	
+						
+						</div>
+
+					</div>
+				
+				</div>
+			
+			</div>
+
+			<h:panelGroup id="panelObektDein">
+
+				<p:dialog appendTo="@form" closeOnEscape="true" header="#{labels['compObektDeinSearch.title']}" fitViewport="true"
+					responsive="true" resizable="true" position="top" widgetVar="obDS" dynamic="true" id="modalObDS" modal="true">
+					
+					<div class="container #{guestPreferences.containerPosition}">
+
+						<ibg:compObektDeinostSearch id="obDeinS" myId="idObDeinS"  modal="true"
+							vidOd="#{testDesi.vidObektDein}" 
+							selIdObDein="#{testDesi.idObDein}"
+							selNaimObDein="#{testDesi.naimenovanie}"
+							dateClassif="#{testDesi.decodeDate}"							
+							update="testForm"
+							onComplete="PF('obDS').hide(); #{testDesi.someActionAfterSelection()};" />
+
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>
+
+
+
+

@@ -1,0 +1,20 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml" xmlns:ui="http://java.sun.com/jsf/facelets" xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui" xmlns:f="http://java.sun.com/jsf/core" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<p:importConstants type="com.ib.babhregs.system.BabhConstants" var="BabhConstants" className="com.ib.babhregs.system.BabhConstants"/>
+
+	<p:column>
+		<f:facet name="header">
+			<h:outputText value="#{labels['users.zveno']}" />
+		</f:facet>
+		<h:outputText value="#{systemData.decodeItemDopInfo (Constants.CODE_CLASSIF_ADMIN_STR, row[0], userList.currentLang, userList.currentDate)}" />
+	</p:column>
+	<p:column>
+		<f:facet name="header">
+			<h:outputText value="#{labels['users.registratura']}" />
+		</f:facet>
+		<h:outputText value="#{systemData.decodeItem (BabhConstants.CODE_CLASSIF_REGISTRATURI, row[6], userList.currentLang, userList.currentDate)}" />
+	</p:column>
+
+</ui:composition>

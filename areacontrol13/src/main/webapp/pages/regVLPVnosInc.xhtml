@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"> 
+          
+	<div>
+      
+		<!-- 1.  Панел за vnosMnogo" -->
+		<div>
+			<h:panelGroup id="panelTblVnosM1" layout="block" class="p-grid">
+				<div class="title-group p-mt-3" jsf:id="buttonAddDivVnos">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#vlpTargForm:registerTabs:vnosMany')">
+						<h:outputText value="#{panelVnosMLabel}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>	
+			    <div class="p-col-6 p-sm-1 p-md-1 p-lg-1 p-xl-1" jsf:id="addButtonDiv22">
+					<p:commandButton id="addVnosMBtn"
+						rendered="#{isView ne 1}"
+						icon="fas fa-plus" partialSubmit="true"
+						process="@this"
+						update="vlpTargForm:registerTabs:dpVnosMData"
+						styleClass="ui-button-success"
+						oncomplete="PF('mVnos').show(); "
+						action="#{regVLP.actionNewVnosM}"
+						value="Ново"
+						title="Ново" />
+				</div>
+			</h:panelGroup>
+		
+
+		
+			<div class="p-grid ui-fluid" id="vnosMany">
+
+				<h:panelGroup id="panelTblVnosM" layout="block"
+					class="p-grid p-col-12">
+
+					<div class="p-col-10" >
+						<p:dataTable id="tblVnosM" var="row" value="#{regVLP.eventDeinostVlp.eventDeinostVlpPrvnos}" lazy="true" rowKey="#{row.id}"	 
+							rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " showGridlines="true"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+							paginatorAlwaysVisible="false" paginator="true">
+						
+						  	<p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+								<h:outputText value="#{idx + 1}" />
+							</p:column>	
+							
+							<p:column width="30" exportable="false">
+								<p:commandButton
+									action="#{regVLP.actionEditVnos(row, idx)}"
+									partialSubmit="true" update="vlpTargForm:registerTabs:dpVnosMData"
+									icon="fas fa-edit" styleClass="ui-button-success"
+									title="Промяна данни">
+								</p:commandButton>
+							</p:column>
+							
+							<p:column  sortBy="#{row.naimenovanie}" headerText="Търг. наименование">
+								<h:outputText value="#{row.naimenovanie}"  />
+							</p:column>
+							
+							<p:column  sortBy="#{row.forma}" headerText="Фарм. форма">
+								<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PHARM_FORMI, row.forma, regVLP.currentLang, now)}"  />
+							</p:column>
+							
+							<p:column  headerText="Активни субстанции">
+								<p:repeat var="item" value="#{row.eventDeinostVlpPrvnosSubst}">
+									<h:outputText value="#{item.vidIdentifier.name}; " />
+								</p:repeat>
+							</p:column>
+							
+							<p:column   headerText="Първична опаковка">
+								<p:repeat var="item" value="#{row.eventDeinostVlpPrvnosOpakovka}">
+									<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PARVICHNA_OPAKOVKA, item.opakovka, regVLP.currentLang, now)}"  />
+								</p:repeat>
+							</p:column>
+							
+							<p:column  sortBy="#{row.prilozenie}" headerText="Начин на приложение">
+								<h:outputText value="#{row.prilozenie}"  />
+							</p:column>
+							
+							<p:column width="30" exportable="false">							
+								<p:commandButton id="removeVnosMBtn"
+									rendered="#{isView ne 1}"
+									icon="fas fa-times" partialSubmit="true"
+									process="vlpTargForm:registerTabs:tblVnosM @this"
+									update="vlpTargForm:registerTabs:tblVnosM"
+									styleClass="ui-button-danger"										
+									action="#{regVLP.actionRemoveVnosM(idx)}"
+									title="Изтриване" />				
+							</p:column>
+							
+						
+						</p:dataTable>
+					</div>
+					 
+				</h:panelGroup>
+			</div>
+		</div>
+		
+		<h:panelGroup id="dpVnosMData">
+				
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{panelVnosMLabel}" fitViewport="true"
+				resizable="false" responsive="true" position="top"
+				widgetVar="mVnos" dynamic="true" id="modalVnosMD" modal="true">
+				<div class="container #{guestPreferences.containerPosition}">
+					
+					<div class="card">
+						<div class="p-grid">
+							<div class="p-col-12 ui-fluid">
+								<h:outputText value="Наименование на ВЛП" styleClass="form-label" />
+								<p:inputText value="#{regVLP.eventDeinostVlpPrvnos.naimenovanie}" />
+							</div>
+							<div class="p-col-6 ui-fluid">
+								<h:outputText value="Фармацевтична форма" styleClass="form-label" />
+							    
+							    <ibg:selectOneModalA codeClassif="#{BabhConstants.CODE_CLASSIF_PHARM_FORMI}" 
+											selectedCode="#{regVLP.eventDeinostVlpPrvnos.forma}" minQueryLength="3"
+											compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+							</div>
+							
+							<div class="p-col-12 ui-fluid" >
+								<h:outputText value="Начин на приложение" styleClass="form-label" />
+								<p:inputTextarea  value="#{regVLP.eventDeinostVlpPrvnos.prilozenie}"  rows="1" />
+							</div>
+							
+							
+							
+						</div>
+					</div>
+					
+					<div>
+						<h:panelGroup id="paneltblParvOpak" layout="block" class="p-grid">
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#vlpTargForm:registerTabs:parvOpakovkaPanel')">
+									<h:outputText value="Първична опаковка" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+							
+						    <div class="p-col-6 p-sm-1 p-md-1 p-lg-1 p-xl-1" jsf:id="addButtonDivParvOp">
+									<p:commandButton id="addParvOp"
+										rendered="#{isView ne 1}"
+										icon="fas fa-plus" partialSubmit="true"
+										process="@this"
+										update="vlpTargForm:registerTabs:dpParvOpModal"
+										styleClass="ui-button-success"
+										oncomplete="PF('mParvichnaOpakovka').show(); "
+										action="#{regVLP.actionNewParvOpak}"
+										value="Нова"
+										title="Нова" />
+										 
+							</div>
+						</h:panelGroup>
+						
+					<!--  Първична опаковка-->
+						<div jsf:id="parvOpakovkaPanel">
+							<div class="p-grid ui-fluid">
+								<div class="p-col-12 ">
+									<p:dataTable id="parvichnaOpakovkaTable" var="row" value="#{regVLP.eventDeinostVlpPrvnos.eventDeinostVlpPrvnosOpakovka}" lazy="true" rowKey="#{row.id}"	 
+										rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " showGridlines="true"
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+										rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+										paginatorAlwaysVisible="false" paginator="true">
+														
+									  	<p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+											<h:outputText value="#{idx + 1}" />
+										</p:column>	
+										
+										<p:column  sortBy="#{row.opakovka}" headerText="Опаковка">
+											<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PARVICHNA_OPAKOVKA, row.opakovka, regVLP.currentLang, now)}"  />								    
+										</p:column>
+										<p:column  sortBy="#{row.kolichestvo}" headerText="Количество">
+											<h:outputText value="#{row.kolichestvo}" />								    
+										</p:column>
+										
+										
+										<p:column width="30" exportable="false">							
+											<p:commandButton id="removeParvOpBtn"
+												rendered="#{isView ne 1}"
+												icon="fas fa-times" partialSubmit="true"
+												process="vlpTargForm:registerTabs:tblActiveSubst @this"
+												update="vlpTargForm:registerTabs:tblActiveSubst"
+												styleClass="ui-button-danger"															
+												action="#{regVLP.actionRemoveActiveSubst(idx)}"
+												title="Изтриване" />				
+										</p:column>
+										
+									
+									</p:dataTable>
+								</div>
+								 
+							</div>
+						</div>
+					</div>
+					<!-- 1.  Панел за Активни в-ва" -->
+					<div>
+						<h:panelGroup id="paneltblActiveSubst" layout="block" class="p-grid">
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#vlpTargForm:registerTabs:licaObDeinVnos')">
+									<h:outputText value="Активни вещества/щамове/микроорганизми" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+							
+						    <div class="p-col-6 p-sm-1 p-md-1 p-lg-1 p-xl-1" jsf:id="addButtonDivObDein2">
+									<p:commandButton id="addVnosMBtn2"
+										rendered="#{isView ne 1}"
+										icon="fas fa-plus" partialSubmit="true"
+										process="@this"
+										update="vlpTargForm:registerTabs:dpVnosActSubstMData"
+										styleClass="ui-button-success"
+										oncomplete="PF('mActiveSubstMD').show(); "
+										action="#{regVLP.actionNewActiveSubst}"
+										value="Ново"
+										title="Ново" />
+										 
+							</div>
+						</h:panelGroup>
+						
+
+						<div jsf:id="licaObDeinVnos">
+							<div class="p-grid ui-fluid">
+								<div class="p-col-12 ">
+									<p:dataTable id="tblActiveSubst" var="row" value="#{regVLP.eventDeinostVlpPrvnos.eventDeinostVlpPrvnosSubst}" lazy="true" rowKey="#{row.id}"	 
+										rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " showGridlines="true"
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+										rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+										paginatorAlwaysVisible="false" paginator="true">
+														
+									  	<p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+											<h:outputText value="#{idx + 1}" />
+										</p:column>	
+										
+										<p:column  sortBy="#{row.vid}" headerText="Вид">
+											<h:outputText value="#{row.vidIdentifier.name}" />								    
+										</p:column>
+
+										<p:column  sortBy="#{row.dopInfo}" headerText="Пояснение">
+											<h:outputText value="#{row.dopInfo}"  />								    
+										</p:column>
+										
+										<p:column width="150" sortBy="#{row.doza}" headerText="Съдържание">
+											<h:outputText value="#{row.doza}"  />								    
+										</p:column>
+										
+										<p:column width="30" exportable="false">							
+											<p:commandButton id="removeActiveSubstBtn"
+												rendered="#{isView ne 1}"
+												icon="fas fa-times" partialSubmit="true"
+												process="vlpTargForm:registerTabs:tblActiveSubst @this"
+												update="vlpTargForm:registerTabs:tblActiveSubst"
+												styleClass="ui-button-danger"															
+												action="#{regVLP.actionRemoveActiveSubst(idx)}"
+												title="Изтриване" />				
+										</p:column>
+										
+									
+									</p:dataTable>
+								</div>
+								 
+							</div>
+						</div>
+					</div>
+				</div>
+				<f:facet name="footer">
+	          	
+		          	<div class="p-grid p-nogutter">
+			       		<div class="p-col-6" align="left">
+					       	 	<p:commandButton id="bntCloseVnos"  icon="fas fa-times" 
+					       	 	styleClass="ui-button-secondary" value="#{labels['register.cancel']}" oncomplete="PF('mVnos').hide();" />	
+					 	</div>
+			       		<div class="p-col-6" align="right">
+					       	 	<p:commandButton id="btnReturnObDeinVnos"  action="#{regVLP.actionReturnVnos}" update="vlpTargForm:registerTabs:panelTblVnosM" 
+					       	 	value="Добавяне"  />	
+					 	</div>
+					 	
+			       	</div>
+		       	</f:facet>
+			</p:dialog>
+		</h:panelGroup>
+		
+		
+		
+		
+		
+		<h:panelGroup id="dpVnosActSubstMData">
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="Активни вещества/щамове/микроорганизми" fitViewport="true" width="1000"
+				resizable="false" responsive="true" 
+				widgetVar="mActiveSubstMD" dynamic="true" id="modalActiveSubstMD" modal="true">
+				
+				<p:messages id="modalMsgAktVS" showDetail="true" closable="false">
+					<p:autoUpdate />
+				</p:messages>
+				
+				<div class="p-grid">
+					<div class="p-col-6 ui-fluid">
+						<h:outputText value="Вид" styleClass="form-label req" />
+					
+						<ibg:findSubstance id="findSubstanceInVlpProizv"  
+					    	selectedSubstanceName="#{regVLP.eventDeinostVlpPrvnosSubst.vidIdentifier.name}" 
+					    	selectedSubstance="#{regVLP.eventDeinostVlpPrvnosSubst.vidIdentifier}"/>
+					</div>
+					 
+					<div class="p-col-12 ui-fluid" >
+						<h:outputText value="Пояснение" styleClass="form-label" />
+						<p:inputTextarea  value="#{regVLP.eventDeinostVlpPrvnosSubst.dopInfo}"  rows="1" />
+					</div>
+					
+					<div class="p-col-12 ui-fluid" >
+						<h:outputText value="Съдържание в дозова единица и количество в крайната опаковка" styleClass="form-label" />
+						<p:inputTextarea  value="#{regVLP.eventDeinostVlpPrvnosSubst.doza}"  rows="1" />
+					</div>
+				</div>
+				
+				<f:facet name="footer">
+		          	
+			          	<div class="p-grid p-nogutter">
+				       		<div class="p-col-6" align="left">
+						       	 	<p:commandButton id="bntCloseActiveSubstM"  icon="fas fa-times" 
+						       	 	styleClass="ui-button-secondary" value="#{labels['register.cancel']}" oncomplete="PF('mActiveSubstMD').hide();" />	
+						 	</div>
+				       		<div class="p-col-6" align="right">
+						       	 	<p:commandButton action="#{regVLP.actionAddActiveSubstM}"  
+				 					update="vlpTargForm:registerTabs:tblActiveSubst"  value="#{ui_labels['general.add']}"/>
+						 	</div>
+						 	
+				       	</div>
+			       	</f:facet>
+				
+				
+			</p:dialog>
+		</h:panelGroup>
+		<h:panelGroup id="dpParvOpModal">
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="Първична опаковка" fitViewport="true" width="1000"
+				resizable="false" responsive="true" 
+				widgetVar="mParvichnaOpakovka" dynamic="true" id="mParvichnaOpakovkaMD" modal="true">
+				
+				<p:messages id="modalMsgParvOpak" showDetail="true" closable="false">
+					<p:autoUpdate />
+				</p:messages>
+				
+				<div class="p-grid">
+				
+					<div class="p-col-12 ui-fluid" >
+						<h:outputText value="Първична опаковка" styleClass="form-label req" />
+						<p:selectOneMenu  value="#{regVLP.parvOpak.opakovka}" id="parvOpakDropMenu">
+						     <f:selectItem value="#{null}" itemValue="#{null}"/>
+						     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PARVICHNA_OPAKOVKA, now, regVLP.currentLang)}" 
+						         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+					    </p:selectOneMenu>	
+						
+					</div>
+					 
+					
+					<div class="p-col-12 ui-fluid" >
+						<h:outputText value="Количество" styleClass="form-label" />
+						<p:inputText  value="#{regVLP.parvOpak.kolichestvo}"  />
+					</div>
+				</div>
+				
+				<f:facet name="footer">
+		          	
+			          	<div class="p-grid p-nogutter">
+				       		<div class="p-col-6" align="left">
+						       	 	<p:commandButton id="bntCloseParvOpakM"  icon="fas fa-times" 
+						       	 	styleClass="ui-button-secondary" value="#{labels['register.cancel']}" oncomplete="PF('mParvichnaOpakovka').hide();" />	
+						 	</div>
+				       		<div class="p-col-6" align="right">
+						       	 	<p:commandButton action="#{regVLP.actionAddParvOpak}"  
+				 					update="vlpTargForm:registerTabs:parvichnaOpakovkaTable"  value="#{ui_labels['general.add']}"/>
+						 	</div>
+						 	
+				       	</div>
+			       	</f:facet>
+				
+				
+			</p:dialog>
+		</h:panelGroup>
+		
+	</div> 
+</html>

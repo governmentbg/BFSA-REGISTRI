@@ -1,0 +1,115 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ibg="http://java.sun.com/jsf/composite/components"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"  
+                template="/template/template.xhtml">	
+	<f:metadata>
+	 	<f:viewAction action="#{userData.checkPageAccess(110)}" onPostback="false" />
+	 	<f:viewAction action="#{userData.checkReloadPage}" onPostback="false" />
+		<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+	</f:metadata>
+                
+    <ui:define name="title">#{navTexts['/pages/regsWholesalersVLP.xhtml']}</ui:define>
+   
+
+    <ui:define name="viewname">
+
+		<li>
+			<p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}" rendered="#{navigation.navPath.size()>1}">
+				<i class="fas fa-caret-left" />
+			</p:commandLink>
+		</li>
+        <li>#{navTexts[reg28.titleReg]}</li>
+
+	</ui:define>
+	
+	<ui:define name="content">		
+		<h:form id="regForm">
+				<h:panelGroup id="pResult" layout="block" styleClass="margin-top">		
+				
+					<h:panelGroup id="panelTblToolbar">
+				
+					<div class="table-toolbar">
+								        									
+						<h:outputText value="#{ui_labels['general.reportResult']} #{reg28.regsList.rowCount}" styleClass="form-label p-mr-2"/>
+											
+					</div>
+					</h:panelGroup>
+					
+					<p:dataTable id="tblRegsLst" var="row" value="#{reg28.regsList}" lazy="true" scrollable="true" scrollWidth="99%"	 
+						rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage="#{labels['doc.listEmptyMsg']}" 
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						rows="15" rowsPerPageTemplate="5,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="true"
+						 paginator="true" sortBy="#{row.id_vpisvane}"  >
+																					
+						<f:facet name="{Exporters}">
+						 
+				            <div style="float:left">
+				             					    		
+					            <p:commandLink id="excel" 
+					            	    update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+					        			<h:graphicImage library="images" name="excel2.png" />
+					        			<p:dataExporter type="xls" target="tblRegsLst" fileName="RegsApprovedSellersList" postProcessor="#{reg28.postProcessXLS}"  />
+					    		</p:commandLink>
+
+								<p:commandLink id="pdf"  
+								 	  update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+					        	 	  <h:graphicImage library="images" name="pdf.png" />
+					        	 	  <p:dataExporter type="pdf" target="tblRegsLst" fileName="regsList"	 encoding="windows-1251"
+					        			preProcessor="#{reg28.preProcessPDF}" options="#{reg28.pdfOptions()}"/>
+					    		</p:commandLink>
+					  		
+					    		<p:commandLink id="csv" update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+					        		<h:graphicImage library="images" name="csv.png"   />
+					        		<p:dataExporter type="csv" target="tblRegsLst" fileName="regsList"  encoding="CP1251"/>
+					    		</p:commandLink>
+				            </div>
+				       	</f:facet>	
+							
+											
+					  	<p:column width="40" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+							<h:outputText value="#{idx + 1}" />
+						</p:column>	
+											
+						<p:column width="100" sortBy="#{row.vlp_reklama}" headerText="ВМП, които ще се рекламират">
+							<h:outputText value="#{row[1]}"/>
+						</p:column>
+																	
+						<p:column width="180" sortBy="#{row.licenziant}" headerText="Притежател на разрешението">
+							<h:outputText value="#{row[6]}"/>
+						</p:column>
+			            <p:column  width="280" sortBy="#{row.ekatte}" headerText="Адрес на притежателя на разрешението">
+	 						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_EKATTE, row[9], reg24.currentLang, now)}"/>
+							<h:outputText value=", #{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, row[9], reg28.currentLang, now)}"/>
+							<h:outputText value=", #{row[10]}"/>
+	                    </p:column>
+ 														
+						<p:column width="100"  sortBy="#{row.nom_dat_lizenz}" headerText="Номер/дата на разрешения за търговия">
+							<h:outputText value="#{row[4]} / "/>
+<ui:remove>							<h:outputText value="#{row[3]}">
+								<f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{reg28.timeZone}"/>
+							</h:outputText>
+</ui:remove>
+						</p:column>
+						
+						<p:column width="200" sortBy="#{row.licenziant}" headerText="Наименование / имена на заявителя">
+							<h:outputText value="#{row[6]}"/>
+						</p:column>
+						<p:column width="200" sortBy="#{row. prednazn_reklama_text}" headerText="Предназначение">
+							<h:outputText value="#{row[7]}"/>
+						</p:column>
+		                <p:column width="290" sortBy="#{row.zabelejka}"  headerText="Забележки по вписаните обстоятелства" >
+	                       <h:outputText value="#{row[8]}"/>
+	                    </p:column>
+														
+					
+					</p:dataTable>
+			</h:panelGroup>
+
+
+		</h:form>
+	</ui:define>
+</ui:composition>

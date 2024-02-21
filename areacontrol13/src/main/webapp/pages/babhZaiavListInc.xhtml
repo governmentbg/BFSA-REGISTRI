@@ -1,0 +1,653 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<style>
+.viewedRow {
+	background-color: var(--surface-c) !important;
+}
+</style>
+
+	<!-- ФОРМА -->
+	<h:form id="zaiavListForm">
+
+		<div class="container #{guestPreferences.containerPosition}">
+			<!-- ФИЛТЪР -->
+			<h:panelGroup id="panelFilter">
+				<div class="card">
+					<div class="p-grid">
+
+						<!--РЕГИСТЪР-->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['docu.register']}"
+								styleClass="form-label" />
+							<h:panelGroup id="babhRegister">
+								<ibg:selectManyModalA compType="2" maxResults="50"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_REGISTRI}"
+									dateClassif="#{babhZaiavListBean.decodeDate}" filtered="false"
+									selectedCodes="#{babhZaiavListBean.docSearch.registerIdList}"
+									selectedClassifs="#{babhZaiavListBean.registerIdClList}"
+									modalPosition="top"
+									sortByName="false" saveStateTree="false" showRadioBtn="true"
+									styleAutoComp="width:99%;" />
+							</h:panelGroup>
+						</div>
+
+						<!-- ВИД НА ДОКУМЕНТА-->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['nastrObjList.vidZaiav']}"
+								styleClass="form-label" />
+							<ibg:selectManyModalA id="vidDoc" compType="2" maxResults="50"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_ZAIAVLENIA}"
+								selectedCodes="#{babhZaiavListBean.docSearch.docVidList}"
+								selectedClassifs="#{babhZaiavListBean.docVidList}"
+								dateClassif="#{babhZaiavListBean.decodeDate}" filtered="false"
+								saveStateTree="false" showRadioBtn="true"
+								modalPosition="top"
+								styleAutoComp="width:990%;" withBtnClear="true" />
+
+						</div>
+
+						<!--ДЕЛОВОДЕН НОМЕР-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3 ui-fluid">
+							<h:outputText value="#{labels['babhZaiavList.regNum']}"
+								styleClass="form-label" />
+							<p:inputText id="egNum"
+								value="#{babhZaiavListBean.docSearch.rnDoc}" />
+						</div>
+
+						<!-- ПЕРИОД-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['babhZaiavList.docDatReg']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="period" value="#{babhZaiavListBean.periodR}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, babhZaiavListBean.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+								<p:ajax event="change" update="period dateOt dateDo"
+									listener="#{babhZaiavListBean.changePeriodR}" />
+							</p:selectOneMenu>
+						</div>
+
+						<!-- ДАТА ОТ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['general.dataOt']}"
+								styleClass="form-label" />
+							<p:datePicker id="dateOt" mask="true" showIcon="true" locale="bg"
+								pattern="dd.MM.yyyy"
+								value="#{babhZaiavListBean.docSearch.docDateFrom}">
+								<p:ajax event="change" update="period"
+									listener="#{babhZaiavListBean.changeDate}" />
+								<p:ajax event="dateSelect" update="period"
+									listener="#{babhZaiavListBean.changeDate}" />
+							</p:datePicker>
+						</div>
+
+						<!-- ДАТА ДО-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['general.dataDo']}"
+								styleClass="form-label" />
+							<p:datePicker id="dateDo" mask="true" showIcon="true" locale="bg"
+								pattern="dd.MM.yyyy"
+								value="#{babhZaiavListBean.docSearch.docDateTo}">
+								<p:ajax event="change" update="period"
+									listener="#{babhZaiavListBean.changeDate}" />
+								<p:ajax event="dateSelect" update="period"
+									listener="#{babhZaiavListBean.changeDate}" />
+							</p:datePicker>
+						</div>
+
+						<!-- СТАТУС-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3  ui-fluid">
+							<h:outputText value="#{labels['babhZaiavList.docStatus']}"
+								styleClass="form-label" />
+							<p:selectCheckboxMenu id="status" multiple="true" filter="true"
+								filterMatchMode="startsWith"
+								value="#{babhZaiavListBean.docSearch.statusList}">
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOC_STATUS, babhZaiavListBean.decodeDate, babhZaiavListBean.currentLang)}" />
+							</p:selectCheckboxMenu>
+						</div>
+
+						<!-- ПЕРИОД НА СТАТУСА -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['babhZaiavList.docDateStatus']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="periodStatus"
+								value="#{babhZaiavListBean.periodStatus}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, babhZaiavListBean.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+								<p:ajax event="change"
+									update="periodStatus dateOtStatus dateDoStatus"
+									listener="#{babhZaiavListBean.changePeriodStatus}" />
+							</p:selectOneMenu>
+						</div>
+
+						<!-- ДАТА ОТ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['general.dataOt']}"
+								styleClass="form-label" />
+							<p:datePicker id="dateOtStatus" mask="true" showIcon="true"
+								locale="bg" pattern="dd.MM.yyyy"
+								value="#{babhZaiavListBean.docSearch.statusDateFrom}">
+								<p:ajax event="change" update="periodStatus"
+									listener="#{babhZaiavListBean.changeDate}" />
+								<p:ajax event="dateSelect" update="periodStatus"
+									listener="#{babhZaiavListBean.changeDateStatus}" />
+							</p:datePicker>
+						</div>
+
+						<!-- ДАТА ДО-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['general.dataDo']}"
+								styleClass="form-label" />
+							<p:datePicker id="dateDoStatus" mask="true" showIcon="true"
+								locale="bg" pattern="dd.MM.yyyy"
+								value="#{babhZaiavListBean.docSearch.statusDateTo}">
+								<p:ajax event="change" update="periodStatus"
+									listener="#{babhZaiavListBean.changeDate}" />
+								<p:ajax event="dateSelect" update="periodStatus"
+									listener="#{babhZaiavListBean.changeDateStatus}" />
+							</p:datePicker>
+						</div>
+
+						<!-- ОТНОСНО -->
+						<div class="p-col-12 p-sm-12  ui-fluid">
+							<h:outputText value="#{labels['general.otnosno']}"
+								styleClass="form-label" />
+							<p:inputText id="otnosno"
+								value="#{babhZaiavListBean.docSearch.otnosno}" />
+						</div>
+
+						<c:if test="#{!babhZaiavListBean.ud.limitedAccess}">
+							<!-- РЕГИСТРАТУРА, В КОЯТО Е РЕГИСТРИРАН ДОКУМЕНТА-->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-7 ui-fluid">
+								<h:outputText value="#{labels['babhZaiavList.docRegistratura']}"
+									styleClass="form-label" />
+								<p:selectCheckboxMenu id="docRegistratura"
+									value="#{babhZaiavListBean.docSearch.registraturaList}"
+									multiple="true" filter="true" filterMatchMode="startsWith">
+									<f:selectItems value="#{babhZaiavListBean.registraturiList}" />
+								</p:selectCheckboxMenu>
+
+							</div>
+
+							<!-- СЛУЖИТЕЛ-->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-5 ui-fluid">
+								<h:outputText value="#{labels['babhZaiavList.user']}"
+									styleClass="form-label" />
+								<ibg:selectOneModalA
+									codeClassif="#{BabhConstants.CODE_CLASSIF_ADMIN_STR}"
+									selectedCode="#{babhZaiavListBean.docSearch.codeRef}"
+									filtered="false" withBtnClear="true" saveStateTree="true"
+									modalPosition="top"
+									showRadioBtn="true" styleAutoComp="width:99%;" compType="2" />
+							</div>
+						</c:if>
+					</div>
+
+					<!-- БУТОНИ -->
+					<div class="filter-buttons">
+						<p:commandButton icon="fas fa-search"
+							value="#{ui_labels['general.search']}" id="btnSearch"
+							update="resultTable" partialSubmit="true"
+							action="#{babhZaiavListBean.actionSearch}"
+							process="@this panelFilter resultTable" styleClass="p-mr-3" />
+
+						<p:commandButton icon="fas fa-eraser"
+							value="#{ui_labels['general.clear']}" id="btnClear"
+							update="resultTable panelFilter" partialSubmit="true"
+							process="@this panelFilter resultTable"
+							action="#{babhZaiavListBean.actionClear}"
+							styleClass="ui-button-warning" />
+					</div>
+
+				</div>
+			</h:panelGroup>
+		</div>
+
+		<h:panelGroup id="resultTable" layout="block" styleClass="margin-top">
+			<h:panelGroup layout="block" styleClass="card"
+				rendered="#{babhZaiavListBean.docsList.rowCount ne null}">
+
+				<div class="table-toolbar">
+					<h:outputText
+						value="#{ui_labels['general.reportResult']}: #{babhZaiavListBean.docsList.rowCount}"
+						styleClass="form-label"
+						rendered="#{babhZaiavListBean.docsList.rowCount ne null}" />
+				</div>
+
+				<!-- РЕЗУЛТАТНА ТАБЛИЦА -->
+				<p:dataTable id="tblZaiavList" var="row" lazy="true"
+					rendered="#{babhZaiavListBean.docsList.rowCount ne null}"
+					rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+					rows="15" sortMode="single" reflow="true"
+					value="#{babhZaiavListBean.docsList}"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+					paginatorAlwaysVisible="true" paginator="true" showGridlines="true"
+					rowExpandMode="single"
+					rowStyleClass="#{babhZaiavListBean.viewedRows eq row[0] ? 'viewedRow' : ' '}">
+
+					<p:ajax event="rowToggle"
+						listener="#{babhZaiavListBean.docExpand(row[0])}" />
+
+					<f:facet name="{Exporters}">
+						<div style="float: left">
+
+							<p:commandLink id="excel" update="tblZaiavList"
+								process="tblZaiavList" partialSubmit="true">
+								<h:graphicImage library="images" name="excel2.png" />
+								<p:dataExporter type="xls" target="tblZaiavList"
+									fileName="zaiavleniaList"
+									postProcessor="#{babhZaiavListBean.postProcessXLS}" />
+							</p:commandLink>
+
+							<p:commandLink id="csv" update="tblZaiavList"
+								process="tblZaiavList" partialSubmit="true">
+								<h:graphicImage library="images" name="csv.png" />
+								<p:dataExporter type="csv" target="tblZaiavList"
+									fileName="zaiavleniaList" encoding="CP1251" />
+							</p:commandLink>
+
+							<p:commandLink id="pdf" update="tblZaiavList"
+								process="tblZaiavList" partialSubmit="true">
+								<h:graphicImage library="images" name="pdf.png" />
+								<p:dataExporter type="pdf" target="tblZaiavList"
+									fileName="zaiavleniaList" encoding="windows-1251"
+									preProcessor="#{babhZaiavListBean.preProcessPDF}"
+									options="#{babhZaiavListBean.pdfOptions()}" />
+							</p:commandLink>
+
+						</div>
+					</f:facet>
+
+					<p:column width="30" headerText="#{ui_labels['general.No-symbol']}">
+						<h:outputText value="#{idx + 1}" />
+					</p:column>
+
+					<p:column exportable="false" width="30">
+						<p:rowToggler />
+					</p:column>
+
+					<p:column exportable="false" width="30" style="text-align:center; ">
+						<p:commandButton icon="fas fa-edit" ajax="false"
+							action="#{babhZaiavListBean.actionGotoEdit(row[0], row[6])}"
+							styleClass="btn-new p-mr-3" title="#{ui_labels['general.edit']}"
+							rendered="#{babhZaiavListBean.isView eq 0}" />
+
+						<p:commandButton icon="fas fa-eye" ajax="false"
+							styleClass="btn-new p-mr-2" title="#{ui_labels['general.view']}"
+							disabled="true" rendered="#{babhZaiavListBean.isView eq 1}" />
+					</p:column>
+
+					<p:column exportable="false" width="30" style="text-align:center; ">
+						<p:commandButton icon="fas fa-files-o" ajax="false"
+							title="#{labels['babhZaiavList.vpisvane']}"
+							styleClass="ui-button-secondary"
+							action="#{babhZaiavListBean.actionGoToVpis(row[0], row[6], row[3])}">
+							<f:setPropertyActionListener value="#{row[0]}"
+								target="#{babhZaiavListBean.tmpDocId}" />
+						</p:commandButton>
+					</p:column>
+
+
+					<p:column headerText="#{labels['nastrObjList.vidZaiav']}">
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[3], babhZaiavListBean.currentLang, now)}" />
+					</p:column>
+
+					<p:column headerText="#{labels['babhZaiavList.regNum']}"
+						width="100" sortBy="#{row.a1}">
+						<h:outputText value="#{row[1]}" />
+					</p:column>
+
+					<p:column headerText="#{labels['refDeleg.dateFrom']}" width="80"
+						sortBy="#{row.a4}">
+						<h:outputText value="#{row[4]}">
+							<f:convertDateTime pattern="dd.MM.yyyy"
+								timeZone="#{babhZaiavListBean.timeZone}" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="#{labels['general.otnosno']}"
+						sortBy="#{row.a5}">
+						<h:outputText value="#{row[5]}" />
+					</p:column>
+
+					<ui:remove>
+						<p:column headerText="#{labels['babhZaiavList.izpulniteli']}"
+							width="120">
+							<h:outputText value="TODO" />
+						</p:column>
+					</ui:remove>
+
+					<p:column headerText="#{labels['users.registratura']}" width="120">
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_REGISTRATURI, row[2], babhZaiavListBean.currentLang, now)}" />
+					</p:column>
+
+
+					<p:rowExpansion id="filesExp">
+
+						<div class="p-col-12 ui-fluid p-mt-3"
+							jsf:rendered="#{babhZaiavListBean.filesList.size() ne 0}">
+							<ibg:compFileUpload id="filesDoc"
+								listObj="#{babhZaiavListBean.filesList}"
+								codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+								header="false" idObj="#{row[0]}" view="true" display="list"
+								typeSign="0" saveFirst="true" dragDropSupport="false"
+								showTitle="false" />
+						</div>
+
+						<div class="p-col-12 ui-fluid p-mt-1"
+							jsf:rendered="#{babhZaiavListBean.filesList.size() eq 0}">
+							<p:outputLabel styleClass="p-text-italic"
+								value="#{labels['babhZaiavList.noFiles']}" />
+						</div>
+
+					</p:rowExpansion>
+
+
+				</p:dataTable>
+			</h:panelGroup>
+		</h:panelGroup>
+
+
+
+
+
+		<!-- МОДАЛЕН ЗА ПРЕНАСОЧВАНЕ КЪМ КОНКРЕТНО ВПИСВАНЕ  -->
+		<h:panelGroup id="panelSlcVpis">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['babhZaiavList.slcVpis']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="modalSlcVpisVar" dynamic="true" id="modalSlcVpis"
+				modal="true" width="95%"
+				onHide="#{babhZaiavListBean.actionClearM()}">
+
+				<p:messages id="modalSlcVpisMsg" showDetail="true" closable="false"
+					style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+
+
+				<h:panelGroup id="panelFilterM">
+					<div class="card">
+
+						<div class="p-grid " jsf:id="modalSlcVpisData">
+
+							<!-- РЕГ. НОМЕР НА ВПИСВАНЕ -->
+							<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+								<h:outputText value="#{labels['babZaiavList.regNZaiav']}"
+									styleClass="form-label" />
+								<p:inputText
+									value="#{babhZaiavListBean.vpisvaneSearch.regNomZaiav}" />
+							</div>
+
+							<!-- Период на статус -->
+							<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['babhZaiavList.periodVpis']}"
+									styleClass="form-label" />
+								<p:selectOneMenu id="periodStatusP"
+									value="#{babhZaiavListBean.periodStatusP}">
+									<f:selectItem value="#{null}" itemValue="#{null}" />
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, babhZaiavListBean.currentLang)}"
+										var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+									<p:ajax event="change"
+										update="zaiavListForm:periodStatusP zaiavListForm:statusFrom zaiavListForm:statusTo"
+										listener="#{babhZaiavListBean.changePeriodProm}" />
+								</p:selectOneMenu>
+							</div>
+
+							<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+								<h:outputText value="#{ui_labels['general.dataOt']}"
+									styleClass="form-label" />
+								<p:datePicker id="statusFrom" pattern="dd.MM.yyyy" mask="true"
+									showIcon="true" locale="bg"
+									value="#{babhZaiavListBean.vpisvaneSearch.statDateFrom}"
+									styleClass="form-control">
+									<p:ajax event="change" update="zaiavListForm:periodStatusP"
+										listener="#{babhZaiavListBean.changeDateStatusVp}" />
+									<p:ajax event="dateSelect" update="zaiavListForm:periodStatusP"
+										listener="#{babhZaiavListBean.changeDateStatusVp}" />
+								</p:datePicker>
+							</div>
+
+							<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+								<h:outputText value="#{ui_labels['general.dataDo']}"
+									styleClass="form-label" />
+								<p:datePicker id="statusTo" pattern="dd.MM.yyyy" mask="true"
+									showIcon="true" locale="bg"
+									value="#{babhZaiavListBean.vpisvaneSearch.statDateTo}"
+									styleClass="form-control">
+									<p:ajax event="change" update="zaiavListForm:periodStatusP"
+										listener="#{babhZaiavListBean.changeDateStatusVp}" />
+									<p:ajax event="dateSelect" update="zaiavListForm:periodStatusP"
+										listener="#{babhZaiavListBean.changeDateStatusVp}" />
+								</p:datePicker>
+							</div>
+
+							<!-- ЛИЦЕНЗИАНТ -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-3  ui-fluid">
+								<h:outputText value="#{labels['babhZaiavList.zaiavitelLong']}"
+									styleClass="form-label" />
+								<p:inputText title="ЕГН/ЕИК/Име"
+									value="#{babhZaiavListBean.vpisvaneSearch.licenziant}" />
+							</div>
+
+							<!-- НОМЕР НА УДОСТ. ДОКУМЕНТ -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3  ui-fluid">
+								<h:outputText value="#{labels['babhZaiavList.udDocNum']}"
+									styleClass="form-label" />
+								<p:inputText
+									value="#{babhZaiavListBean.vpisvaneSearch.regNomResult}" />
+							</div>
+
+							<!-- период на издаване на удост. документ -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2 ui-fluid">
+								<h:outputText value="#{labels['babhZaiavList.udDoc']}"
+									styleClass="form-label" />
+								<p:selectOneMenu id="periodStVpisvane"
+									value="#{babhZaiavListBean.periodUdoc}">
+									<f:selectItem value="#{null}" itemValue="#{null}" />
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, babhZaiavListBean.currentLang)}"
+										var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+									<p:ajax event="change"
+										update="zaiavListForm:periodStVpisvane zaiavListForm:fromStatusVpis zaiavListForm:toStatusVpis"
+										listener="#{babhZaiavListBean.changePeriodStVpisvane}" />
+								</p:selectOneMenu>
+							</div>
+
+
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2 ui-fluid">
+								<h:outputText value="#{ui_labels['general.dataOt']}"
+									styleClass="form-label" />
+								<p:datePicker id="fromStatusVpis" pattern="dd.MM.yyyy"
+									mask="true" showIcon="true" locale="bg"
+									value="#{babhZaiavListBean.vpisvaneSearch.resultDateFrom}"
+									styleClass="form-control">
+									<p:ajax event="change" update="zaiavListForm:periodStVpisvane"
+										listener="#{babhZaiavListBean.changeDateStVpisvane}" />
+									<p:ajax event="dateSelect"
+										update="zaiavListForm:periodStVpisvane"
+										listener="#{babhZaiavListBean.changeDateStVpisvane}" />
+								</p:datePicker>
+							</div>
+
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2 ui-fluid">
+								<h:outputText value="#{ui_labels['general.dataDo']}"
+									styleClass="form-label" />
+								<p:datePicker id="toStatusVpis" pattern="dd.MM.yyyy" mask="true"
+									showIcon="true" locale="bg"
+									value="#{babhZaiavListBean.vpisvaneSearch.resultDateTo}"
+									styleClass="form-control">
+									<p:ajax event="change" update="zaiavListForm:periodStVpisvane"
+										listener="#{babhZaiavListBean.changeDateStVpisvane}" />
+									<p:ajax event="dateSelect"
+										update="zaiavListForm:periodStVpisvane"
+										listener="#{babhZaiavListBean.changeDateStVpisvane}" />
+								</p:datePicker>
+							</div>
+
+
+						</div>
+
+						<!-- БУТОНИ -->
+						<div class="filter-buttons">
+							<p:commandButton icon="fas fa-search"
+								value="#{ui_labels['general.search']}" id="btnSearchM"
+								update="resultTableM" partialSubmit="true"
+								action="#{babhZaiavListBean.actionSearchVpisvaneDlg}"
+								process="@this modalSlcVpisData resultTableM"
+								styleClass="p-mr-3" />
+
+
+							<p:commandButton icon="fas fa-eraser"
+								value="#{ui_labels['general.clear']}" id="btnClearM"
+								update="resultTableM modalSlcVpisData" partialSubmit="true"
+								process="@this modalSlcVpisData resultTableM"
+								action="#{babhZaiavListBean.actionClearM}"
+								styleClass="ui-button-warning" />
+						</div>
+
+					</div>
+				</h:panelGroup>
+
+				<h:panelGroup id="resultTableM" layout="block"
+					styleClass="margin-top">
+
+					<h:panelGroup layout="block" styleClass="card">
+
+						<div class="table-toolbar">
+							<h:outputText
+								value="#{ui_labels['general.reportResult']}: #{babhZaiavListBean.vpisvaniaList.rowCount}"
+								styleClass="form-label"
+								rendered="#{babhZaiavListBean.vpisvaniaList.rowCount ne null}" />
+
+						</div>
+
+						<p:dataTable id="tblSFList" var="row" lazy="true"
+							value="#{babhZaiavListBean.vpisvaniaList}" rowIndexVar="idx"
+							emptyMessage="#{ui_labels['general.norows']}" rows="15"
+							sortMode="single" reflow="true"
+							rendered="#{babhZaiavListBean.vpisvaniaList.rowCount ne null}"
+							styleClass="ui-datatable-gridlines"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+							paginatorAlwaysVisible="true" paginator="true">
+
+							<p:column width="20" exportable="false"
+								headerText="#{ui_labels['general.No-symbol']}">
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+
+							<p:column width="30" style="text-align: center;">
+								<p:commandButton id="btnCh"
+									title="#{ui_labels['general.choise']}" partialSubmit="true"
+									process="@this" icon="fas fa-hand-point-down"
+									actionListener="#{babhZaiavListBean.actionAddZaiavToVpis(row[0], row[20])}" />
+							</p:column>
+
+							<p:column width="170" sortBy="#{row.licenziant}"
+								headerText="Заявител (лицензиант) ">
+								<h:outputText value="#{row[12]}" />
+							</p:column>
+
+
+							<p:column width="60" sortBy="#{row.reg_nom_zaqvl_vpisvane}"
+								headerText="Рег.№" title="Заявление за първоначално вписване">
+								<h:outputText value="#{row[17]}"
+									title="Заявление за първоначално вписване" />
+							</p:column>
+
+							<p:column width="90" sortBy="#{row.date_zaqvl_vpis}"
+								headerText="Дата на з."
+								title="Дата на заявлението за първоначално вписване">
+								<h:outputText value="#{row[18]}"
+									title="Дата на заявление за първоначално вписване">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{babhZaiavListBean.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column width="300"
+								headerText="#{labels['nastrObjList.vidZaiav']}">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[20], babhZaiavListBean.currentLang, now)}" />
+							</p:column>
+
+
+							<p:column width="100" sortBy="#{row.date_status}"
+								headerText="Дата на впис.">
+								<h:outputText value="#{row[9]}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{babhZaiavListBean.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column width="90" sortBy="#{row.reg_nom_result}"
+								headerText="Номер на УД">
+								<h:outputText value="#{row[10]}"
+									title="Номер на удостоверителен документ" />
+							</p:column>
+
+							<p:column width="90" sortBy="#{row.date_result}"
+								headerText="Дата на УД">
+								<h:outputText value="#{row[11]}"
+									title="Дата на удостоверителен документ">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{babhZaiavListBean.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+
+						</p:dataTable>
+					</h:panelGroup>
+				</h:panelGroup>
+
+			</p:dialog>
+		</h:panelGroup>
+
+
+		<!-- ТЪРСЕНЕ НА КОРЕСПОНДЕНТ -->
+		<h:panelGroup id="dpCorrSearch">
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['docu.titleExtSrchCoresp']}" fitViewport="true"
+				responsive="true" resizable="true" position="top" widgetVar="mCorrS"
+				dynamic="true" id="modalCorrS" modal="true">
+
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:refCorrespSearch id="mCorrS1"
+						codeRef="#{babhZaiavListBean.docSearch.codeRef}"
+						refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+						searchTxt="#{babhZaiavListBean.txtCorresp}"
+						dateClassif="#{babhZaiavListBean.decodeDate}" modal="true"
+						update="@this zaiavListForm"
+						onComplete="PF('mCorrS').hide();  cmdSelectCorresp()" />
+				</div>
+
+			</p:dialog>
+		</h:panelGroup>
+
+
+	</h:form>
+
+</ui:composition>

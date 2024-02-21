@@ -1,0 +1,110 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{userData.checkPageAccess(110)}" onPostback="false"/>
+        <f:viewAction action="#{userData.checkReloadPage}" onPostback="false"/>
+        <f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+    </f:metadata>
+
+    <ui:define name="title">Регистър на търговците на средства за идентификация на животните</ui:define>
+    <ui:define name="head">
+        <style>
+            .nested-table {
+                margin: -6px -1.1rem;
+                margin-top: -5px;
+                margin-bottom: -5px;
+            }
+            .nested-table thead {
+                display: none;
+            }
+
+        </style>
+    </ui:define>
+    <ui:define name="viewname">
+
+        <li>
+            <p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}"
+                           rendered="#{navigation.navPath.size()>1}">
+                <i class="fas fa-caret-left"/>
+            </p:commandLink>
+        </li>
+
+        <li>Регистър на търговците на средства за идентификация на животните</li>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="regForm">
+            <h:panelGroup id="pResult" layout="block" styleClass="margin-top">
+
+                <h:panelGroup id="panelTblToolbar">
+
+                    <div class="table-toolbar">
+
+                        <h:outputText
+                                value="#{ui_labels['general.reportResult']} #{regsSellersIdentif73.regsList.rowCount}"
+                                styleClass="form-label p-mr-2"/>
+
+
+                    </div>
+                </h:panelGroup>
+
+                <p:dataTable id="tblRegsLst" var="item" value="#{regsSellersIdentif73.regsList}" lazy="true" showGridlines="true"
+                			 scrollable="true"
+                             rowIndexVar="idx" sortMode="single" reflow="true"
+                             emptyMessage="#{labels['doc.listEmptyMsg']}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rows="15" rowsPerPageTemplate="5,15,20,25" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="true" paginator="true" sortBy="#{row.a0}">
+                    <p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+                        <h:outputText value="#{idx + 1}" />
+                    </p:column>
+                     <p:column headerText="Ном.Лиценз" width="100" sortBy="#{item.nomer_licenz}">
+                        #{item[6]}
+                    </p:column>
+                    <p:column  headerText="Дата" width="100" sortBy="#{item.date_licenz}">
+                        <h:outputText value="#{item[7]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Име" width="200" sortBy="#{item.licenziant_name}">                #{item[4]}</p:column>
+                    <p:column headerText="#{labels['admStruct.eik']}" width="100" sortBy="#{item.licenziant_egn}"> 
+                        <h:outputText value=" #{item[10]== 4 ? '-':item[5]} "/>  
+                    </p:column>
+                   
+
+                    <p:column width="800" headerText="Идентификатор: Код/Вид идентификатор/Вид животни/Модел" >
+                        <p:dataTable value="#{(item[8]).toString().split('-ROW_END-')}" var="i" styleClass="nested-table">
+                            <p:column width="100">
+                                #{(i).toString().split('==')[0]}
+                            </p:column>
+                            <p:column width="400">
+                                #{(i).toString().split('==')[1]}
+                            </p:column>
+                            <p:column width="100">
+                                #{(i).toString().split('==')[2]}
+                            </p:column>
+                            <p:column width="200">
+                                #{(i).toString().split('==')[3]}
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </p:column>
+
+                    <p:column headerText="Област" width="120" sortBy="#{item.oblast_text}">              #{item[1]}</p:column>
+                    <p:column headerText="Община" width="120" sortBy="#{item.obshtina_text}">  #{item[2]}</p:column>
+                    <p:column headerText="Адрес" width="200" sortBy="#{item.addr_text}">              #{item[3]}</p:column>
+                    <p:column headerText="#{labels['docu.note']}" width="250" sortBy="#{item.info}">            #{item[9]}</p:column>
+
+                </p:dataTable>
+            </h:panelGroup>
+
+
+        </h:form>
+    </ui:define>
+</ui:composition>

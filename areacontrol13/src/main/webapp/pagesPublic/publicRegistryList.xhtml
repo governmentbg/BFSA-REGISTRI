@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  >
+
+	<ui:composition template="/template/template.xhtml">
+
+
+		<ui:define name="metadata">
+			<f:metadata>
+				<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			</f:metadata>
+		</ui:define>
+
+			<ui:define name="title">Справка публични регистри</ui:define>
+			<ui:define name="viewname">Справка публични регистри</ui:define>
+			<ui:define name="content">
+				
+				<h:form  id="formPRL">
+					
+					<div class="container #{guestPreferences.containerPosition}">
+
+					<!-- FILTER -->
+					<h:panelGroup id="panelFilter">
+			
+						<div class="card">
+						
+							<div class="p-grid ui-fluid">
+								
+								<!-- Вид регистър -->
+								<div class="p-col-12  ui-fluid">
+									<h:outputText value="#{labels['regData.registri']}" styleClass="form-label" />
+									<h:panelGroup styleClass="input-group">
+										<ibg:selectManyModalA id="idReg"
+											codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_REGISTRI}"
+											styleAutoComp="" selectedCodes="#{publicRegistryList.registerIdList}"
+											selectedClassifs="#{publicRegistryList.registerSC}"
+											emptyMessage="#{labels['vpisvane.vidRegisturEmptyMessage']}"
+											saveStateTree="false" withBtnClear="true" compType="2"
+											minQueryLength="3" dopInfoAutoComp="true"
+											dopInfoTitleAutoComp="Избор на регистри" />
+									</h:panelGroup>
+								</div>
+								
+									<!-- •	•	• Местонахождение на обект (адрес) държава -->
+									<div class="p-col-3 ui-fluid">
+										<h:outputText value="#{ui_labels['general.country']}" styleClass="form-label" />
+										<ibg:selectOneModalA id="cntryC"
+															 codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+															 selectedCode="#{publicRegistryList.vlpObektCountry}"
+															 emptyMessage="#{labels['docu.countryEmptyMsg']}"
+															 saveStateTree="false" withBtnClear="true" compType="3"
+															 minQueryLength="2" styleAutoComp="" update="formPRL:adrNM"
+	     														 onComplete="cmdChCountry()" />
+										<p:remoteCommand name="cmdChCountry" update="formPRL:adrNM" partialSubmit="true" process="formPRL:adrNM  @this" actionListener="#{publicRegistryList.actionChangeCountry}" />
+									</div>
+								<h:panelGroup layout="block" class="p-grid p-col-8" id="adrNM" >
+									<!-- •	Местонахождение на обект (адрес) нас.място /област /община -->
+									<div class="p-col-4  ui-fluid" jsf:id="pmestoC" jsf:rendered="#{publicRegistryList.vlpObektCountry eq publicRegistryList.countryBG}">
+										<h:outputText value="#{ui_labels['general.ekatte']}"  styleClass="form-label" />
+										<ibg:selectOneModalA id="mestoC"
+															 update="formPRL:cOblObsh"
+															 codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+															 specifics="#{publicRegistryList.specificsEKATTE}"
+															 selectedCode="#{publicRegistryList.vlpObektEkatte}"
+															 emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+															 saveStateTree="false" withBtnClear="true" compType="3"
+															 minQueryLength="3" styleAutoComp="" dopInfoAutoComp="true"
+															 dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+									</div>
+									<!-- •	•	Местонахождение на обект (адрес); -->
+									<div class="p-col-4 ui-fluid" jsf:id="cOblObsh" jsf:rendered="#{publicRegistryList.vlpObektCountry eq publicRegistryList.countryBG}">
+										<h:outputText value="#{ui_labels['general.ekatteObshObl']}" styleClass="form-label" />
+										<p:inputText  value="#{publicRegistryList.vlpObektAddress}" />
+									</div>
+								</h:panelGroup>
+
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					</div>
+				
+				</h:form>
+			</ui:define>
+	</ui:composition>
+
+</html>

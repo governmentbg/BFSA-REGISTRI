@@ -1,0 +1,99 @@
+<ui:composition 
+ 		xmlns="http://www.w3.org/1999/xhtml" 
+		xmlns:h="http://java.sun.com/jsf/html"
+		xmlns:f="http://java.sun.com/jsf/core" 
+		xmlns:ui="http://java.sun.com/jsf/facelets"
+		xmlns:p="http://primefaces.org/ui" 
+		xmlns:ibg="http://java.sun.com/jsf/composite/components"
+		template="/template/template.xhtml">
+		
+		<f:metadata>
+	 		<f:viewAction action="#{userData.checkPageAccess(110)}" onPostback="false" />	 				
+		</f:metadata>
+		
+		<style type="text/css">
+		.dataList .ui-datalist-data{
+			border: none;
+			background: transparent;
+			background-image: none;
+		}
+		</style>
+				
+		<ui:define name="title">#{navTexts['/pages/publicRegisters.xhtml']}</ui:define>
+		
+		<ui:define name="viewname">  
+			     
+	        <li>#{navTexts['/pages/publicRegisters.xhtml']}</li>
+	    </ui:define> 
+    
+		<ui:define name="content">	
+			<style type="text/css">
+				.ui-datalist.noborder .ui-widget-content {
+					border: none;
+				}
+			</style>
+		
+			<h:form id="regsForm">	
+				
+						<div class="card">
+							<div class="p-grid ui-fluid">	
+						
+								<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12 ">			
+									
+									<p:dataTable id="tblDates1" var="row" value="#{publicRegistersBean.regsList}" rowIndexVar="idx"
+										emptyMessage="#{ui_labels['general.norows']}" rows="15" sortMode="single"
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+										rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="true" paginator="true">
+										
+										<p:column width="25" exportable="false" headerText="#{ui_labels['general.No-symbol']}" > 
+											<h:outputText value="#{idx + 1}" />
+										</p:column>
+					
+										<p:column width="25" exportable="false">							
+											<p:commandButton icon="fas fa-eye" action="#{publicRegistersBean.actionGoTo(row[1], row[2])}" ajax="false" styleClass="btn-new"/>
+										</p:column>
+										
+										<p:column width="*" sortBy="#{row[0]}" headerText="#{labels['publicRegisters.title']}">						
+											<h:outputText value="#{row[0]}" />					
+										</p:column>
+									</p:dataTable>
+									
+									<ui:remove>
+									<!-- 
+									<p:dataView id="tblDates"  var="row" value="#{publicRegistersBean.regsList}" rowIndexVar="idx" 							
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"  
+										gridIcon="pi pi-th-large" listIcon="pi pi-bars"
+										rows="50"  rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="false" paginator="true" emptyMessage="#{ui_labels['general.norows']}">
+			  							
+											<f:facet name="header">
+									           <h:outputText value="#{labels['publicRegisters.title']}" class="extended-search-toggle expanded"/>
+									        </f:facet>
+									        
+											<p:dataViewGridItem>
+									        	<p:commandLink value="#{row[0]}" action="#{publicRegistersBean.actionGoTo(row[1])}" ajax="false" styleClass="p-m-2">
+													<i class="fas fa-eye" aria-hidden="true" ></i>						
+												</p:commandLink>
+									        </p:dataViewGridItem> 
+										  	<p:dataViewListItem >
+										  		
+											  		<p:commandLink value="#{row[0]}"  action="#{publicRegistersBean.actionGoTo(row[1])}" ajax="false" styleClass="p-m-3">
+														<i class="fas fa-eye" aria-hidden="true"  ></i>						
+													</p:commandLink>
+													
+											</p:dataViewListItem>																		
+									</p:dataView>	
+						 				-->
+									</ui:remove>
+															
+							</div>	
+							</div>
+							
+							
+						</div>	
+
+
+																						
+							
+		</h:form>
+	</ui:define>
+</ui:composition>

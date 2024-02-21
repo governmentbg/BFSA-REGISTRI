@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"> 
+          
+<div >
+       
+		<div jsf:id="dpLiceEdnoVlp">
+				
+				<div class="title-group p-mt-3" jsf:rendered="#{panelLiceEdnoLabel ne null}">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '#vlpTargForm:registerTabs:registerTabs:liceEdnoVlp')">
+							<h:outputText value="#{panelLiceEdnoLabel}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+				<div jsf:id="liceEdnoVlp" class="p-grid ui-fluid" >
+					  
+					  <div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" > 
+							 	
+							<h:outputText value="#{liceEdnoLabel}"
+								styleClass="form-label" />
+								
+							<div class="selectModalA-with-buttons">
+								<h:panelGroup id="refOtgLiceInp" layout="block" styleClass="koresp-input">
+								 	 
+								
+								<ibg:selectReferents id="findOtgLice"  
+										readonly="#{isView eq 1}"
+										update="vlpTargForm"
+										typeSearch="EGN"
+										dateClassif="#{regVLP.decodeDate}"
+										corespCompCommand="PF('mOtgLiceD').show();"
+										onComplete="#{regVLP.someActionAfterSelection()}"	
+										refObj="#{regVLP.eventLice.referent}"
+										searchWord="#{regVLP.txtLice}"/>
+								</h:panelGroup>
+								<div jsf:id="refOtgLice">
+									<ui:remove>	<!--  Корекция на данни на кореспондент	--></ui:remove>
+									<p:commandButton id="btnOtgLiceD"
+										rendered="#{regVLP.eventLice.referent ne null}"
+										icon="#{(isView ne 1) ? 'fas fa-edit' : 'fas fa-eye'}" partialSubmit="true"
+										process="vlpTargForm:registerTabs:dpOtgLiceData @this"
+										update="vlpTargForm:registerTabs:dpOtgLiceData"
+										oncomplete="PF('mOtgLiceD').show(); "
+										title="Актуализация на юридическо лице"/>
+	
+									<ui:remove><!--  Разширено търсене на кореспондент --></ui:remove>
+									<p:commandButton id="btnOtgLiceS"
+										onmousemove="document.getElementById('vlpTargForm:btnOtgLiceS').focus();"
+										rendered="#{isView ne 1 and regVLP.eventLice.referent eq null}"
+										icon="fas fa-list-ul" partialSubmit="true"
+										process="vlpTargForm:registerTabs:dpOtgLiceSearch @this"
+										update="vlpTargForm:registerTabs:dpOtgLiceSearch"
+										oncomplete="PF('mOtgLiceS').show(); "
+										title="#{labels['search.extendRef']}" />
+	
+									<ui:remove>	<!--  Нов кореспондент	-->
+									<p:commandButton id="btnOtgLiceN"
+										onmousemove="document.getElementById('vlpTargForm:btnOtgLiceN').focus();"
+										rendered="#{isView ne 1 and regVLP.eventLice.referent eq null}"
+										icon="fas fa-plus" partialSubmit="true" 
+										process="vlpTargForm:registerTabs:dpOtgLiceData @this"
+										update="vlpTargForm:registerTabs:dpOtgLiceData"
+										oncomplete="PF('mOtgLiceD').show();"
+										title="#{labels['docu.refOtgLiceNew']}" /></ui:remove>
+								</div>
+							</div>
+
+											
+				    </div>
+					   
+				</div> 
+				<h:panelGroup id="dpOtgLiceData">	
+					<p:dialog appendTo="@form"  closeOnEscape="true" 
+					    header="Въвеждане/актуализация на лице"  
+					    fitViewport="true"	
+					    resizable="true"
+					    responsive="true" 
+					    position="top" 		
+						widgetVar="mOtgLiceD" dynamic="true" id="modalOtgLiceD" 
+						modal="true">
+						<div class="container #{guestPreferences.containerPosition}">	
+							
+						 		<ibg:refCorrespData id="btnCorrDLice2"  readonly="#{isView eq 1}"
+									 refObj="#{regVLP.eventLice.referent}"
+									 saveInComponent="false"
+									 showReturnButton="true"
+									 searchTxt="#{regVLP.txtLice}" 
+									 showDocs="#{showDocs}"
+									 showObraz="#{showObraz}"
+									 showOpit="#{showOpit}" 
+									 vidDoc="#{regVLP.zaiavlVp.docVid}"
+									 dateClassif="#{regVLP.decodeDate}"
+									 modal="true" refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+									 update="vlpTargForm:registerTabs:refOtgLiceInp vlpTargForm:registerTabs:refOtgLice"	
+									 onComplete = "PF('mOtgLiceD').hide();document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"/>
+								
+						</div>		
+				 		
+					</p:dialog>
+							
+				</h:panelGroup>	     
+				<h:panelGroup id="dpOtgLiceSearch">	
+		
+					<p:dialog appendTo="@form"  closeOnEscape="true"
+					    header="#{labels['docu.titleExtSrchCoresp']}" 
+					    fitViewport="true"	
+					    responsive="true" 
+					    resizable="true"
+					    position="top"	
+						widgetVar="mOtgLiceS" dynamic="true" id="modalOtgLiceS" 
+						modal="true">
+						<div class="container #{guestPreferences.containerPosition}">		
+							
+							 	<ibg:refCorrespSearch id="mOtgLiceS1" myId="mCS1"
+									 refObj="#{regVLP.eventLice.referent}"
+									 searchTxt="#{regVLP.txtLice}" 
+									 dateClassif="#{regVLP.decodeDate}"
+									 modal="true" refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+									 update="vlpTargForm"
+									 onComplete = "PF('mCorrSLice').hide();#{regVLP.someActionAfterSelection()};"/>
+									 
+							
+						</div>
+									
+					</p:dialog>	
+				</h:panelGroup>
+		</div> 
+	</div>  
+</html>

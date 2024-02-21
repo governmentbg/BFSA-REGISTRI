@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job-scheduling-data xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.quartz-scheduler.org/xml/JobSchedulingData http://www.quartz-scheduler.org/xml/job_scheduling_data_2_0.xsd"
+    version="1.8">
+
+
+	<pre-processing-commands>
+        <delete-jobs-in-group>*</delete-jobs-in-group>  <!-- clear all jobs in scheduler -->
+        <delete-triggers-in-group>*</delete-triggers-in-group> <!-- clear all triggers in scheduler -->
+    </pre-processing-commands>
+
+    <processing-directives>
+        <!-- if there are any jobs/trigger in scheduler of same name (as in this file), overwrite them -->
+        <overwrite-existing-data>true</overwrite-existing-data>
+        <!-- if there are any jobs/trigger in scheduler of same name (as in this file), and over-write is false, ignore them rather then generating an error -->
+        <ignore-duplicates>false</ignore-duplicates>
+    </processing-directives>
+
+    <schedule>
+		<!-- Commented on 19.11.2024 as unsuitable for this project -->
+      <!--	<job>
+			<name>SendNotificationByMail</name>
+			<group>SystemTriggersIB</group>
+			<description>Изпращане на нотификации по email</description>
+			<job-class>com.ib.babhregs.quartz.SendMailJob</job-class>
+			<durability>true</durability>
+			<recover>true</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>TriggerSendNotificationByMail</name>
+				<group>SystemTriggersIB</group>
+				<description>Тригер за изпращане на нотификации по email</description>
+				<job-name>SendNotificationByMail</job-name>
+				<job-group>SystemTriggersIB</job-group>
+				<cron-expression>0 * * ? * * *</cron-expression>
+			</cron>
+		</trigger>
+		<job>
+			<name>RefreshDashboard</name>
+			<group>SystemTriggersIB</group>
+			<description>Обновяване на работния плот</description>
+			<job-class>com.ib.babhregs.experimental.CheckNewData</job-class>
+			<durability>true</durability>
+			<recover>true</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>TriggerRefreshDashboard</name>
+				<group>SystemTriggersIB</group>
+				<description>Тригер Обновяване на работния плот</description>
+				<job-name>RefreshDashboard</job-name>
+				<job-group>SystemTriggersIB</job-group>
+				<cron-expression>0 * * ? * * *</cron-expression>
+			</cron>
+		</trigger>-->
+		<!-- Get data wrom DeloWeb-->
+		<job>
+			<name>DocsFromDeloWebJob</name>
+			<group>SystemTriggersIB</group>
+			<description>Извличане на документи от DeloWeb</description>
+			<job-class>com.ib.babhregs.quartz.GetFromDeloWebJob</job-class>
+			<durability>true</durability>
+			<recover>true</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>TriggerDataFromDeloWeb</name>
+				<group>SystemTriggersIB</group>
+				<description>Тригер, който се стартира всеки 1 минути</description>
+				<job-name>DocsFromDeloWebJob</job-name>
+				<job-group>SystemTriggersIB</job-group>
+				<!-- every minute -->
+				<cron-expression>30 * * ? * * *</cron-expression>
+			</cron>
+		</trigger>
+		<!-- Refresh all Materialized Views -->
+		<job>
+			<name>RefreshMViews</name>
+			<group>SystemTriggersIB</group>
+			<description>Обновяване на всички Materialized Views!!!</description>
+			<job-class>com.ib.babhregs.quartz.RefreMViewJob</job-class>
+			<durability>true</durability>
+			<recover>true</recover>
+		</job>
+		<trigger>
+			<cron>
+				<name>TrgiggerRefreshMViews</name>
+				<group>SystemTriggersIB</group>
+				<description>Тригер, който се стартира в 23:00 всеки ден</description>
+				<job-name>RefreshMViews</job-name>
+				<job-group>SystemTriggersIB</job-group>
+				<cron-expression>0 0 23 1/1 * ? </cron-expression>
+
+			</cron>
+		</trigger>
+	</schedule>
+
+</job-scheduling-data>

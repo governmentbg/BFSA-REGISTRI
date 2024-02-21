@@ -1,0 +1,226 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	template="/template/template.xhtml" xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<p:importConstants type="com.ib.babhregs.system.BabhConstants"
+				var="BabhConstants" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="title">
+		<h:outputText value="systemOptions Browser" />
+	</ui:define>
+
+	<ui:define name="viewname">
+		<li>Данни в СистемДата</li>
+	</ui:define>
+
+	<ui:define name="content">
+		<script type="text/javascript">
+			//<![CDATA[ 
+
+	// Търсене в PrimeFaces таблица.. подаваме индекса на колоната, думата от инпут полето и WidgetVar-а на таблицата
+	function searchTable(columnIndex, searchTerm, tableWidgetVar) {
+
+		  // Получаваме референция към HTML елемента на таблицата от PrimeFaces
+		  var tableWidget = PF(tableWidgetVar);
+
+		  // Обхождаме всички редове в таблицата
+		  var rows = tableWidget.getTbody().children('tr');
+		  for (var i = 0; i < rows.length; i++) {
+			  
+		  // Получаваме стойността на клетката в съответната колона
+		  var cellValue = $(rows[i]).children('td').eq(columnIndex).text();		 
+		  var row = rows[i];
+
+		  // Проверяваме дали стойността съдържа търсения термин
+		    if (!cellValue.includes(searchTerm)) {
+			    //Ако не съдържа думата скриваме реда
+		    	 row.classList.add('hidden-row');
+		    } else {
+		    	//Ако съдържа думата показваме реда		      
+		    	row.classList.remove('hidden-row');
+		    }
+		  }
+		}
+
+
+	// Зачистване на таблицата след търсене.. подаваме ИД-то на полето за търсене и WidgetVar-а на таблицата
+	function clearSearch(searchTermId, tableWidgetVar) {
+		  var searchTerm = document.getElementById(searchTermId);
+		  searchTerm.value = '';
+
+		  var tableWidget = PF(tableWidgetVar);
+		  var rows = tableWidget.getTbody().children('tr');
+
+		  for (var i = 0; i < rows.length; i++) {
+			var row = rows[i];
+			row.classList.remove('hidden-row');
+		  }
+		}
+	
+
+	// Сортира резултатите в колона във ВЪЗХОДЯЩ ред.. подаваме индекса на колоната и WidgetVar-а на таблицата
+	function sortColumnASC(columnIndex, tableWidgetVar) {
+		  // Получаваме референция към HTML елемента на таблицата от PrimeFaces
+		  var tableWidget = PF(tableWidgetVar);
+
+		  // Обхождаме всички редове в таблицата
+		  var rows = tableWidget.getTbody().children('tr');
+
+		  // Създаваме масив за сортираните стойности
+		  var sortedValues = [];
+
+		  // Извличаме стойностите на клетките в съответната колона
+		  for (var i = 0; i < rows.length; i++) {
+		    var cellValue = $(rows[i]).children('td').eq(columnIndex).text().trim();
+		    sortedValues.push({ value: cellValue, row: rows[i] });
+		  }
+
+		  // Сортираме масива по текстовите стойности
+		  sortedValues.sort(function(a, b) {
+		    var textA = a.value.toLowerCase();
+		    var textB = b.value.toLowerCase();
+		    return textA.localeCompare(textB);
+		  });
+
+		  // Преместваме редовете в таблицата, според сортирания масив
+		  for (var j = 0; j < sortedValues.length; j++) {
+		    var sortedRow = sortedValues[j].row;
+		    tableWidget.tbody.append(sortedRow);
+		  }
+		}
+
+
+	// Сортира резултатите в колона във НИЗХОДЯЩ ред.. подаваме индекса на колоната и WidgetVar-а на таблицата
+	function sortColumnDESC(columnIndex, tableWidgetVar) {
+		  // Получаваме референция към HTML елемента на таблицата от PrimeFaces
+		  var tableWidget = PF(tableWidgetVar);
+
+		  // Обхождаме всички редове в таблицата
+		  var rows = tableWidget.getTbody().children('tr');
+
+		  // Създаваме масив за сортираните стойности
+		  var sortedValues = [];
+
+		  // Извличаме стойностите на клетките в съответната колона
+		  for (var i = 0; i < rows.length; i++) {
+		    var cellValue = $(rows[i]).children('td').eq(columnIndex).text().trim();
+		    sortedValues.push({ value: cellValue, row: rows[i] });
+		  }
+
+		  // Сортираме масива по текстовите стойности в обратен ред
+		  sortedValues.sort(function(a, b) {
+		    var textA = a.value.toLowerCase();
+		    var textB = b.value.toLowerCase();
+		    return textB.localeCompare(textA); // Сменяме реда на сравнение
+		  });
+
+		  // Преместваме редовете в таблицата, според сортирания масив
+		  for (var j = 0; j < sortedValues.length; j++) {
+		    var sortedRow = sortedValues[j].row;
+		    tableWidget.tbody.append(sortedRow);
+		  }
+		}
+
+		//]]>
+		</script>
+
+		<style>
+.hidden-row {
+	display: none;
+}
+</style>
+
+
+		<p:panel>
+     		 Тук стоят някакви неща, които стоят в SystemData. Колкото повече- толкова по-добре
+  		</p:panel>
+
+
+
+		<h:form id="sysDataForm" prependId="false">
+
+			<!-- НАСТРОЙКИ НА РЕГИСТРИ -->
+			<p:panel header="Настройки на регистри" toggleable="true"
+				collapsed="false" styleClass="p-mt-3">
+
+				<div class="p-grid p-ai-stretch vertical-container">
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-8">
+
+						<h:panelGroup>
+							<p:inputText id="searchTerm"
+								placeholder="наименование на регистър.." style="width:250px;" />
+							<p:commandButton icon="fas fa-search"
+								onclick="searchTable(1, $('#searchTerm').val(), 'regisTbl')"
+								styleClass="rounded-button ui-button-flat"
+								title="Търси в наименованието на регистъра" />
+							<p:commandButton icon="fas fa-times"
+								styleClass="rounded-button ui-button-danger ui-button-flat"
+								onclick="clearSearch('searchTerm', 'regisTbl')"
+								title="Зачисти резултата" />
+						</h:panelGroup>
+
+						<p:dataTable id="sysDataTbl" value="#{systemData.roptions}"
+							rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+							allowUnsorting="true" var="regs" globalFilterOnly="false"
+							widgetVar="regisTbl" showGridlines="true">
+
+							<p:column width="60" headerText="Key-ID">
+								<h:outputText value=" (#{regs.key}-#{regs.value.registerId}) " />
+							</p:column>
+
+							<p:column width="35">
+								<p:commandButton icon="fas fa-eye" partialSubmit="true"
+									process="@this" update="detailPnl">
+									<f:setPropertyActionListener value="#{regs.value}"
+										target="#{systemDataBrowserBean.regOption}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column>
+								<f:facet name="header">
+									<h:outputText value="Наименование на регистър" />
+									<p:commandLink onclick="sortColumnASC(1, 'regisTbl')"
+										title="Сортиране по възходящ ред">
+										<i class="fas fa-sort-amount-asc fa-lg p-mr-2"></i>
+									</p:commandLink>
+
+									<p:commandLink onclick="sortColumnDESC(1, 'regisTbl')"
+										title="Сортиране по низходящ ред">
+										<i class="fas fa-sort-amount-desc fa-lg"></i>
+									</p:commandLink>
+								</f:facet>
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regs.value.registerId, 1, now)} " />
+							</p:column>
+
+						</p:dataTable>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-4" jsf:id="detailPnl">
+
+						<div class="p-col-12 ui-fluid p-mt-4">
+							<h:outputText rendered="#{systemDataBrowserBean.regOption.registerId ne null}"
+								value="#{systemData.roptions[(systemDataBrowserBean.regOption.registerId).intValue()].toStringSystem()}"
+								escape="false" />
+						</div>
+
+					</div>
+				</div>
+
+			</p:panel>
+
+
+
+
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

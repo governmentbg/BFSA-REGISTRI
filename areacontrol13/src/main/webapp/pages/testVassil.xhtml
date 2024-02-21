@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	  xmlns:c="http://java.sun.com/jstl/core"> 
+ 
+	
+	<ui:composition template="/template/template.xhtml">
+	
+		<ui:param name="pageTitle" value="Test Vassil" />
+		<ui:define name="title">Test Vassil</ui:define>
+	
+		<ui:define name="content">
+		  
+		  	<f:metadata>
+				<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			</f:metadata>
+		
+		<h:form id="testForm" >
+
+			<div class="p-grid ui-fluid">
+				<div class="p-col-1">
+				<p:commandButton icon="fas fa-clone" id="btnCopy" styleClass="p-mr-3"
+							partialSubmit="true" process="@this  edt1"
+							update="@this  stxt"
+							action="#{testVassil.actionCopyToSimple}"
+							value="Copy" />
+				</div>
+				<div class="p-col-1">
+					<p:commandButton icon="fas fa-clone" id="btnClear" styleClass="p-mr-3"
+							partialSubmit="true" process="@this"
+							update="@this  stxt edt1"
+							action="#{testVassil.actionClear}"
+							value="Clear" />					
+				</div>
+				<div class="p-col-12">
+					 <p:textEditor id="edt1" widgetVar="editor1" value="#{testVassil.txtEditor}" height="300" style="margin-bottom:10px"/>
+				</div>
+				<div class="p-col-12" jsf:id="stxt">				
+					<p:inputTextarea  value="#{testVassil.txtSimple}" rows="10" />					
+				</div>
+			</div>					
+				
+			</h:form>
+		</ui:define>
+	</ui:composition>
+	
+</html>

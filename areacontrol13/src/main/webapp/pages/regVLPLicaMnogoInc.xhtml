@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"> 
+          
+	<div>
+      
+		<!-- 1.  Панел за ВЕТЕРИНАРНИ ЛЕКАРИ" -->
+		<div>
+			<h:panelGroup id="panelTblLica1" layout="block" class="p-grid">
+				<div class="title-group p-mt-3" jsf:id="buttonAddDiv">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#vlpTargForm:registerTabs:vetLekari')">
+						<h:outputText value="#{panelLiceLabel}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+				<div class="p-col-6 p-sm-3 p-md-3 p-lg-3 p-xl-3" jsf:id="vidDoc" jsf:rendered="#{codeClassifLiceRole ne null and hideDropDownRole==null}"> 
+					<p:selectOneMenu id="roleLice" value="#{regVLP.tipCurrentVrazkaLice}" disabled="#{isView ==1}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{systemData.getSysClassification(codeClassifLiceRole, now, regVLP.currentLang)}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+					     <p:ajax event="change" process="@this" update="addButtonDiv" />
+				    </p:selectOneMenu>
+				</div>
+			    <div class="p-col-6 p-sm-1 p-md-1 p-lg-1 p-xl-1" jsf:id="addButtonDiv">
+			    
+					<p:commandButton id="addLekarBtn"
+						rendered="#{isView ne 1 and regVLP.tipCurrentVrazkaLice ne null}"
+						icon="fas fa-plus" partialSubmit="true"
+						process="vlpTargForm:registerTabs:dpLekarData @this"
+						update="vlpTargForm:registerTabs:dpLekarData"
+						styleClass="ui-button-success"
+						oncomplete="PF('mLekarD').show(); "
+						action="#{regVLP.actionNewLice}"
+						value="Ново"
+						title="Ново" />
+				</div>
+			</h:panelGroup>
+					
+				
+
+			
+				<div class="p-grid ui-fluid" id="vetLekari">
+	
+					<h:panelGroup id="panelTblLica" layout="block"
+						class="p-grid p-col-12">
+	
+						<div class="p-col-10" >
+							<p:dataTable id="tblLekari" var="row" value="#{regVLP.licaList}" lazy="true" rowKey="#{row.id}"	 
+								rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " showGridlines="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+								
+								 
+													
+							  	<p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+									<h:outputText value="#{idx + 1}" />
+								</p:column>	
+								<p:column width="30" exportable="false" rendered="#{isView ne 1}">
+									<p:commandButton
+										action="#{regVLP.actionEditLice(row, idx)}"
+										partialSubmit="true" update="vlpTargForm:registerTabs:dpLekarData"
+										icon="fas fa-edit" styleClass="ui-button-success"
+										title="Промяна данни">
+									</p:commandButton>
+								</p:column>
+								<p:column  sortBy="#{row.code}" headerText="Имена">
+									<h:outputText value="#{row.refName}"  />								    
+								</p:column>
+
+								<p:column  sortBy="#{row.dbEmplPosition}" headerText="Роля">
+									<h:outputText value="#{systemData.decodeItem(codeClassifLiceRole, row.dbEmplPosition, regVLP.currentLang, now)}"  />								    																	    
+								</p:column>
+								
+								<p:column width="150" sortBy="#{row.dateBeg}" headerText="Начална дата">
+									<h:outputText value="#{row.dateBeg}"  >
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+									</h:outputText>								    
+								</p:column>
+								
+								<p:column width="150" sortBy="#{row.dateEnd}" headerText="Крайна дата">
+									<h:outputText value="#{row.dateEnd}"  >
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+									</h:outputText>								    
+								</p:column>
+								
+								<p:column width="150"   headerText="№ / дата на документ" rendered="#{showDocs}">
+									<p:repeat var="item" value="#{row.referentDocs}">
+										<h:outputText value="#{item.nomDoc}/" />
+										<h:outputText value="#{item.dateIssued}" >
+											<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+										</h:outputText>
+										<h:outputText value="; " />
+									</p:repeat>
+									 							    
+								</p:column>
+								
+								<p:column width="30" exportable="false">							
+									<p:commandButton id="removeLekarBtn"
+										rendered="#{isView ne 1}"
+										icon="fas fa-times" partialSubmit="true"
+										process="vlpTargForm:registerTabs:tblLekari @this"
+										update="vlpTargForm:registerTabs:tblLekari"
+										styleClass="ui-button-danger"										
+										action="#{regVLP.actionRemoveLice(idx)}"
+										title="Изтриване" />				
+								</p:column>
+								
+							
+							</p:dataTable>
+						</div>
+						 
+					</h:panelGroup>
+				</div>
+		</div>
+		
+		<h:panelGroup id="dpLekarData">
+				
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="Въвеждане на лице" fitViewport="true"
+					resizable="true" responsive="true" position="top"
+					widgetVar="mLekarD" dynamic="true" id="modalLekarD" modal="true">
+					<div class="container #{guestPreferences.containerPosition}">
+
+						
+						<ibg:refCorrespData id="vetLekariComp"  readonly="#{isView eq 1}"
+											 codeRef="#{regVLP.currentLice.code}"
+											 refObj="#{regVLP.currentLice}"				 				 
+											 mainDataLabel="#{panelLiceLabel}"
+											 saveInComponent="false"
+											 showKorespAdress="#{showAddress!=null?showAddress:true}"
+											 showContacts="true"
+											 showPostAdress="false"
+											 showReturnButton="true"
+											 english="#{english!=null?english:false}"
+											 englishBirthPlace="#{english!=null?english:false}"
+											 showChujdiLica="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+											 showIdentNom="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL_F)}"
+											 showLnch="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+											 showRadio="#{showRadio}"											 
+											 showDocs="#{showDocs}"
+											 showObraz="#{showObraz}"
+											 showOpit="#{showOpit}"											 
+											 showDatBegEnd="true"
+											 showUrn="false"
+											 refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+											 vidDoc="#{regVLP.zaiavlVp.docVid}"
+											 searchTxt="#{regVLP.txtRef2}" 
+											 dateClassif="#{regVLP.decodeDate}"
+											 modal="true"
+											 update="vlpTargForm:registerTabs:panelTblLica"
+											 onComplete="PF('mLekarD').hide();document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"/>
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+	</div> 
+</html>

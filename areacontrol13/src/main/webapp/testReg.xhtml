@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:fn="http://java.sun.com/jsp/jstl/functions">
+<f:view>
+    <h:head>
+        <style>
+            .nested-table {
+                margin: -6px -1.1rem;
+                margin-top: -17px;
+                margin-bottom: -20px;
+            }
+            .nested-table thead {
+                display: none;
+            }
+
+        </style>
+    </h:head>
+    <h:body>
+    <h:outputLabel value="Hello, world"/>
+
+    <br/>
+    <h:form>
+        <h:panelGrid columns="2" id="alabala">
+        <h:outputLabel for="vidDoc" value="Vid doc"/>
+        <h:inputText value="#{testDocNastr.vidDoc}" id="vidDoc"/>
+        <h:outputLabel for="idElement" value="idElement"/>
+        <h:inputText value="#{testDocNastr.idElement}" id="idElement"/>
+
+        </h:panelGrid>
+        <p:commandButton action="#{testDocNastr.actionTest()}" update="result" value="Check exist id element by vid doc" process="alabala"/>
+        <p:dataTable value="#{testReg.resultList}" var="item" showGridlines="true" rowIndexVar="idx">
+            <p:column width="10">
+                <h:outputText value="#{idx + 1}" />
+            </p:column>
+            <p:column headerText="Област" width="50px">              #{item[1]}</p:column>
+            <p:column headerText="Община" width="120">  #{item[2]}</p:column>
+            <p:column headerText="Адрес" width="200px">              #{item[3]}</p:column>
+            <p:column headerText="Име" width="200px">                #{item[4]}</p:column>
+            <p:column headerText="ЕГН/ЕИК" width="100px">            #{item[5]}</p:column>
+            <p:column headerText="Ном.Лиценз" width="100px">
+                #{item[6]}
+            </p:column>
+            <p:column headerText="Дата" width="100px">
+                <h:outputText value="#{item[7]}">
+                    <f:convertDateTime pattern="dd.MM.yyyy" type="date"/>
+                </h:outputText>
+            </p:column>
+
+                <p:column headerText="идент Инфо" >
+                    <p:dataTable value="#{(item[8]).toString().split('-ROW_END-')}" var="i" styleClass="nested-table">
+                        <p:column style="width: 200px">
+                            #{(i).toString().split('==')[0]}
+                        </p:column>
+                        <p:column style="width: 400px">
+                            #{(i).toString().split('==')[1]}
+                        </p:column>
+                        <p:column style="width: 200px">
+                            #{(i).toString().split('==')[2]}
+                        </p:column>
+                        <p:column>
+                            #{(i).toString().split('==')[3]}
+                        </p:column>
+
+                    </p:dataTable>
+
+                </p:column>
+
+        </p:dataTable>
+
+        <p:panel  header="Test panel1"  id="result" style="border-style: solid;">
+            <h:outputText value="You see me? Then it exist."/>#{testDocNastr.vidDoc}
+           -#{systemData.isElementVisible(testDocNastr.vidDoc,testDocNastr.idElement)}
+        </p:panel>
+
+
+    </h:form>
+
+
+    </h:body>
+
+</f:view>
+</html>

@@ -1,0 +1,107 @@
+// index page
+
+.index-page {
+
+	.tile {
+		aspect-ratio: 16 / 9;
+		padding: 4px;
+		box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+		position: relative;
+		overflow: hidden;
+		display: flex;
+		align-items: flex-end;
+
+		&:hover {
+			.white-overlay {
+				opacity: 0;
+			}
+
+			.tile-title::before {
+				opacity: 1;
+				bottom: 0;
+			}
+		}
+
+		.tile-title {
+			color: #434c5e;
+			position: absolute;
+			bottom: 0%;
+			left: 0;
+			width: 100%;
+			padding: 4px 4px 12px;
+			text-align: center;
+			font-size: 1.75rem;
+			text-shadow: 0px 1px 1px rgb(0 0 0 / 15%);
+
+			&::before {
+				content: "";
+				width: 100%;
+				height: 100%;
+				background-color: rgb(255 255 255 / 75%);
+				display: block;
+				position: absolute;
+				bottom: -100%;
+				left: 0;
+				opacity: 1;
+				transition: bottom 0.1s linear;
+				z-index: 100;
+			}
+
+			> span {
+				position: relative;
+				z-index: 101;
+			}
+		}
+
+		.tile-bg {
+			position: absolute;
+			height: 100%;
+			width: 100%;
+			top: 0;
+			left: 0;
+
+			> div {
+				height: 100%;
+				background-size: cover;
+			}
+
+			.white-overlay {
+				height: 100%;
+				background: linear-gradient(to bottom, rgb(255 255 255 / 50%) 0%, rgb(255 255 255 / 50%) 25%, rgb(255 255 255 / 75%) 50%, rgb(255 255 255 / 90%) 100%);
+				transition: opacity 0.1s linear;
+			}
+
+			.tile-bg-animals {
+				background-image: url("\#{resource['images:homepage_tile_sheep.jpg']}");
+			}
+		
+			.tile-bg-medicine {
+				background-image: url("\#{resource['images:homepage_tile_medicine.jpg']}");
+			}
+		
+			.tile-bg-fodder {
+				background-image: url("\#{resource['images:homepage_tile_fodder.jpg']}");
+			}
+		
+			.tile-bg-food {
+				background-image: url("\#{resource['images:homepage_tile_food.jpg']}");
+			}
+		
+			.tile-bg-fertilizer {
+				background-image: url("\#{resource['images:homepage_tile_fertilizer.jpg']}");
+			}
+		
+			.tile-bg-sanitary {
+				background-image: url("\#{resource['images:homepage_tile_sanitary.jpg']}");
+			}
+		}
+	}
+
+}
+
+@media (max-width: 480px) {
+	.index-page .tile .tile-title {
+		font-size: 1.5rem;
+		padding-bottom: 8px;
+	}
+}

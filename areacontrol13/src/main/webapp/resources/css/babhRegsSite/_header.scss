@@ -1,0 +1,46 @@
+// header
+
+.header-wrapper {
+	width: 100%;
+	position: relative;
+	padding-left: 18px;
+	padding-right: 18px;
+	background-color: #ffffff;
+	
+	.header {
+		margin-right: auto;
+		margin-left: auto;
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%,
+			rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.5) 50%,
+			rgba(255, 255, 255, 0.5) 75%, rgba(255, 255, 255, 1) 100%),
+			linear-gradient(to right, rgba(255, 255, 255, 1) 0%,
+			rgba(255, 255, 255, 0.5) 25%, rgba(255, 255, 255, 0.5) 50%,
+			rgba(255, 255, 255, 0.5) 75%, rgba(255, 255, 255, 1) 100%),
+			url("\#{resource['images:statistic-report.jpg']}");
+		background-size: inherit;
+		background-position: center;
+		background-repeat: no-repeat;
+		
+		.logo-container {
+			height: 130px;
+			
+			.logos-wrapper {
+				position: relative;
+				
+				.logo-gerb {
+					position: absolute;
+					left: 0;
+					top: 14px;
+					width: 120px;
+				}
+			}
+		}
+	}
+}
+
+@media only screen and (max-width: 991px) {
+	.header-wrapper {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+}

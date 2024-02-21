@@ -1,0 +1,22 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:f="http://java.sun.com/jsf/core"
+    template="/templateExt/template.xhtml">
+
+    <ui:define name="title">#{labels['ext.homeTile.vlp']}</ui:define>
+
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewParam name="lang" />
+            <f:viewParam name="locale" />
+        </f:metadata>
+    </ui:define>
+
+    <ui:define name="content">
+    	
+    	<ui:include src="registerIncl.xhtml">
+    		<ui:param name="backingBean" value="#{vlpBean}" />
+    	</ui:include>
+    	
+    </ui:define>
+</ui:composition>

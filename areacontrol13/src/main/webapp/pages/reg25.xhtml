@@ -1,0 +1,163 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{userData.checkPageAccess(110)}" onPostback="false"/>
+        <f:viewAction action="#{userData.checkReloadPage}" onPostback="false"/>
+        <f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+    </f:metadata>
+.someClass {
+    word-wrap: break-word;
+}
+    <ui:define name="title">#{navTexts['/pages/reg31.xhtml']}</ui:define>
+
+
+    <ui:define name="viewname">
+
+        <li>
+            <p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}"
+                           rendered="#{navigation.navPath.size()>1}">
+                <i class="fas fa-caret-left"/>
+            </p:commandLink>
+        </li>
+
+        <li>#{navTexts[reg27.titleReg]}</li>
+	
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="regForm">
+            <h:panelGroup id="pResult" layout="block" styleClass="margin-top">
+
+                <h:panelGroup id="panelTblToolbar">
+
+                    <div class="table-toolbar">
+
+                        <h:outputText
+                                value="#{ui_labels['general.reportResult']} #{reg27.regsList.rowCount}"
+                                styleClass="form-label p-mr-2"/>
+
+
+                    </div>
+                </h:panelGroup>
+
+                <p:dataTable id="tblRegsLst" var="row" value="#{reg27.regsList}" lazy="true"
+                             rowIndexVar="idx" sortMode="single" reflow="true"
+                             emptyMessage="#{labels['doc.listEmptyMsg']}"   scrollable="true" scrollWidth="99%" 
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rows="15" rowsPerPageTemplate="5,15,20,25" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="true" paginator="true" sortBy="#{row.id_vpisvane}">
+
+                    <f:facet name="{Exporters}">
+
+                        <div style="float:left">
+
+                            <p:commandLink id="excel"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="excel2.png"/>
+                                <p:dataExporter type="xls" target="tblRegsLst" fileName="regsSellersAnimList"
+                                                postProcessor="#{reg27.postProcessXLS}"/>
+                            </p:commandLink>
+
+                            <p:commandLink id="pdf"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="pdf.png"/>
+                                <p:dataExporter type="pdf" target="tblRegsLst" fileName="regsList"
+                                                encoding="windows-1251"
+                                                preProcessor="#{reg27.preProcessPDF}"
+                                                options="#{reg27.pdfOptions()}"/>
+                            </p:commandLink>
+
+
+                            <p:commandLink id="csv" update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                 <h:graphicImage library="images" name="csv.png"   />
+                                 <p:dataExporter type="csv" target="tblRegsLst" fileName="regsList"  encoding="CP1251"/>
+                            </p:commandLink> 
+                        </div>
+                    </f:facet>
+
+
+                     <p:column width="40" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+                        <h:outputText value="#{idx + 1}"/>
+                    </p:column>
+<ui:remove>
+                   <p:column width="80" sortBy="#{row.nom_zaqvl}" headerText="Рег. ном. заявление">
+                        <h:outputText value="#{row[6]}"/>
+                    </p:column>
+
+                    <p:column width="80"  sortBy="#{row.date_zaqvl}" headerText="Дата на заявление">
+  						<h:outputText value="#{row[7]}">
+							<f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{reg23.timeZone}"/>
+						</h:outputText>
+                    </p:column>
+</ui:remove>
+                    <p:column width="80" sortBy="#{row.licenz}" headerText="Рег. номер на разрешението">
+                        <h:outputText value="#{row[1]}"/>
+                    </p:column>
+
+                    <p:column width="80"  sortBy="#{row.date_licenz}" headerText="Дата на издаване">
+  						<h:outputText value="#{row[2]}">
+							<f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{reg25.timeZone}"/>
+						</h:outputText>
+                    </p:column>
+
+                    <p:column width="120" sortBy="#{row.licenziant}" headerText="Притежател на разрешението" >
+                       <h:outputText value="#{row[3]}"/>
+                    </p:column>
+                    <p:column width="280" sortBy="#{row.vestestva}" headerText="Вещества">
+	                    <f:facet name="header">
+  						   &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;	Вещества
+  						    <br />Тип:Вид вещество:Количество:Единица мярка:Стандарт
+						</f:facet>
+   						<p:inputTextarea  value="#{row[4]}" rows="4" escape="false"
+  						    style="font-size:16px; width:99%; height:150px; padding:8px;" autoResize="false"  />
+ 
+                    </p:column>
+                    <p:column width="80"  sortBy="#{row.jivotni}" headerText="Животни">
+                        <h:outputText value="#{row[5]}" escape="false"   />
+                    </p:column>
+ 
+                    <p:column width="80"  sortBy="#{row.opakovka}" headerText="Опаковка">
+                        <h:outputText value="#{row[10]}" escape="false"   />
+                    </p:column>
+                    <p:column width="180"  sortBy="#{row.rejim_otpuskane}" headerText="Режим на отпускане">
+						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_NACHIN_OTPUSK_VLP, row[12], reg25.currentLang, now)}"/>
+                     </p:column>
+                    
+                    <p:column width="80"  sortBy="#{row.farmform}" headerText="Фармацевтична форма">
+                        <h:outputText value="#{row[11]}" escape="false"   />
+                    </p:column>
+                    <p:column width="280"  sortBy="#{row.karenten_srok}" headerText="Карентен срок">
+ 						<p:inputTextarea  value="#{row[13]}" rows="4" style="font-size:16px; width:99%; height:150px; padding:8px;" autoResize="false"  />
+                     </p:column>
+                    
+           <ui:remove>        <p:column sortBy="#{row.OEZ_NAS_MESTO}" headerText="Местонахождение">
+ 						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_EKATTE, row[6], reg120.currentLang, now)}"/>
+						<h:outputText value=", #{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, row[7], reg120.currentLang, now)}"/>
+                   </p:column>
+            </ui:remove>         
+                   <p:column width="80"  sortBy="#{row.naimlat}" headerText="Наименование лат " >
+                       <h:outputText value="#{row[9]}"/>
+                    </p:column>
+                   <p:column width="280" sortBy="#{row.kvlica}" headerText="Квалифицирани лица">
+	                    <f:facet name="header">
+  						   &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;	Квалифицирани лица
+  						    <br />Тип:Наименование:Дата от
+						</f:facet>
+                       <h:outputText value="#{row[14]}"   escape="false"/>
+                    </p:column>
+                    <p:column width="90"   headerText="Забележки по вписаните обстоятелства" >
+                       <h:outputText value="#{row[15]}"/>
+                    </p:column>
+
+         
+                </p:dataTable>
+            </h:panelGroup>
+
+
+        </h:form>
+    </ui:define>
+</ui:composition>

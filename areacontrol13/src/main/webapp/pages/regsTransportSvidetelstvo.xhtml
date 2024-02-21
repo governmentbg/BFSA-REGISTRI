@@ -1,0 +1,149 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{userData.checkPageAccess(110)}" onPostback="false"/>
+        <f:viewAction action="#{userData.checkReloadPage}" onPostback="false"/>
+        <f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+    </f:metadata>
+
+    <ui:define name="title">#{navTexts['/pages/regsTransportSvidetelstvo.xhtml']}</ui:define>
+
+
+    <ui:define name="viewname">
+
+        <li>
+            <p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}"
+                           rendered="#{navigation.navPath.size()>1}">
+                <i class="fas fa-caret-left"/>
+            </p:commandLink>
+        </li>
+
+        <li>#{navTexts['/pages/regsTransportSvidetelstvo.xhtml']}</li>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="regForm">
+            <h:panelGroup id="pResult" layout="block" styleClass="margin-top">
+
+                <h:panelGroup id="panelTblToolbar">
+
+                    <div class="table-toolbar">
+
+                        <h:outputText
+                                value="#{ui_labels['general.reportResult']} #{regsTransportSvidetelstvoBean.regsList.rowCount}"
+                                styleClass="form-label p-mr-2"/>
+
+
+                    </div>
+                </h:panelGroup>
+
+                <p:dataTable id="tblRegsLst" var="row" value="#{regsTransportSvidetelstvoBean.regsList}" lazy="true"
+                			 scrollable="true"
+                             rowIndexVar="idx" sortMode="single" reflow="true"
+                             emptyMessage="#{labels['doc.listEmptyMsg']}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rows="15" rowsPerPageTemplate="5,15,20,25" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="true" paginator="true" sortBy="#{row.a0}">
+
+                    <f:facet name="{Exporters}">
+
+                        <div style="float:left">
+
+                            <p:commandLink id="excel"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="excel2.png"/>
+                                <p:dataExporter type="xls" target="tblRegsLst" fileName="regsTransportSvidetelstvo"
+                                                postProcessor="#{regsTransportSvidetelstvoBean.postProcessXLS}"/>
+                            </p:commandLink>
+
+                            <p:commandLink id="pdf"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="pdf.png"/>
+                                <p:dataExporter type="pdf" target="tblRegsLst" fileName="regsList"
+                                                encoding="windows-1251"
+                                                preProcessor="#{regsTransportSvidetelstvoBean.preProcessPDF}"
+                                                options="#{regsTransportSvidetelstvoBean.pdfOptions()}"/>
+                            </p:commandLink>
+
+                             <p:commandLink id="csv" update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                 <h:graphicImage library="images" name="csv.png"   />
+                                 <p:dataExporter type="csv" target="tblRegsLst" fileName="regsList"  encoding="CP1251"/>
+                             </p:commandLink> 
+                        </div>
+                    </f:facet>
+                    <!-- Номер по ред-->
+                    <p:column width="40" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+                        <h:outputText value="#{idx + 1}"/>
+                    </p:column>
+                  	
+                  	<!-- Рег. номер на заповедта-->
+                    <p:column  width="150" sortBy="#{row.nomer_licenz}" headerText="#{labels['regPub.udostDocRegN']}">
+                        <h:outputText value=" #{row[10]}"/>
+                    </p:column>
+                    
+                      <!-- Дата на регистрация-->
+                    <p:column width="110" sortBy="#{row.date_licenz}" headerText="#{labels['docu.docDate']}">
+                    <h:outputText value="#{row[11]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{regsTransportSvidetelstvoBean.timeZone}"/>
+                        </h:outputText>
+        			</p:column>
+                    
+					 <!--Лицензиант(имена на физическо лице);-->
+					 <p:column width="200" sortBy="#{row.ref_name}" headerText="#{labels['admStruct.names']}">
+                         <h:outputText value="#{row[7]}" />
+                    </p:column>
+                    
+                    <!-- Качество на лицето – водач, придружител;-->
+                    <p:column width="350" sortBy="#{row.lice_kachestvo}" headerText="#{labels['general.kachestvo']}">
+                        <h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_OTN_LICE_PREVOZ, row[9], regsTransportSvidetelstvoBean.currentLang, now)}"/>
+                    </p:column>
+
+                     <!-- Регистратура-->
+                    <p:column  width="120" sortBy="#{row.registratura_id}" headerText="#{labels['users.registratura']}">
+                        <h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_REGISTRATURI, row[12], regsTransportSvidetelstvoBean.currentLang, now)}"/>
+                    </p:column>
+                    
+                     <!-- Рег. номер на заповедта
+                    <p:column  width="180" sortBy="#{row.reg_nom_zaqvl_vpisvane}" headerText="#{labels['registerMainTab.regNumZaiav']}">
+                        <h:outputText value="#{row[13]} /"/>
+                         <h:outputText value="#{row[14]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{regsTransportSvidetelstvoBean.timeZone}"/>
+                        </h:outputText>
+                    </p:column>-->
+                    
+                    <!-- Област (лицензиант); -->
+                      <p:column width="110" sortBy="#{row.oblast_text}" headerText="#{labels['global.oblast']}">
+                        <h:outputText value="#{row[2]}"/>
+                    </p:column>
+                     <!-- Община (лицензиант);  -->
+                     <p:column width="110" sortBy="#{row.obshtina_text}" headerText="#{labels['registerMainTab.municipality']}">
+                        <h:outputText value="#{row[3]}"/>
+                    </p:column>
+                     <!--Населено място (лицензиант); -->
+                    <p:column width="140" sortBy="#{row.ekatte_text}" headerText="#{labels['registerMainTab.city']}">
+                        <h:outputText value="#{row[4]}"/>
+                    </p:column>
+                     <!--Улица/сграда (лицензиант) -->
+                    <p:column  width="200" sortBy="#{row.addr_text}" headerText="#{labels['registerMainTab.street']}">
+                        <h:outputText value="#{row[5]}"/>
+                    </p:column>
+
+                        <!-- обстоятелства по вписването -->
+                    <p:column width="250" sortBy="#{row.info}" headerText="#{labels['docu.note']}">
+                        <h:outputText value="#{row[15]}"/>
+                    </p:column>
+
+
+
+                </p:dataTable>
+            </h:panelGroup>
+
+
+        </h:form>
+    </ui:define>
+</ui:composition>

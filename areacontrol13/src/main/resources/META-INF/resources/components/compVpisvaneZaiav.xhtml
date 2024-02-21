@@ -1,0 +1,108 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+
+	<cc:interface componentType="compVpisvaneZaiav">
+
+		<cc:attribute name="codeRef" 			    type="java.lang.Integer" 			shortDescription="код на референт - заявител" deafult="null" />
+		<cc:attribute name="idVpisvane" 		   	type="java.lang.Integer" 			shortDescription="ид на текущото вписване" deafult="null" />
+		<cc:attribute name="dateClassif" 			type="java.util.Date" 				shortDescription="Дата, към която да се заредят класификации и за разкодиране. По подразбиране - днешна дата." />
+		<cc:attribute name="update" 				type="java.lang.String" 			shortDescription="Полета, които трябва да се обновят" />
+		<cc:attribute name="onComplete" 			type="java.lang.String" 			shortDescription="Изпълнява функция при връщане на резултата - подава се името на функцията" />
+		<cc:attribute name="titleLoadBtn" 			type="java.lang.String" 			shortDescription="Подсказка за бутон за зареждане" default="Други вписвания за лицето" />
+		<cc:attribute name="labelBtn" 			    type="java.lang.String" 			shortDescription="Етикет бутон за зареждане" default="Други вписвания" />
+	</cc:interface>
+
+
+
+	<cc:implementation>
+
+
+		<p:commandButton 	styleClass=" p-mr-2" rendered="#{cc.attrs.codeRef ne null}"
+					icon="fa fa-fw fa-list-ul"  id="dialogBtnVpZ"
+					actionListener="#{cc.actionSearch}"
+				 	value="#{cc.attrs.labelBtn}"
+					partialSubmit="true" process="@this"
+					update="#{cc.clientId}:vpSearchPnl"
+					oncomplete="PF('vpZaiavVar').show();"
+					title="#{cc.attrs.titleLoadBtn}"/>
+	
+									 
+		<h:panelGroup id="vpSearchPnl">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="Други вписвания за лицето" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="vpZaiavVar" dynamic="true" id="modalVpZaiav" modal="true"
+				width="70%">
+				
+					<h:panelGroup id="panelTblVpZaiav" layout="block" 	styleClass="margin-top"> 
+						<h:panelGroup layout="block" styleClass="card">					
+							<p:dataTable id="tblVpList" var="row" lazy="true" 
+								rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+								rows="5" sortMode="single" reflow="true"
+								value="#{cc.vpList}"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="true" paginator="true" showGridlines="true"
+								rowExpandMode="single" >
+											
+									<p:column width="20" headerText="#{ui_labels['general.No-symbol']}">
+										<h:outputText value="#{idx + 1}" />
+									</p:column>
+									<p:column exportable="false" width="40" style="text-align:center; ">
+										<p:button icon="fas fa-eye"
+											href="#{cc.actionGoto(row[0],  row[10])}"
+											target="_blank" 
+											title="Разглеждане на вписване" >
+										</p:button>	
+									</p:column>
+									
+									<p:column headerText="#{labels['docu.register']}"   width="200" >
+										<h:outputText
+											value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, row[2], cc.lang, now)}" />
+									</p:column>
+								
+									<p:column headerText="#{labels['ud.udNomer']}"	width="100" >
+										<h:outputText value="#{row[5]}" />
+									</p:column>
+									
+									<p:column headerText="#{labels['ud.udDate']}" width="90"   >
+										<h:outputText value="#{row[6]}">
+											<f:convertDateTime pattern="dd.MM.yyyy"
+												timeZone="#{cc.timeZone}" />
+										</h:outputText>  
+									</p:column>		
+																	
+									<p:column headerText="#{labels['corresp.vidDein']}" width="200" >
+									     <h:outputText
+											value="#{systemData.decodeItems(BabhConstants.CODE_CLASSIF_VID_DEINOST, row[7], cc.lang, null)}" />
+									</p:column>
+												
+									<p:column headerText="#{labels['corresp.predmet']}" width="200" >
+									     <h:outputText
+											value="#{systemData.decodePredmet( row[8], cc.lang, null)}" />
+									</p:column>
+									<p:column headerText="#{labels['corresp.obekti']}" width="200" >
+									     <h:outputText
+											value="#{systemData.decodeObekt( row[9], cc.lang, null)}" />
+									</p:column>
+				                 </p:dataTable>
+						</h:panelGroup>
+					</h:panelGroup>
+				
+
+			</p:dialog>
+		
+		</h:panelGroup>
+
+	</cc:implementation>
+</ui:composition>

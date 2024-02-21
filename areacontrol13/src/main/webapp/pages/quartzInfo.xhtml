@@ -1,0 +1,416 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	template="/template/template.xhtml">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			<f:viewAction action="#{userData.checkPageAccess(5)}" onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="title">#{navTexts['pages/quartzInfo.xhtml']}</ui:define>
+
+	<ui:define name="viewname">
+		<li>#{navTexts['pages/quartzInfo.xhtml']}</li>
+	</ui:define>
+
+
+	<ui:define name="content">
+
+		<style type="text/css">
+mark.red {
+	color: #ff0000;
+	background: none;
+	font-weight: bold;
+}
+
+mark.green {
+	color: green;
+	background: none;
+	font-weight: bold;
+}
+
+.tag {
+	color: #ffffff;
+	padding: 0.25rem 0.4rem;
+	border-radius: 4px;
+	font-weight: 500;
+}
+</style>
+
+		<h:form id="quartzForm" prependId="false">
+
+			<div
+				class="container #{guestPreferences.containerPosition} margin-bottom">
+				<p:panel toggleable="true" toggleSpeed="500" closeSpeed="500"
+					widgetVar="panel" id="panel0" collapsed="false">
+
+					<f:facet name="header">Scheduler:#{quartzInfoEx.scheduler.metaData.schedulerName}
+                        <span class="fas fa-asterisk"
+							style="color:#{quartzInfoEx.scheduler.started?'#5cb85c':'red'}"
+							title="Scheduler started:#{quartzInfoEx.scheduler.metaData.started}" />
+						<span class="fas fa-asterisk"
+							style="color:#{quartzInfoEx.scheduler.inStandbyMode?'red':'#5cb85c'};"
+							title="Scheduler in standby mode:#{quartzInfoEx.scheduler.metaData.inStandbyMode}" />
+						<span class="fas fa-asterisk"
+							style="color:#{quartzInfoEx.scheduler.metaData.shutdown?'red':'#5cb85c'};"
+							title="Scheduler is sutted down:#{quartzInfoEx.scheduler.metaData.shutdown}" />
+					</f:facet>
+
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputLabel value="Sheduler name:"
+								styleClass="form-label p-mr-2" />
+							<h:outputText id="sname" 
+								value="#{quartzInfoEx.scheduler.metaData.schedulerName}" />
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputLabel value="Sheduler instance:"
+								styleClass="form-label p-mr-2" />
+							<h:outputText
+								value="#{quartzInfoEx.scheduler.metaData.schedulerInstanceId}" />
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputLabel value="Started:" styleClass="form-label p-mr-2" />
+							<h:outputText value="#{quartzInfoEx.scheduler.metaData.started}"
+								class="tag" 
+								style="background-color: #{quartzInfoEx.scheduler.started?'#5cb85c':'red'}; text-align-right;" />
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputLabel value="Is in Standby:"
+								styleClass="form-label p-mr-2" />
+							<h:outputText
+								value="#{quartzInfoEx.scheduler.metaData.inStandbyMode}"
+								class="tag"
+								style="background-color: #{quartzInfoEx.scheduler.inStandbyMode?'red':'#5cb85c'};" />
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputLabel value="ShutDown:" styleClass="form-label p-mr-2" />
+							<h:outputText value="#{quartzInfoEx.scheduler.metaData.shutdown}"
+								class="tag"
+								style="background-color: #{quartzInfoEx.scheduler.metaData.shutdown?'red':'#5cb85c'};" />
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputLabel value="numJobsExec:"
+								styleClass="form-label p-mr-2" />
+							<h:outputText
+								value="#{quartzInfoEx.scheduler.metaData.numberOfJobsExecuted}" />
+						</div>
+					</div>
+
+					<br />
+					<h:panelGroup id="btnsgroup">
+						<p:commandButton styleClass="p-mr-2"
+							action="#{quartzInfoEx.actionStartStopScheduler()}"
+							value="Start/Stop Scheduler" 
+							process="@this" update="panel0">
+						</p:commandButton>
+
+						<p:commandButton action="#{quartzInfoEx.actionStandbyOnOff()}"
+							value="StandBy On/Off" process="@this" update="panel0" />
+					</h:panelGroup>
+
+				</p:panel>
+			</div>
+
+			<h:panelGroup id="allDataTbl" layout="block"
+				styleClass="card margin-top">
+
+				<h:outputText
+					value="#{ui_labels['general.reportResult']} #{quartzInfoEx.allTrigger.size()}"
+					styleClass="form-label"
+					rendered="#{quartzInfoEx.allTrigger.size() > 0}" />
+
+				<p:dataTable id="allData" widgetVar="tblProc" var="rows"
+					rowIndexVar="idx" value="#{quartzInfoEx.allTrigger}"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+					paginatorAlwaysVisible="true" paginator="true" rows="5"
+					emptyMessage="#{ui_labels['general.norows']}" reflow="true">
+
+					<p:column width="20" headerText="#{ui_labels['general.No-symbol']}">
+						<h:outputText value="#{idx + 1}" />
+					</p:column>
+
+					<p:column width="30">
+						<p:commandButton icon="fas fa-eye"
+							title="#{labels['general.view']}"
+							action="#{quartzInfoEx.actionSelectTrigger()}" process="@form"
+							partialSubmit="true" update="@form"
+							onclick="$('.ui-state-highlight').removeClass('ui-state-highlight');PF('tblProc').selectRow($(this).parents('tr:first').addClass('ui-state-highlight'));"
+							oncomplete="PrimeFaces.scrollTo('jobsResult')">
+
+							<f:setPropertyActionListener value="#{rows}" target="#{quartzInfoEx.selectedTrigger}" />
+						</p:commandButton>
+					</p:column>
+
+					<p:column width="20">
+						<i class="fas fa-info"
+							title="[TriggerKe=#{rows.triggerKey}],
+						[TriggerName=#{rows.triggerName}],
+						[TriggerGroup=#{rows.triggerGroup}],
+						[JobKey=	#{rows.jobKey}]" />
+					</p:column>
+
+					<p:column headerText="TriggerState " width="80">
+						<f:facet name="header">
+                                State
+                                <p:commandLink update="@none"
+								process="@none" value="" class="glyphicon glyphicon-info-sign"
+								onclick="PF('trgStateDlg').show(); return false;"
+								style="text-decoration:none;">
+								<i class="fa fa-info-circle" />
+							</p:commandLink>
+						</f:facet>
+                            #{rows.triggerState}
+                        </p:column>
+
+					<p:column headerText="Job Name" width="200">
+						<h:outputText value="#{rows.jobName}" />
+					</p:column>
+
+					<p:column headerText="Job Group" width="150">
+						<h:outputText value="#{rows.jobGroup}" />
+					</p:column>
+
+					<p:column headerText="Job Description">
+						<h:outputText value="#{rows.jobDescription}" />
+					</p:column>
+
+					<p:column headerText="Previous start" width="160">
+						<h:outputText value="#{rows.triggerPrevFireTime}">
+							<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" timeZone="#{quartzInfoEx.timeZone}"  />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Next start" width="160">
+						<h:outputText value="#{rows.triggerNextFireTime}">
+							<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" timeZone="#{quartzInfoEx.timeZone}" />
+						</h:outputText>
+					</p:column>
+
+					<p:column width="100">
+						<p:commandLink							
+							action="#{quartzInfoEx.actionPauseResumeTrg(rows.triggerName,rows.triggerGroup)}"
+							process="@this" update="allData" ajax="true" title="pause/resume"
+							disabled="#{rows.triggerState == 'NORMAL' or rows.triggerState == 'PAUSED'?false:true}]">
+							<i class="fas fa-pause" /> / <i class="fas fa-play" />
+						</p:commandLink>
+
+						<p:commandLink
+							styleClass="p-ml-5"
+							action="#{quartzInfoEx.actionFireTrigger(rows.jobName,rows.jobGroup)}"
+							process="@this" update="allData" ajax="true" title="run now"
+							disabled="#{rows.triggerState == 'NORMAL'?false:true}]">
+							<i class="fas fa-play" />
+						</p:commandLink>
+					</p:column>
+
+				</p:dataTable>
+			</h:panelGroup>
+
+			<p:divider />
+
+			<!-- ИСТОРИЯ -->
+			<div jsf:id="tabName" class="title-group"
+				jsf:rendered="#{quartzInfoEx.jobHistory.rowCount ne null}">
+				<p:commandLink class="extended-search-toggle expanded"
+					onclick="toggleSection(this, '#jobsResult')">
+					<h:outputText value="История" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="jobsResult" jsf:rendered="#{quartzInfoEx.jobHistory.rowCount ne null}">
+
+				<!-- ТЪРСЕНЕ В ИСТОРИЯТА  -->
+				<h:panelGroup id="searchPnl" layout="block" styleClass="card">
+
+					<div class="p-grid p-align-end inline-block">
+						<!--ПЕРИОД-->
+						<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['journal.period']}"
+								styleClass="form-label" />
+							<p:selectOneMenu value="#{quartzInfoEx.period}" id="periodV"
+								class="form-control">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, quartzInfoEx.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+								<f:ajax event="change" listener="#{quartzInfoEx.actionPeriod}"
+									render="dateOtV dateDoV" />
+							</p:selectOneMenu>
+						</div>
+
+						<!--ДАТА ОТ-->
+						<div class="p-col-12 p-sm-4 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['general.dataOt']}"
+								styleClass="form-label" />
+							<p:datePicker value="#{quartzInfoEx.dateOt}" id="dateOtV"
+								pattern="dd.MM.yyyy HH:mm:ss" mask="true" showIcon="true"
+								showOnFocus="false" showTime="true" showSeconds="true">
+								<p:ajax event="dateSelect" update="periodV"
+									listener="#{quartzInfoEx.changeDate}" />
+							</p:datePicker>
+						</div>
+
+						<!--ДАТА ДО-->
+						<div class="p-col-12 p-sm-4 p-md-3 p-lg-2 p-xl-2  ui-fluid">
+							<h:outputText value="#{ui_labels['general.dataDo']}"
+								styleClass="form-label" />
+							<p:datePicker value="#{quartzInfoEx.dateDo}" id="dateDoV"
+								pattern="dd.MM.yyyy HH:mm:ss" mask="true" showIcon="true"
+								showOnFocus="false" showTime="true" showSeconds="true">
+								<p:ajax event="dateSelect" update="periodV"
+									listener="#{quartzInfoEx.changeDate}" />
+							</p:datePicker>
+						</div>
+
+						<p:commandButton icon="fas fa-search" id="btnSearch"
+							partialSubmit="true" process="@this jobsResult"
+							styleClass="p-mb-2" update="jobsResult" 
+							value="#{ui_labels['general.search']}"
+							action="#{quartzInfoEx.actionSearchTrigger}">
+						</p:commandButton>
+					</div>
+				</h:panelGroup>
+
+
+				<!-- ИСТОРИЯ РЕЗУЛТАТ-->
+				<h:panelGroup id="historyTbl" layout="block" styleClass="card">
+					<h:outputText
+						value="#{ui_labels['general.reportResult']} #{quartzInfoEx.jobHistory.rowCount}"
+						styleClass="form-label"
+						rendered="#{quartzInfoEx.jobHistory.rowCount ne null}" />
+
+					<p:dataTable id="history" var="row" rowIndexVar="idx"
+						rendered="#{quartzInfoEx.jobHistory.rowCount ne null}"
+						style="block" value="#{quartzInfoEx.jobHistory}" lazy="true"
+						rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+						paginatorAlwaysVisible="true" paginator="true" rows="5"
+						emptyMessage="#{ui_labels['general.norows']}"
+						selectionMode="single" reflow="true">
+
+						<p:column width="30" exportable="false"
+							headerText="#{ui_labels['general.No-symbol']}">
+							<h:outputText value="#{idx + 1}" />
+						</p:column>
+
+						<p:column width="45">
+							<p:commandButton icon="fas fa-eye"
+								oncomplete="PF('job_details').show()" update="job_details"
+								ajax="true" class="btn btn-primary btn-xs"
+								rendered="#{row[5] ne null or row[6] ne null}">
+								<span class="glyphicon glyphicon-eye-open" />
+								<f:setPropertyActionListener value="#{row}"
+									target="#{quartzInfoEx.selectedHistory}" />
+							</p:commandButton>
+						</p:column>
+
+						<p:column headerText="TRIGGER_NAME" width="180">
+							<h:outputText value="#{row[2]}" />
+						</p:column>
+
+						<p:column headerText="JOB_NAME">
+							<h:outputText value="#{row[1]}" />
+						</p:column>
+
+						<p:column headerText="START_TIME" width="180">
+							<h:outputText value="#{row[3]}">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" timeZone="#{quartzInfoEx.timeZone}" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="END_TIME" width="180">
+							<h:outputText value="#{row[4]}">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss" timeZone="#{quartzInfoEx.timeZone}" />
+							</h:outputText>
+						</p:column>
+
+						<p:column headerText="STATUS" width="60"
+							style="text-align: center;">
+							<h:graphicImage width="18" height="18"
+								name="#{quartzInfoEx.getImageSource(row[5])}"
+								alt="#{quartzInfoEx.getImageSourceAlt(row[5])}"
+								title="#{quartzInfoEx.getImageSourceAlt(row[5])}"
+								library="images" />
+						</p:column>
+					</p:dataTable>
+
+				</h:panelGroup>
+
+			</div>
+
+			<p:dialog header="Trigger state information" widgetVar="trgStateDlg"
+				modal="true" height="auto" closeOnEscape="true">
+				<p>
+					<strong>WAITING</strong> = the normal state of a trigger, waiting
+					for its fire time to arrive and be acquired for firing by a
+					scheduler.
+				</p>
+				<p>
+					<strong>PAUSED</strong> = means that one of the
+					scheduler.pauseXXX() methods was used. The trigger is not eligible
+					for being fired until it is resumed.
+				</p>
+				<p>
+					<strong>ACQUIRED</strong> = a scheduler node has identified this
+					trigger as the next trigger it will fire - may still be waiting for
+					its fire time to arrive. After it fires the trigger will be updated
+					(per its repeat settings, if any) and placed back into the WAITING
+					state (or be deleted if it does not repeat again).
+				</p>
+				<p>
+					<strong>BLOCKED</strong> = the trigger is prevented from being
+					fired because it relates to a StatefulJob that is already
+					executing. When the statefuljob completes its execution, all
+					triggers relating to that job will return to the WAITING state.
+				</p>
+				<p>In other words, When a state is BLOCKED, another trigger (or
+					an instance of this trigger) is already executing for the trigger's
+					stateful job, so this trigger is blocked until the other trigger is
+					finished." /></p>
+			</p:dialog>
+
+			<p:dialog id="job_details" widgetVar="job_details" modal="true"
+				minWidth="1000" minHeight="640" width="1000" height="640"
+				closeOnEscape="true" closable="true" header="Job details">
+
+				<div class="card border-red-100">
+					
+					<div class="form-label">COMMENT/DESCRIPTION</div>
+					<p:inputTextarea readonly="true"
+						value="#{quartzInfoEx.selectedHistory[6]} #{quartzInfoEx.selectedHistory[8]}" rows="16" 
+						escape="false"
+						styleClass="block"
+						style="max-width:100%; min-width:100%; max-height: 10"
+						autoResize="false" />
+					
+					
+					<div class="form-label mt-4">EXCEPTION</div>
+					<p:inputTextarea readonly="true"
+						value="#{quartzInfoEx.selectedHistory[7]}" rows="16"
+						styleClass="block"
+						style="max-width:100%; min-width:100%; max-height: 10"
+						autoResize="false" />
+					
+				</div>
+
+			</p:dialog>
+
+		</h:form>
+
+
+	</ui:define>
+
+</ui:composition>

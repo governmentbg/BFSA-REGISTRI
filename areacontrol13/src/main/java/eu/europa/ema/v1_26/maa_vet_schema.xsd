@@ -1,0 +1,841 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:thisfile="me" xmlns:rdm="http://www.ema.eaf/dictionary/" xmlns:maa="http://www.ema.eaf/maa/" targetNamespace="http://www.ema.eaf/maa/" elementFormDefault="qualified" version="1.26.0.0">
+	<xs:import namespace="http://www.ema.eaf/dictionary/" schemaLocation="eaf_dictionary.xsd"/>
+	<xs:element name="eu_application_form">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="envelope" type="rdm:envelope"/>
+				<xs:element name="initial-application-form-veterinary">
+					<xs:complexType>
+						<xs:sequence>	
+							<!-- Begin Section 1 -->
+							<xs:element name="type_of_application">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="concerns">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="centralised-procedure" type="rdm:yes-no"/>
+													<xs:element name="cp">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="mandatory-scope" type="rdm:yes-no"/>
+																<xs:element name="ms">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="cbArticle42_2_a_i" type="rdm:yes-no"/>
+																			<xs:element name="cbArticle42_2_a_ii" type="rdm:yes-no"/>
+																			<xs:element name="cbArticle42_2_a_iii" type="rdm:yes-no"/>
+																			<xs:element name="cbArticle42_2_b" type="rdm:yes-no"/>
+																			<xs:element name="cbArticle42_2_c" type="rdm:yes-no"/>
+																			<xs:element name="cbArticle42_2_d" type="rdm:yes-no"/>
+																			<xs:element name="cbArticle42_2_e" type="rdm:yes-no"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="optional-scope" type="rdm:yes-no"/>
+																<xs:element name="os">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="cbArticle42_4" type="rdm:yes-no"/>
+																			<xs:element name="acceptance_cvmp"/>
+																			<xs:element name="ema-procedure-number" type="xs:string"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="mutual-procedure" type="rdm:yes-no"/>
+													<xs:element name="mutual-recognition-procedure" type="rdm:mutual-recognition-procedure" minOccurs="0"/>
+													<xs:element name="decentralised-procedure" type="rdm:yes-no"/>
+													<xs:element name="dp">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="procedure_number" type="rdm:string30"/>
+																<xs:element name="reference_member_state" type="xs:string"/>
+																<xs:element name="member_state" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="member_state" type="xs:string"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="national_procedure" type="rdm:yes-no"/>
+													<xs:element name="np">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="member_state" type="xs:string"/>
+																<xs:element name="application_number" type="rdm:string30"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="change-market-authorization">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="yes" type="rdm:yes-no"/>
+													<xs:element name="no" type="rdm:yes-no"/>
+													<xs:element name="specify-yes" type="xs:string"/>
+													<xs:element name="upd-product-identifier" type="xs:string"/>
+													<xs:element name="upd-permanent-identifier" type="xs:string"/>
+													<xs:element name="variation-procedure-number" type="xs:string"/>
+													<xs:element name="qualitative-change" type="rdm:yes-no"/>
+													<xs:element name="qualitative-change-detail"/>
+													<xs:element name="bioavailability" type="rdm:yes-no"/>
+													<xs:element name="pharmacokinetics" type="rdm:yes-no"/>
+													<xs:element name="strength-potency" type="rdm:yes-no"/>
+													<xs:element name="pharma-form" type="rdm:yes-no"/>
+													<xs:element name="route-of-admin" type="rdm:yes-no"/>
+													<xs:element name="target-animal-species" type="rdm:yes-no"/>
+													<xs:element name="product" type="rdm:product-type" maxOccurs="unbounded"/>
+													<xs:element name="pharmaceutical-products" type="xs:string"/>
+													<!-- <xs:element name="other-changes" type="xs:string"/>  removed in version 7.3 word form -->
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="directive-2001-82-ec">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="section1-3-1">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article8" type="rdm:yes-no"/>
+																<!-- <xs:element name="new-active-substance" type="rdm:yes-no"/> -->
+																<!-- <xs:element name="known-active-substance" type="rdm:yes-no"/> -->
+																<!-- xs:element name="attach-letter" type="rdm:yes-no"/> -->
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-2">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article18"/>
+																<xs:element name="first-rmp">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="second-rmp">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="third-rmp">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" maxOccurs="unbounded"/>
+																			<xs:element name="member_state_source" type="xs:string"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-3">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article19-1" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_a_as" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_a_ti" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_a_strength" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_a_roa" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_a_pharma" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_b" type="rdm:yes-no"/>
+																<xs:element name="cbArticle19_1_c" type="rdm:yes-no"/>
+																<xs:element name="first-rmp">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="second-rmp">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" maxOccurs="unbounded"/>
+																			<xs:element name="member_state" type="xs:string"/>
+																			<xs:element name="change-active-substance" type="rdm:yes-no"/>
+																			<xs:element name="change-therapeutic-indication" type="rdm:yes-no"/>
+																			<xs:element name="change-strength" type="rdm:yes-no"/>
+																			<xs:element name="change-addition" type="rdm:yes-no"/>
+																			<xs:element name="route-admin" type="rdm:yes-no"/>
+																			<xs:element name="bioequilvalence" type="rdm:yes-no"/>
+																			<xs:element name="raw-materials" type="rdm:yes-no"/>
+																			<xs:element name="manufacturing-process" type="rdm:yes-no"/>
+																			<xs:element name="other" type="rdm:yes-no"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="third-rmp">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-4">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article20" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-5">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article21" type="rdm:yes-no"/>
+																<xs:element name="products">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="product" type="rdm:product-type" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="attach-letter" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-6">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article22" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-7">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article23" type="rdm:yes-no"/>
+																<xs:element name="acceptance-date" type="xs:date"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-3-8">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="exceptional" type="rdm:yes-no"/>
+																<xs:element name="acceptance-date" type="xs:date"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="mrl_status">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="mrl_status_yes" type="rdm:yes-no"/>
+													<xs:element name="commission_regulation" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="active-substances">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="temp-substances" type="xs:string"/>
+																<xs:element name="mrl_details" minOccurs="1" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="marker_residue" type="rdm:string50"/>
+																			<xs:element name="multi_animal_species" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="animal_species" type="rdm:control-term"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="mrl_target_tissues" minOccurs="0" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="mrl" type="rdm:string50"/>
+																						<xs:element name="target_tissue" type="rdm:control-term"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="other_provisions" minOccurs="0" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="other_previsions" type="rdm:control-term"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="therapeutic_classification" type="rdm:string50"/>
+																			<xs:element name="date_of_publication" type="xs:date"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="biological_substances" type="xs:string"/>
+													<xs:element name="max_residue_EMA_Yes" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="max_residue_yes" type="rdm:yes-no"/>
+																<xs:element name="max_residue" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="active-substances" minOccurs="0">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="temp-substances" type="xs:string"/>
+																			<xs:element name="date_of_submission" type="xs:date"/>
+																			<xs:element name="species_set" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="species" type="rdm:control-term"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="remarks" type="rdm:string50"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="max_residue_EMA_NA" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="max_residue_NA" type="rdm:yes-no"/>
+																<xs:element name="max_residue" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="active-substances" minOccurs="0">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="temp-substances" type="xs:string"/>
+																			<xs:element name="species_set" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="species" type="rdm:control-term"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="remarks" type="rdm:string50"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>															
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="consideration_of_application">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="section1-5-1">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article44-3" type="rdm:yes-no"/>
+																<xs:element name="cvmp" type="xs:date"/>
+																<xs:element name="cvmp-details" type="xs:string"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-5-2">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article40-1" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-5-3">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article40-2" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-5-4">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article40-4" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-5-5">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="article40-5" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-5-6">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="vaccine_antigen" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section1-5-7">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="vaccine_platform" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<!-- End Section 1 -->
+							<!-- Begin Section 2 -->
+							<xs:element name="marketing_authorisation_application_particulars">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="names_and_atc_code" maxOccurs="unbounded">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="section2-1-1">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="invented-name" type="rdm:string250"/>
+																<xs:element name="annex5-18" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section2-1-2">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="active-substances">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="substanceType" type="rdm:control-term"/>
+																<xs:element name="new-active-substance" type="rdm:yes-no"/>
+																<xs:element name="known-active-substance" type="rdm:yes-no"/>
+																<xs:element name="attach-letter" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section2-1-3">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="atc" type="rdm:atc"/>
+																<xs:element name="target_species" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="species" type="rdm:control-term"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+													<xs:element name="section2-1-4">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="withdrawal-period-check" type="rdm:yes-no"/>
+																<xs:element name="withdrawal-period" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="route-of-administration" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="name" type="rdm:control-term"/>
+																						<xs:element name="code" type="rdm:control-term"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																			<xs:element name="target-species" type="rdm:control-term"/>
+																			<xs:element name="target-tissue" type="rdm:control-term"/>
+																			<xs:element name="period" type="rdm:string30"/>
+																			<xs:element name="units" type="xs:string"/>
+																			<xs:element name="note" type="xs:string"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="medicinal-product" type="rdm:medicinal-product"/>
+										<xs:element name="annex5-17" type="rdm:yes-no"/>
+										<xs:element name="legal-status">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="no-prescription" type="rdm:yes-no"/>
+													<xs:element name="no-prescription-retail-restricted-no" type="rdm:yes-no"/>
+													<xs:element name="no-prescription-retail-restricted-yes" type="rdm:yes-no"/>
+													<xs:element name="prescription" type="rdm:yes-no"/>
+													<xs:element name="prescription-qualified-professionals" type="rdm:yes-no"/>
+													<xs:element name="prescription-official-vet" type="rdm:yes-no"/>
+													<xs:element name="prescription-veterinarians" type="rdm:yes-no"/>
+													<xs:element name="prescription-veterinarians-use-possession" type="rdm:yes-no"/>
+													<xs:element name="prescription-veterinarians-administration" type="rdm:yes-no"/>
+													<xs:element name="prescription-special-supervision" type="rdm:yes-no"/>
+													<xs:element name="prescription-psychotropic-administration" type="rdm:yes-no"/>
+													<xs:element name="prescription-psychotropic-special-supervision" type="rdm:yes-no"/>
+													<xs:element name="prescription-renewal" type="rdm:yes-no"/>
+													<xs:element name="prescription-renewal-yes" type="rdm:yes-no"/>
+													<xs:element name="prescription-renewal-no" type="rdm:yes-no"/>
+													<xs:element name="prescription-narcotics-special-supervision" type="rdm:yes-no"/>
+													<xs:element name="prescription-narcotics-administration" type="rdm:yes-no"/>
+													<xs:element name="prescription-renewable-delivery" type="rdm:yes-no"/>
+													<xs:element name="prescription-renewable-delivery-yes" type="rdm:yes-no"/>
+													<xs:element name="prescription-renewable-delivery-no" type="rdm:yes-no"/>
+													<xs:element name="prescription-except-some-packages" type="rdm:yes-no"/>	
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.4.1 Begin -->
+										<xs:element name="centralised-nationalprocedure" type="rdm:yes-no"/>
+										<xs:element name="marketing-authorisation-holders">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="marketing-authorisation-holder" type="rdm:marketing-authorisation-holder" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="marketing-authorisation-holders-sme">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="marketing-authorisation-holders-sme" type="rdm:contact-details-type" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.4.1 End -->
+										<!-- Section 2.4.2 Begin -->
+										<xs:element name="contact-during-procedures">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contact-during-procedure" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="member-states" type="rdm:member-states"/>
+																<xs:element name="contact-details" type="rdm:contact-details-type" maxOccurs="unbounded"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.4.2 End  -->
+										<!-- Section 2.4.3 Begin -->
+										<xs:element name="contact-after-procedures">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contact-after-procedure" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="member-states" type="rdm:member-states"/>
+																<xs:element name="contact-details" type="rdm:contact-details-type" maxOccurs="unbounded"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.4.3 End -->
+										<!-- Section 2.4.4 Begin -->
+										<xs:element name="contact-pharmaco-vigilances">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contact-pharmaco-vigilance" maxOccurs="unbounded">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="contact-details" type="rdm:contact-details-type"/>
+																<xs:element name="reference-number" type="rdm:string30"/>
+																<xs:element name="pharma-system-address" type="rdm:contact-details-type"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.4.4 End -->
+										<!-- Section 2.5.1 Begin -->
+										<xs:element name="manufacturer-batch-releases">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="manufacturer-batch-release" type="rdm:manufacturer-batch-release" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.1 End -->
+										<!-- Section 2.5.1 Continued Begin -->
+										<xs:element name="contact-blood-vaccines">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contact-blood-vaccine" type="rdm:contact-blood-vaccine" minOccurs="1" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.1 Continued End -->
+										<!-- Section 2.5.1.1 Begin -->
+										<xs:element name="contact-product-defects">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contact-product-defect" type="rdm:contact-details-type" minOccurs="1" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.1.1 End -->
+										<!-- Section 2.5.1.2 Begin -->
+										<xs:element name="contact-batch-testing-sites">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contact-batch-testing-site" type="rdm:contact-batch-testing-site" minOccurs="1" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.1.2 End -->
+										<!-- Section 2.5.2 Begin -->
+										<xs:element name="manufacturer-pharmaceutical-products">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="manufacturer-pharmaceutical-product" type="rdm:manufacturer-pharmaceutical-product" minOccurs="1" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.2 End -->
+										<!-- Section 2.5.3 Begin -->
+										<xs:element name="manufacturer-active-substances">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="manufacturer-active-substance" type="rdm:manufacturer-active-substance-vet" minOccurs="1" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.3 End -->
+										<!-- Section 2.5.4 Begin -->
+										<xs:element name="contract-companies">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="contract-study" type="rdm:contract-study" minOccurs="0" maxOccurs="unbounded"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<!-- Section 2.5.4 End -->
+										<!-- Section 2.6.1 Begin -->
+										<!-- Section 2.6.1 End -->
+										<xs:element name="compositions">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="medicinal-product" type="rdm:medicinal-product"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="section2-6-2">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="materials">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="none" type="rdm:yes-no"/>
+																<xs:element name="material" minOccurs="1" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="name" type="xs:string"/>
+																			<xs:element name="function" type="xs:string"/>
+																			<xs:element name="substance" type="rdm:substance"/>
+																			<xs:element name="animal-origin-tse" type="rdm:yes-no"/>
+																			<xs:element name="animal-origin" type="rdm:yes-no"/>
+																			<xs:element name="other-animal-origin" type="rdm:yes-no"/>
+																			<xs:element name="human-origin" type="rdm:yes-no"/>
+																			<xs:element name="certificate-suitable-tse" type="rdm:yes-no"/>
+																			<xs:element name="tse-numbers" minOccurs="1" maxOccurs="unbounded">
+																				<xs:complexType>
+																					<xs:sequence>
+																						<xs:element name="tse-number" type="xs:string"/>
+																					</xs:sequence>
+																				</xs:complexType>
+																			</xs:element>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+																<xs:element name="annex5-12" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="section2-6-3">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="gmo">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="is-gmo" type="rdm:yes-no"/>
+																<xs:element name="directive" type="rdm:yes-no"/>
+																<xs:element name="annex5-13" type="rdm:yes-no"/>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<!-- End Section 2 -->
+							<!-- Begin Section 3 -->
+							<xs:element name="scientific-advice" type="rdm:scientific-advice"/>
+							<!-- End Section 3 -->
+							<!-- Begin Section 4 -->
+							<xs:element name="other_marketing_authorisation_applications">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="section4-1-1">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="product_pending" type="rdm:yes-no"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="section4-1-2">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="same_product" type="rdm:yes-no"/>
+													<xs:element name="implications" type="rdm:yes-no"/>
+													<xs:element name="elaborate" type="xs:string"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="section4-1-3">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="refused" type="rdm:yes-no"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Marketing_authorisation_applications_in_EEA">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="authorised" type="rdm:mark-auth"/>
+													<xs:element name="pending" type="rdm:mark-auth"/>
+													<xs:element name="refused" type="rdm:mark-auth"/>
+													<xs:element name="withdrawn-before" type="rdm:mark-auth"/>
+													<xs:element name="withdrawn-after" type="rdm:mark-auth"/>
+													<xs:element name="suspended" type="rdm:mark-auth"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="multiple_or_duplicate_applications_same_medicinal_product">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="submission" type="rdm:yes-no"/>
+													<xs:element name="mult-duplicates">
+														<xs:complexType>
+															<xs:sequence>
+																<xs:element name="application" maxOccurs="unbounded">
+																	<xs:complexType>
+																		<xs:sequence>
+																			<xs:element name="product-name"/>
+																			<xs:element name="date-application"/>
+																			<xs:element name="applicant"/>
+																			<xs:element name="attach-copy" type="rdm:yes-no"/>
+																			<xs:element name="procedure-number" type="xs:string"/>
+																		</xs:sequence>
+																	</xs:complexType>
+																</xs:element>
+															</xs:sequence>
+														</xs:complexType>
+													</xs:element>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="marketing_authorisation_applications_outside_EEA">
+											<xs:complexType>
+												<xs:sequence>
+													<xs:element name="authorised" type="rdm:mark-auth"/>
+													<xs:element name="pending" type="rdm:mark-auth"/>
+													<xs:element name="refused" type="rdm:mark-auth"/>
+													<xs:element name="withdrawn-before" type="rdm:mark-auth"/>
+													<xs:element name="withdrawn-after" type="rdm:mark-auth"/>
+													<xs:element name="suspended" type="rdm:mark-auth"/>
+												</xs:sequence>
+											</xs:complexType>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<!-- End Section 4 -->
+							<!-- Begin Declaration -->
+							<xs:element name="declaration">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="applicant" type="rdm:contact-details-type"/>
+										<xs:element name="signature" type="rdm:contact-details-type"/>
+										<xs:element name="dec-signature" type="xs:string"/>
+										<xs:element name="function" type="rdm:string50"/>
+										<xs:element name="place" type="rdm:string30"/>
+										<xs:element name="date" type="xs:date"/>
+										<xs:element name="annex5-4" type="rdm:yes-no"/>
+										<xs:element name="annex5-1" type="rdm:yes-no"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<!-- End Declaration -->
+							<!-- Begin Section 5 -->
+							<xs:element name="AnnexedDocuments">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="annex5-1" type="rdm:yes-no"/>
+										<xs:element name="annex5-2" type="rdm:yes-no"/>
+										<xs:element name="annex5-3" type="rdm:yes-no"/>
+										<xs:element name="annex5-4" type="rdm:yes-no"/>
+										<xs:element name="annex5-5" type="rdm:yes-no"/>
+										<xs:element name="annex5-6" type="rdm:yes-no"/>
+										<xs:element name="annex5-7" type="rdm:yes-no"/>
+										<xs:element name="annex5-8" type="rdm:yes-no"/>
+										<xs:element name="annex5-9" type="rdm:yes-no"/>
+										<xs:element name="annex5-10" type="rdm:yes-no"/>
+										<xs:element name="annex5-11" type="rdm:yes-no"/>
+										<xs:element name="annex5-12" type="rdm:yes-no"/>
+										<xs:element name="annex5-13" type="rdm:yes-no"/>
+										<xs:element name="annex5-14" type="rdm:yes-no"/>
+										<xs:element name="annex5-15" type="rdm:yes-no"/>
+										<xs:element name="annex5-16" type="rdm:yes-no"/>
+										<xs:element name="annex5-17" type="rdm:yes-no"/>
+										<xs:element name="annex5-18" type="rdm:yes-no"/>
+										<xs:element name="annex5-19" type="rdm:yes-no"/>
+										<xs:element name="annex5-20" type="rdm:yes-no"/>
+										<xs:element name="annex5-21" type="rdm:yes-no"/>
+										<xs:element name="annex5-22" type="rdm:yes-no"/>
+										<xs:element name="annex5-23" type="rdm:yes-no"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<!-- End Section 5 -->
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

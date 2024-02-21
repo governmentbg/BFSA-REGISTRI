@@ -1,0 +1,333 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(null)}"
+				onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+	<script>
+        function transformText() {
+            var inputTextElement = document.getElementById('targovtsiFurajForm:regNTS');
+            
+            var inputText = inputTextElement.value;
+            var transformedText = inputText.toUpperCase().replace(/\s/g, '');
+            
+            inputTextElement.value = transformedText;
+        }
+    </script>
+
+	<h:form id="targovtsiFurajForm">
+
+		<div class="#{guestPreferences.containerPosition}"
+			jsf:rendered="#{regTargovtsiFuraj.showEkran}">
+
+			<ui:include src="/pages/regTargovtsiFurajModals.xhtml" />
+
+			<div class="card">
+				<h:panelGroup id="vpTitle"
+					style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+					<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regTargovtsiFuraj.registerOptions.registerId, regTargovtsiFuraj.currentLang, null)}"
+						styleClass="form-label" />
+					<br />
+					<h:outputText value="#{labels['babhMigr.msgmigr']}"
+						style="color:red"
+						rendered="#{regTargovtsiFuraj.vpisvane.fromМigr eq 0}" />
+				</h:panelGroup>
+
+
+
+				<ui:remove>
+					<!-- без това, при местене между табовете не субмитва данните -->
+				</ui:remove>
+				<p:remoteCommand name="onTabChangeProcess"
+					process="registerTabs @this" />
+
+				<p:tabView id="registerTabs" dynamic="true" cache="true"
+					styleClass="p-mt-4" onTabChange="onTabChangeProcess()">
+
+					<p:ajax event="tabChange" process="registerTabs"
+						listener="#{regTargovtsiFuraj.onTabChange}" update="registerTabs"
+						partialSubmit="true" />
+
+					<!-- ТАБ ОСНОВНИ ДАННИ -->
+					<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+
+						<h:panelGroup id="tdPanelOsnDanni" layout="block">
+							<p:sticky target="tlbr" margin="100">
+
+								<!-- ТООЛБАР ОСОВНИ ДАННИ-->
+								<p:toolbar id="tlbr" styleClass="p-mb-2">
+
+									<f:facet name="left">
+										<p:commandButton icon="fas fa-save"
+											value="#{ui_labels['general.save']}" id="btnSave"
+											partialSubmit="true"
+											oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+											action="#{regTargovtsiFuraj.actionSave}"
+											process="tdPanelOsnDanni  @this" update="registerTabs"
+											rendered="#{isView ne 1}"
+											disabled="#{regTargovtsiFuraj.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}" />
+
+										<span class="fas fa-ellipsis-v p-mx-2"
+											jsf:rendered="#{isView ne 1}" />
+
+										<ibg:compAccess readonly="#{isView eq 1}"
+											alue="#{labels['regTargovtsiFuraj.compAccess']}"
+											rendered="#{regTargovtsiFuraj.vpisvane.id ne null}"
+											idObj="#{regTargovtsiFuraj.vpisvane.id}"
+											infoJournal="#{regTargovtsiFuraj.vpisvane.licenziant}"
+											taskInfo="#{regTargovtsiFuraj.babhDoc.taskInfo}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}"
+											dateClassif="#{regTargovtsiFuraj.decodeDate}" />
+
+
+										<p:button value="#{labels['registerMainTab.viewZaiav']}"
+											title="#{ui_labels['general.view']}" icon="fas fa-eye"
+											target="_blank" styleClass="ui-button-secondary p-mr-2"
+											outcome="#{regTargovtsiFuraj.actionGotoZaiav()}" />
+
+										<p:commandButton
+											rendered="#{regTargovtsiFuraj.filesList.size() ne 0}"
+											value="#{labels['babhZaiavEdit.upFiles']}"
+											styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-paperclip" partialSubmit="true"
+											update="targovtsiFurajForm:panelAttFiles"
+											oncomplete="PF('attFilesVar').show();" />
+
+										<p:button
+											rendered="#{regTargovtsiFuraj.vpisvane.id ne null and regTargovtsiFuraj.lastDoc[0] ne null}"
+											value="#{labels['registerMainTab.lastDoc']}"
+											title="#{ui_labels['general.view']}"
+											styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-arrow-left" target="_blank"
+											outcome="#{regTargovtsiFuraj.actionGotoLastZaiav()}"
+											ajax="false" />
+
+										<p:button rendered="false"
+											value="#{labels['regTargovtsiFuraj.migr']}"
+											styleClass="ui-button-info p-mr-2" icon="fas fa-info-circle"
+											partialSubmit="true" target="_blank" ajax="false"
+											outcome="#{regTargovtsiFuraj.actionMigrInfo()}" />
+
+									</f:facet>
+
+									<f:facet name="right">
+
+										<ibg:compVpisvaneZaiav
+											rendered="#{regTargovtsiFuraj.referent2.code ne null}"
+											codeRef="#{regTargovtsiFuraj.referent2.code}"
+											idVpisvane="#{regTargovtsiFuraj.vpisvane.id}"
+											onComplete="PF('vpZaiavVar').hide();" />
+											
+										<span class="fas fa-ellipsis-v p-mx-2" jsf:rendered="#{regTargovtsiFuraj.referent2.code ne null}" />
+
+										<ibg:compSendEmail
+											mailTo="#{regTargovtsiFuraj.referent2.contactEmail}"
+											subject="#{labels['regTargovtsiFuraj.otnosno']} #{regTargovtsiFuraj.vpisvane.regNomZaqvlVpisvane}"
+											rendered="#{regTargovtsiFuraj.referent2.contactEmail ne null}" />
+
+										<h:panelGroup id="pRegInfo">
+											<ibg:compObjAudit id="compJ"
+												idObj="#{regTargovtsiFuraj.vpisvane.id}"
+												codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+										</h:panelGroup>
+
+										<span class="fas fa-ellipsis-v p-mx-2"
+											jsf:rendered="#{regTargovtsiFuraj.vpisvane.id ne null and isView ne 1}" />
+
+										<p:commandButton icon="fas fa-times"
+											styleClass="ui-button-danger"
+											value="#{ui_labels['general.delete']}" partialSubmit="true"
+											action="#{regTargovtsiFuraj.actionDelete}"
+											rendered="#{isView ne 1 and regTargovtsiFuraj.vpisvane.id ne null and !regTargovtsiFuraj.ud.limitedAccess}"
+											disabled="#{regTargovtsiFuraj.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+											<p:confirm header="#{ui_labels['general.comfirmation']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+									</f:facet>
+
+								</p:toolbar>
+							</p:sticky>
+
+							<p:divider align="right" type="dashed" style="margin: 0rem;">
+
+								<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: "
+									styleClass="form-label" />
+								<h:outputText id="regNumZaiav"
+									value="#{regTargovtsiFuraj.vpisvane.regNomZaqvlVpisvane} / " />
+								<h:outputText id="dateZaiav" styleClass="p-mr-2"
+									value="#{regTargovtsiFuraj.vpisvane.dateZaqvlVpis}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regTargovtsiFuraj.timeZone}" />
+								</h:outputText>
+
+								<h:outputText value="#{labels['registerMainTab.statusV']}: "
+									styleClass="form-label" />
+								<h:outputText id="statusV"
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regTargovtsiFuraj.vpisvane.status, regTargovtsiFuraj.currentLang, null)}" />
+								<h:outputText value="   "
+									rendered="#{regTargovtsiFuraj.vpisvane.id ne null}" />
+								<h:outputText id="dateSv"
+									rendered="#{regTargovtsiFuraj.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+									value="#{regTargovtsiFuraj.vpisvane.dateStatus}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regTargovtsiFuraj.timeZone}" />
+								</h:outputText>
+
+								<!-- Дължима такса -->
+								<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+									styleClass="form-label"
+									rendered="#{regTargovtsiFuraj.daljimaSuma ne null and regTargovtsiFuraj.daljimaSuma gt 0}" />
+								<h:outputText value="#{regTargovtsiFuraj.daljimaSuma}"
+									style="color: red"
+									rendered="#{regTargovtsiFuraj.daljimaSuma ne null and regTargovtsiFuraj.daljimaSuma gt 0}" />
+
+								<!-- УД -->
+								<h:panelGroup
+									rendered="#{regTargovtsiFuraj.vpisvane.regNomResult ne null}">
+									<h:outputText value="#{labels['ud.udNomer']}: "
+										styleClass="form-label" />
+									<h:outputText
+										value="#{regTargovtsiFuraj.vpisvane.regNomResult} / " />
+									<h:outputText value="#{regTargovtsiFuraj.vpisvane.dateResult}">
+										<f:convertDateTime pattern="dd.MM.yyyy"
+											timeZone="#{regTargovtsiFuraj.timeZone}" />
+									</h:outputText>
+								</h:panelGroup>
+
+							</p:divider>
+
+							<!-- ПОДАТЕЛ -->
+							<ui:remove>
+								<ui:include src="/pages/podatelInc.xhtml">
+									<ui:param name="isView" value="0" />
+									<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+								</ui:include>
+							</ui:remove>
+
+							<!-- Представляващо лице -->
+							<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}"
+								refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+								binding="#{regTargovtsiFuraj.bindingReferent1}"
+								refObj="#{regTargovtsiFuraj.referent1}"
+								codeRef="#{regTargovtsiFuraj.referent1.code}"
+								mainDataLabel="#{labels['docu.podatel']}"
+								saveInComponent="false" modal="false" showContacts="false"
+								showRadio="flase" showBtnClear="true" showKachectvoLice="true" />
+
+							<ibg:refCorrespData id="liceZaqvitel" readonly="#{isView eq 1}"
+								binding="#{regTargovtsiFuraj.bindingReferent2}"
+								codeRef="#{regTargovtsiFuraj.referent2.code}"
+								refObj="#{regTargovtsiFuraj.referent2}"
+								mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+								saveInComponent="false"
+								vidDoc="#{regTargovtsiFuraj.babhDoc.docVid}"
+								dateClassif="#{regTargovtsiFuraj.decodeDate}" modal="false"
+								showDopInfo="false" showKorespAdress="true" showBtnClear="true"
+								showContacts="true" showRadio="true" regixPermAddress="true"
+								btnPostAdress="true"
+								english="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_VNOS_FURAJI) ? true : false}" />
+
+							<ui:include src="regTargovtsiFurajTab1.xhtml" />
+
+							<!-- ДОПЪЛНИТЕЛНА ИНФОРМАЦИЯ ЗА ВПИСВАНЕТО-->
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#targovtsiFurajForm:registerTabs:vpisvaneInfo')">
+									<h:outputText value="#{labels['reg.dopInfoVpisvane']}" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+
+							<div jsf:id="vpisvaneInfo">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 ui-fluid">
+										<p:inputTextarea rows="4" readonly="#{isView eq 1}"
+											value="#{regTargovtsiFuraj.vpisvane.info}" />
+									</div>
+								</div>
+							</div>
+
+						</h:panelGroup>
+					</p:tab>
+
+					<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.danniVpisvaneTab']}"
+						id="danniVpisvaneTab"
+						disabled="#{regTargovtsiFuraj.vpisvane.id eq null}">
+						<ui:include src="vpStatusData.xhtml">
+							<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+						</ui:include>
+					</p:tab>
+
+
+					<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.docsVpisvaneTab']}"
+						id="docVpisvaneTab"
+						disabled="#{regTargovtsiFuraj.vpisvane.id eq null}">
+						<ui:include src="vpDocs.xhtml">
+							<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+						</ui:include>
+					</p:tab>
+
+					<!-- ТАБ ЕТАПИ НА ОБРАБОТКА -->
+					<p:tab title="#{labels['register.etapiVpisvaneTab']}"
+						id="etapiVpisvaneTab"
+						disabled="#{regTargovtsiFuraj.vpisvane.id eq null}">
+						<ui:include src="procEtaps.xhtml">
+							<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+						</ui:include>
+					</p:tab>
+
+				</p:tabView>
+
+			</div>
+		</div>
+
+
+		<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+		<h:panelGroup id="panelAttFiles">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+				modal="true">
+
+				<p:messages id="attFilesModalMsg" showDetail="true" closable="false"
+					style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:compFileUpload id="filesDoc"
+						listObj="#{regTargovtsiFuraj.filesList}"
+						codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+						header="true" idObj="#{regTargovtsiFuraj.babhDoc.id}"
+						hideDel="false" view="true" display="list" typeSign="0"
+						saveFirst="true" dragDropSupport="table"
+						headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+				</div>
+
+			</p:dialog>
+		</h:panelGroup>
+
+
+	</h:form>
+
+
+
+</ui:composition>

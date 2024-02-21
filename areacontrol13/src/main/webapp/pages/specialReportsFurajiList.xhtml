@@ -1,0 +1,765 @@
+<ui:composition   xmlns="http://www.w3.org/1999/xhtml"
+			      xmlns:ui="http://java.sun.com/jsf/facelets"
+			      xmlns:f="http://java.sun.com/jsf/core"
+			      xmlns:h="http://java.sun.com/jsf/html"
+			      template="/template/template.xhtml"
+			      xmlns:ibg="http://java.sun.com/jsf/composite/components"
+			      xmlns:p="http://primefaces.org/ui"
+			      xmlns:c="http://java.sun.com/jsp/jstl/core"
+				xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+				xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+	
+		<ui:define name="title">Филтър за специализирани справки Фуражи</ui:define>
+		
+		<ui:define name="viewname">
+			<li>Филтър за специализирани справки Фуражи</li>
+		</ui:define>
+		
+		<ui:define name="content">
+			<f:metadata>
+				<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+				<f:importConstants type="com.ib.system.SysConstants" />
+			</f:metadata>
+						
+			<h:form id="formSRList">
+		
+				<div class="container #{guestPreferences.containerPosition}">
+
+		<!-- FILTER -->
+		<h:panelGroup id="panelFilter">
+
+			<div class="card">
+			
+			<div class="p-grid ui-fluid">
+				<!-- Вид регистър -->
+				<div class="p-col-12  ui-fluid">
+					<h:outputText value="#{labels['regData.registri']}" styleClass="form-label" />
+					<ui:remove>	<h:panelGroup styleClass="input-group">
+							<ibg:selectManyModalA id="idReg"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_REGISTRI}"
+								styleAutoComp="" selectedCodes="#{specialReportsList.srs.registerIdList}"
+								selectedClassifs="#{specialReportsList.registerSC}"
+								emptyMessage="#{labels['vpisvane.vidRegisturEmptyMessage']}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								minQueryLength="3" dopInfoAutoComp="true"
+								dopInfoTitleAutoComp="Избор на регистри" />
+						</h:panelGroup>
+					</ui:remove>
+					
+					<p:selectCheckboxMenu id="vidRegistri" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.registerIdList}">
+						<f:selectItems value="#{specialReportsList.registriFur}" var="itemSc" itemLabel="#{itemSc.tekst}" itemValue="#{itemSc.code}" />
+					</p:selectCheckboxMenu>
+				</div>
+			</div>
+
+			<!-- 	Заявления-->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle" onclick="toggleSection(this, '#formSRList:zaiav')">
+					<h:outputText value="#{labels['nastrObjList.zaiav']}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="zaiav" style="display: none;">
+				<div class="p-grid ui-fluid">
+					
+					<!-- Видове заявления (от избраната област); -->
+					<div class="p-col-3  ui-fluid">
+						<h:outputText value="Вид заявление" styleClass="form-label" />
+						<p:selectOneMenu id="vidZThree" value="#{specialReportsList.vidZPrednz}">
+							<f:selectItems value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_ZAIAV_PREDNAZNACHENIE, now, specialReportsList.currentLang)}" 
+											var="vidZPredn" itemLabel="#{vidZPredn.tekst}" itemValue="#{vidZPredn.code}" />
+							<p:ajax event="change" update="formSRList:vidZ" listener="#{specialReportsList.changeVidZPrednaznachenie(3)}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-9  ui-fluid">
+						<h:outputText value="Видове заявления" styleClass="form-label" />
+						<p:selectCheckboxMenu id="vidZ" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.zaiavDocVidList}">
+							<f:selectItems value="#{specialReportsList.zaiavFur}" var="itemSc" itemLabel="#{itemSc.tekst}" itemValue="#{itemSc.code}" />
+						</p:selectCheckboxMenu>
+					</div>	
+					
+					<!-- Рег. номер -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Рег. номер" styleClass="form-label" />
+						<p:inputText value="#{specialReportsList.srs.zaiavRnDoc}" title="Рег. номер" />
+					</div>
+					
+					<!-- Период на дата на регистрация -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Период на дата на регистрация" styleClass="form-label" />
+						<p:selectOneMenu id="periodZaiavlenia" value="#{specialReportsList.periodRegisterZ}" title="Период на дата на регистрация">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, specialReportsList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSRList:periodZaiavlenia formSRList:fromStatusZ formSRList:toStatusZ"
+								listener="#{specialReportsList.changePeriodRegisterZ}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}" styleClass="form-label" />
+						<p:datePicker id="fromStatusZ" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.zaiavDateFrom}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodZaiavlenia" listener="#{specialReportsList.changeDateRegisterZ}" />
+							<p:ajax event="dateSelect" update="formSRList:periodZaiavlenia" listener="#{specialReportsList.changeDateRegisterZ}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}" styleClass="form-label" />
+						<p:datePicker id="toStatusZ" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.zaiavDateTo}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodZaiavlenia" listener="#{specialReportsList.changeDateRegisterZ}" />
+							<p:ajax event="dateSelect" update="formSRList:periodZaiavlenia" listener="#{specialReportsList.changeDateRegisterZ}" />
+						</p:datePicker>
+					</div>
+					
+					
+					<!-- Статус на заявление -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Статус на заявление" styleClass="form-label" />
+						<p:selectCheckboxMenu id="statusZaiavlenia" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.zaiavStatusList}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOC_STATUS, now, specialReportsList.currentLang)}"
+								var="itemSc" itemLabel="#{itemSc.tekst}"
+								itemValue="#{itemSc.code}" />
+						</p:selectCheckboxMenu>
+					</div>
+
+
+					<!-- Период на дата на статуса на заявление -->
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Период на дата на статуса на заявление" styleClass="form-label" style="white-space: nowrap;" />
+						<p:selectOneMenu id="periodStatus" value="#{specialReportsList.periodStatus}">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, specialReportsList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSRList:periodStatus formSRList:statusFrom formSRList:statusTo"
+								listener="#{specialReportsList.changePeriodStatus}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}" styleClass="form-label" />
+						<p:datePicker id="statusFrom" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.zaiavStatusDateFrom}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodStatus" listener="#{specialReportsList.changeDateStatus}" />
+							<p:ajax event="dateSelect" update="formSRList:periodStatus" listener="#{specialReportsList.changeDateStatus}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}" styleClass="form-label" />
+						<p:datePicker id="statusTo" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.zaiavStatusDateTo}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodStatus" listener="#{specialReportsList.changeDateStatus}" />
+							<p:ajax event="dateSelect" update="formSRList:periodStatus" listener="#{specialReportsList.changeDateStatus}" />
+						</p:datePicker>
+					</div>
+				</div>
+			</div>
+								
+			<!-- Физически лица -->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle " onclick="toggleSection(this, '#formSRList:fizLice')">
+					<h:outputText value="Лица" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+
+			</div>
+
+			<div jsf:id="fizLice" style="display: none;">
+				<p:selectOneButton unselectable="false"   value="#{specialReportsList.refType}" immediate="true" >
+					<f:selectItem itemLabel="#{labels['coresp.uLice']}" itemValue="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}" />
+					<f:selectItem itemLabel="#{labels['coresp.fizLice']}" itemValue="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" />
+					<p:ajax event="change" update="formSRList:pglice formSRList:pgliceNFL" process="@this" listener="#{specialReportsList.actionChTypRef()}" />
+				</p:selectOneButton>
+				<h:panelGroup id="pglice">
+					<h:panelGroup id="pglice2" rendered="#{specialReportsList.refType == BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}">
+						<div class="p-grid ui-fluid" >
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="#{ui_labels['general.egn']}" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.fzlEgn}" />
+							</div>
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="#{ui_labels['general.lnch']}" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.fzlLnc}" />
+							</div>
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="Номер на документ" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.fzlNomDoc}" />
+							</div>
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="Имена на ФЛ" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.refNameBgEn}" />
+							</div>
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="Адрес" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.refAddress}" />
+							</div>
+							<div class="p-col-2 ui-fluid">
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<p:selectBooleanCheckbox value="#{specialReportsList.srs.licenziant}" itemLabel="Заявител / Притежател на разрешение"/>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<p:selectBooleanCheckbox value="#{specialReportsList.srs.obektLice}" itemLabel="Качество на лицето във връзка с обект на дейност">
+									<p:ajax event="change" update="formSRList:obektLiceSomPG formSRList:obektLiceSomPG2"  />
+								</p:selectBooleanCheckbox>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<p:selectBooleanCheckbox value="#{specialReportsList.srs.predstLice}" itemLabel="Представляващо лице">
+									<p:ajax event="change" update="formSRList:predstLiceSomPG formSRList:predstLiceSomPG2" listener="#{specialReportsList.changeObektLice}"/>
+								</p:selectBooleanCheckbox>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:outputText value="" styleClass="form-label" rendered="false"/>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:panelGroup id="obektLiceSomPG">
+								<h:panelGroup id="obektLiceSomPG2" rendered="#{specialReportsList.srs.obektLice}">
+								<h:outputText value="Тип на връзката" styleClass="form-label" />
+								<p:selectCheckboxMenu id="obektLiceSOM" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.kachestvoObektLiceList}">
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VRAZ_LICE_OBEKT, now, specialReportsList.currentLang)}"
+										var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}" />
+								</p:selectCheckboxMenu>
+								</h:panelGroup>
+								</h:panelGroup>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:panelGroup id="predstLiceSomPG">
+								<h:panelGroup id="predstLiceSomPG2" rendered="#{specialReportsList.srs.predstLice}">
+								<h:outputText value="Качество на лицето" styleClass="form-label" />
+								<p:selectCheckboxMenu id="predstLiceSOM" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.kachestvoPredstLiceList}">
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_KACHESTVO_LICE, now, specialReportsList.currentLang)}"
+										var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}" />
+								</p:selectCheckboxMenu>
+								</h:panelGroup>
+								</h:panelGroup>
+							</div>
+							
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+				
+				<h:panelGroup id="pgliceNFL">   
+					<h:panelGroup id="pgliceNFL2" rendered="#{specialReportsList.refType == BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}">
+						<div class="p-grid ui-fluid">
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="#{ui_labels['general.eik']}" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.nflEik}" />
+							</div>
+							<div class="p-col-2 ui-fluid">
+								<h:outputText value="Идент. номер на ЮЛ" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.nflIdentNom}" />
+							</div>
+							<div class="p-col-3 ui-fluid">
+								<h:outputText value="Наименование на ЮЛ" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.refNameBgEn}" />
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:outputText value="Адрес" styleClass="form-label" />
+								<p:inputText value="#{specialReportsList.srs.refAddress}" />
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<p:selectBooleanCheckbox value="#{specialReportsList.srs.licenziant}" itemLabel="Заявител / Притежател на разрешение"/>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<p:selectBooleanCheckbox value="#{specialReportsList.srs.obektLice}" itemLabel="Качество на лицето във връзка с обект на дейност">
+									<p:ajax event="change" update="formSRList:obektLiceSomNFLPG formSRList:obektLiceSomNFLPG2"  listener="#{specialReportsList.changeObektLice}"/>
+								</p:selectBooleanCheckbox>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:outputText value="" styleClass="form-label" rendered="false"/>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:outputText value="" styleClass="form-label" rendered="false"/>
+							</div>
+							<div class="p-col-4 ui-fluid">
+								<h:panelGroup id="obektLiceSomNFLPG">
+								<h:panelGroup id="obektLiceSomNFLPG2" rendered="#{specialReportsList.srs.obektLice}">
+								<h:outputText value="Тип на връзката" styleClass="form-label" />
+								<p:selectCheckboxMenu id="obektLiceNFLSOM" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.kachestvoObektLiceList}">
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VRAZ_LICE_OBEKT, now, specialReportsList.currentLang)}"
+										var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}" />
+								</p:selectCheckboxMenu>
+								</h:panelGroup>
+								</h:panelGroup>
+							</div>
+						</div>
+					</h:panelGroup>
+				</h:panelGroup>
+			</div>
+				
+			<!-- 	Вписвания -->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle " onclick="toggleSection(this, '#formSRList:vpisvaneInfo')">
+					<h:outputText value="Вписвания" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="vpisvaneInfo" style="display: none;">
+				<div class="p-grid ui-fluid">
+					
+					<div class="p-col-3 ui-fluid">
+						<h:outputText value="Институция, работила по вписването" styleClass="form-label" />
+						<p:selectCheckboxMenu id="docRegistraturaVpisvane" value="#{specialReportsList.srs.registraturaIdList}" multiple="true" filter="true" filterMatchMode="contains">
+							<f:selectItems value="#{specialReportsList.registraturiList}" />
+						</p:selectCheckboxMenu>
+					</div>
+					
+					<!-- Статус на вписване -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="#{labels['compReg.statusVpisvane']}" styleClass="form-label" />
+						<p:selectCheckboxMenu id="statusVpis" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.vpStatusList}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, now, specialReportsList.currentLang)}"
+								var="itemSc" itemLabel="#{itemSc.tekst}"
+								itemValue="#{itemSc.code}" />
+						</p:selectCheckboxMenu>
+					</div>
+
+
+					<!-- период на Статус на вписване -->
+					<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="Период" styleClass="form-label" />
+						<p:selectOneMenu id="periodStVpisvane" value="#{specialReportsList.periodStVpisvane}" title="Период на Статус на вписване">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, specialReportsList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSRList:periodStVpisvane formSRList:fromStatusVpis formSRList:toStatusVpis"
+								listener="#{specialReportsList.changePeriodStVpisvane}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}" styleClass="form-label" />
+						<p:datePicker id="fromStatusVpis" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.vpStatusDateFrom}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodStVpisvane" listener="#{specialReportsList.changeDateStVpisvane}" />
+							<p:ajax event="dateSelect" update="formSRList:periodStVpisvane" listener="#{specialReportsList.changeDateStVpisvane}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}" styleClass="form-label" />
+						<p:datePicker id="toStatusVpis" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.vpStatusDateTo}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodStVpisvane" listener="#{specialReportsList.changeDateStVpisvane}" />
+							<p:ajax event="dateSelect" update="formSRList:periodStVpisvane" listener="#{specialReportsList.changeDateStVpisvane}" />
+						</p:datePicker>
+					</div>
+
+				</div>
+			</div>
+			<!-- 		Удостоверителни документи -->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle " onclick="toggleSection(this, '#formSRList:uDocs')">
+					<h:outputText value="Удостоверителни документи" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="uDocs" style="display: none;">
+				<div class="p-grid ui-fluid">
+					<!-- Вид документ 688-->
+					<div class="p-col-12 ui-fluid">
+						<h:outputText value="Вид документ" styleClass="form-label" />
+						
+						<ui:remove>
+						<ibg:selectManyModalA 
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VID_UD_DOCS}"	
+							selectedCodes="#{specialReportsList.srs.udDocVidList}" minQueryLength="2"
+							selectedClassifs="#{specialReportsList.selectedudDocVidListSC}" 
+							compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+							
+						</ui:remove>
+						
+						<p:selectCheckboxMenu id="vidDoc688" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.udDocVidList}">
+							<f:selectItems value="#{specialReportsList.vidUdDocsFur}" var="itemSc" itemLabel="#{itemSc.tekst}" itemValue="#{itemSc.code}" />
+						</p:selectCheckboxMenu>
+						
+					</div>
+					
+					<!-- Рег. номер на удостоверителен документ -->
+					<div class="p-col-2 ui-fluid">
+						<h:outputText value="Рег. номер на УД" styleClass="form-label" />
+						<p:inputText value="#{specialReportsList.srs.udRnDoc}" />
+					</div>
+					
+					<!-- Период на дата на регистрация на удостоверителен документ -->
+					<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="Период" styleClass="form-label" />
+						<p:selectOneMenu id="periodUD" value="#{specialReportsList.periodUD}" title="Период на издаване на удостоверителен документ">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, specialReportsList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSRList:periodUD formSRList:fromRegUD formSRList:toRegUD"
+								listener="#{specialReportsList.changePeriodUD}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}" styleClass="form-label" />
+						<p:datePicker id="fromRegUD" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.udDateFrom}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodUD" listener="#{specialReportsList.changeDateUD}" />
+							<p:ajax event="dateSelect" update="formSRList:periodUD" listener="#{specialReportsList.changeDateUD}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}" styleClass="form-label" />
+						<p:datePicker id="toRegUD" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.udDateTo}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodUD" listener="#{specialReportsList.changeDateUD}" />
+							<p:ajax event="dateSelect" update="formSRList:periodUD" listener="#{specialReportsList.changeDateUD}" />
+						</p:datePicker>
+					</div>
+					
+					<!-- Статус на удостоверителен документ -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4  ui-fluid">
+						<h:outputText value="Валидност" styleClass="form-label" />
+						<p:selectOneRadio value="#{specialReportsList.udValidnost}">
+							<f:selectItem itemLabel="Всички" itemValue="0"/>
+							<f:selectItem itemLabel="Да" itemValue="1"/>
+							<f:selectItem itemLabel="Не" itemValue="2"/>
+						</p:selectOneRadio>
+						
+						<ui:remove>
+							<p:selectCheckboxMenu id="statusVpisUD" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.udValidList}">
+								<f:selectItems
+									value="#{systemData.getSysClassification(SysConstants.CODE_CLASSIF_DANE, now, specialReportsList.currentLang)}"
+									var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}" />
+							</p:selectCheckboxMenu>
+						</ui:remove>
+					</div>
+
+
+					<!-- •	Период на дата на статуса на удостоверителен документ -->
+					<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="Период на валидност" styleClass="form-label" />
+						<p:selectOneMenu id="periodStUD" value="#{specialReportsList.periodUdStatus}" title="Период на дата на статуса на удостоверителен документ">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, specialReportsList.currentLang)}"
+								var="ps" itemLabel="#{ps.tekst}" itemValue="#{ps.code}" />
+							<p:ajax event="change"
+								update="formSRList:periodStUD formSRList:fromStatusUD formSRList:toStatusUD"
+								listener="#{specialReportsList.changePeriodUDStatus}" />
+						</p:selectOneMenu>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataOt']}" styleClass="form-label" />
+						<p:datePicker id="fromStatusUD" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.udValidDateFrom}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodStUD" listener="#{specialReportsList.changeDateUdStatus}" />
+							<p:ajax event="dateSelect" update="formSRList:periodStUD" listener="#{specialReportsList.changeDateUdStatus}" />
+						</p:datePicker>
+					</div>
+
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.dataDo']}" styleClass="form-label" />
+						<p:datePicker id="toStatusUD" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" value="#{specialReportsList.srs.udValidDateTo}" styleClass="form-control">
+							<p:ajax event="change" update="formSRList:periodStUD" listener="#{specialReportsList.changeDateUdStatus}" />
+							<p:ajax event="dateSelect" update="formSRList:periodStUD" listener="#{specialReportsList.changeDateUdStatus}" />
+						</p:datePicker>
+					</div>
+
+				</div>
+			</div>
+			
+			<!-- 	1.2.	Атрибути по области на контрол  -->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle " onclick="toggleSection(this, '#formSRList:animals')">
+					<h:outputText value="Контрол на фуражи" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="animals" style="display: none;">
+				<div class="p-grid ui-fluid">
+					
+					<!-- Номер на обект -->
+					<div class="p-col-2 ui-fluid">
+						<h:outputText value="Номер на обект" styleClass="form-label" />
+						<p:inputText value="#{specialReportsList.srs.furObektRegNom}" />
+					</div>	
+				<h:panelGroup layout="block" class="p-grid p-col-8" id="adrNM" >	
+					<!-- •	•	• Местонахождение на обект (адрес) Вид дейноста -->
+					<div class="p-col-3 ui-fluid">
+						<h:outputText value="#{ui_labels['general.country']}" styleClass="form-label" />
+						<ibg:selectOneModalA id="cntryC"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+							selectedCode="#{specialReportsList.srs.furObektCountry}"
+							emptyMessage="#{labels['docu.countryEmptyMsg']}"
+							saveStateTree="false" withBtnClear="true" compType="3"
+							minQueryLength="2" styleAutoComp="" update="formSRList:adrNM"
+							onComplete="cmdChCountry()" />
+						<p:remoteCommand name="cmdChCountry" update="formSRList:adrNM" partialSubmit="true" process="formSRList:adrNM  @this" actionListener="#{specialReportsList.actionChangeCountry}" />
+					</div>
+
+					<!-- •	Местонахождение на обект (адрес) нас.място /област /община -->
+					<div class="p-col-4  ui-fluid" jsf:id="pmestoC" jsf:rendered="#{specialReportsList.srs.furObektCountry eq specialReportsList.countryBG}">
+						<h:outputText value="#{ui_labels['general.ekatte']}"  styleClass="form-label" />
+						<ibg:selectOneModalA id="mestoC"
+							update="formSRList:cOblObsh"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+							specifics="#{specialReportsList.specificsEKATTE}"
+							selectedCode="#{specialReportsList.srs.furObektEkatte}"
+							emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+							saveStateTree="false" withBtnClear="true" compType="3"
+							minQueryLength="3" styleAutoComp="" dopInfoAutoComp="true"
+							dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+					</div>
+					<!-- •	•	Местонахождение на обект (адрес); -->
+					<div class="p-col-4 ui-fluid" jsf:id="cOblObsh" jsf:rendered="#{specialReportsList.srs.furObektCountry eq specialReportsList.countryBG}">
+						<h:outputText value="#{ui_labels['general.ekatteObshObl']}" styleClass="form-label" />
+						<p:inputText  value="#{specialReportsList.srs.furObektAddress}" />
+					</div>
+				</h:panelGroup>	
+					
+					<!-- •	//  Вид дейност (класификация = 506 ) -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4  ui-fluid">
+						<h:outputText value="Дейности с фуражи" styleClass="form-label" />
+						
+						<ui:remove>
+						<ibg:selectManyModalA 
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VID_DEINOST}"	
+							selectedCodes="#{specialReportsList.srs.furVidDeinList}" minQueryLength="2"
+							selectedClassifs="#{specialReportsList.selectedfurVidDeinListSC}" 
+							compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+							
+						</ui:remove>
+						
+						<p:selectCheckboxMenu id="vidDein" multiple="true" filter="true" filterMatchMode="contains" value="#{specialReportsList.srs.furVidDeinList}">
+							<f:selectItems value="#{specialReportsList.furVidDeinList}" var="itemSc" itemLabel="#{itemSc.tekst}" itemValue="#{itemSc.code}" />
+						</p:selectCheckboxMenu>
+						
+						
+					</div>
+					<!-- •		Вид фуражи (класификация 531); -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4  ui-fluid">
+						<h:outputText value="Вид фуражи" styleClass="form-label" />
+						
+						<ibg:selectManyModalA 
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_FURAJ}"	
+							selectedCodes="#{specialReportsList.srs.furVidFurajList}" minQueryLength="2"
+							selectedClassifs="#{specialReportsList.selectedfurVidFurajListSC}" 
+							compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+					</div>
+					<!-- •	•	Номер на МПС -->
+					<div class="p-col-2 ui-fluid">
+						<h:outputText value="Номер на МПС" styleClass="form-label" />
+						<p:inputText value="#{specialReportsList.srs.furNomerMps}" />
+					</div>	
+					<!-- •		Вид животни (класификация 508); -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4  ui-fluid">
+						<h:outputText value="Вид животни" styleClass="form-label" />
+						
+						<ibg:selectManyModalA 
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIVOTNO}"	
+							selectedCodes="#{specialReportsList.srs.furVidJivotniList}" minQueryLength="2"
+							selectedClassifs="#{specialReportsList.selectedfurVidJivotniListSC}" 
+							compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+					</div>	
+					<!-- Съхранява ли фуражи на склад -->
+					<div class="p-col-3  ui-fluid">
+						<h:outputText value="Съхранява ли фуражи на склад" styleClass="form-label" />
+						<p:selectOneMenu id="furSklad" value="#{specialReportsList.srs.furSklad}">
+							<f:selectItem itemLabel="" itemValue=""/>
+							<f:selectItems
+								value="#{systemData.getSysClassification(SysConstants.CODE_CLASSIF_DANE, now, specialReportsList.currentLang)}"
+								var="itemSc" itemLabel="#{itemSc.tekst}"
+								itemValue="#{itemSc.code}" />
+						</p:selectOneMenu>
+					</div>
+
+
+				</div>
+			</div>
+							
+			<div class="filter-buttons">
+
+				<p:commandButton icon="fas fa-search"
+					value="#{ui_labels['general.search']}" id="btnSearchSF"
+					update="resultTable" partialSubmit="true"
+					process="@this panelFilter resultTable"
+					actionListener="#{specialReportsList.actionSearch()}" styleClass="p-mr-3" >
+					<f:param name="oblast" value="3"></f:param>
+				</p:commandButton>	
+				<p:defaultCommand target="btnSearchSF" scope="panelFilter" />
+
+				<p:commandButton icon="fas fa-eraser"
+					value="#{ui_labels['general.clear']}" id="btnClear"
+					update="resultTable panelFilter" partialSubmit="true"
+					process="@this panelFilter resultTable"
+					actionListener="#{specialReportsList.actionClear}"
+					styleClass="ui-button-warning" />
+			</div>
+
+			</div>
+
+		</h:panelGroup>
+
+	</div>
+	<h:panelGroup id="resultTable" layout="block" styleClass="margin-top">
+
+		<h:panelGroup layout="block" styleClass="card"
+			rendered="#{specialReportsList.specReportList != null}">
+
+			<div class="table-toolbar">
+
+				<h:outputText
+					value="#{ui_labels['general.reportResult']}: #{specialReportsList.specReportList.rowCount}"
+					styleClass="form-label"
+					rendered="#{specialReportsList.specReportList.rowCount > 0}" />
+
+			</div>
+
+			<p:dataTable id="tblSFList" var="row"
+				value="#{specialReportsList.specReportList}" lazy="true"
+				rendered="#{specialReportsList.specReportList != null}" rowIndexVar="idx"
+				emptyMessage="#{ui_labels['general.norows']}" rows="15"
+				sortMode="single" reflow="true" styleClass="ui-datatable-gridlines"
+				paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+				rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+				paginatorAlwaysVisible="true" paginator="true"
+				rowStyleClass="#{specialReportsList.viewedRows eq row[0] ? 'viewedRow' : ' '}">
+
+				<f:facet name="{Exporters}">
+
+					<div style="float: left">
+
+						<p:commandLink id="excel" update="tblSFList" process="tblSFList"
+							partialSubmit="true">
+							<h:graphicImage library="images" name="excel2.png" />
+							<p:dataExporter type="xls" target="tblSFList"
+								fileName="vpListXls"
+								postProcessor="#{specialReportsList.postProcessXLS}" />
+						</p:commandLink>
+
+						<p:commandLink id="pdf" update="tblSFList" process="tblSFList"
+							partialSubmit="true">
+							<h:graphicImage library="images" name="pdf.png" />
+							<p:dataExporter type="pdf" target="tblSFList"
+								fileName="vpListPdf" encoding="windows-1251"
+								preProcessor="#{specialReportsList.preProcessPDF}"
+								options="#{specialReportsList.pdfOptions()}" />
+						</p:commandLink>
+
+						<p:commandLink id="csv" update="tblSFList" process="tblSFList"
+							partialSubmit="true">
+							<h:graphicImage library="images" name="csv.png" />
+							<p:dataExporter type="csv" target="tblSFList"
+								fileName="vpListCsv" encoding="CP1251" />
+						</p:commandLink>
+
+					</div>
+
+				</f:facet>
+
+				<p:column width="20" exportable="false"
+					headerText="#{ui_labels['general.No-symbol']}">
+					<h:outputText value="#{idx + 1}" />
+				</p:column>
+
+				<p:column width="30" exportable="false">
+
+					<p:button icon="fas fa-eye"
+						href="#{specialReportsList.actionGoto(row[0], row[13], row[16])}"
+						target="_blank" 
+						title="Разглеждане на вписване">
+						<f:param name="isView" value="1" />
+					</p:button>
+
+
+				</p:column>
+
+				<p:column width="200" sortBy="#{row.licenziant}"
+					headerText="Заявител (лицензиант) ">
+					<h:outputText value="#{row[6]}" />
+				</p:column>
+
+				<p:column width="100" headerText="Статус">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[8], specialReportsList.currentLang, now)}" />
+				</p:column>
+
+				<p:column width="75" sortBy="#{row.date_status}"
+					headerText="От дата">
+					<h:outputText value="#{row[9]}">
+						<f:convertDateTime pattern="dd.MM.yyyy"
+							timeZone="#{specialReportsList.timeZone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column width="115" sortBy="#{row.reg_nom_result}"
+					headerText="Номер на УД">
+					<h:outputText value="#{row[10]}"
+						title="Номер на удостоверителен документ" />
+				</p:column>
+
+				<p:column width="100" sortBy="#{row.date_result}"
+					headerText="Дата на УД">
+					<h:outputText value="#{row[11]}"
+						title="Дата на удостоверителен документ">
+						<f:convertDateTime pattern="dd.MM.yyyy"
+							timeZone="#{specialReportsList.timeZone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column width="65" sortBy="#{row.reg_nom_zaqvl_vpisvane}"
+					headerText="Рег.№">
+					<h:outputText value="#{row[17]}"
+						title="Рег. номер на заявление за първоначално вписване" />
+				</p:column>
+
+				<p:column width="90" sortBy="#{row.date_zaqvl_vpis}"
+					headerText="Дата на з.">
+					<h:outputText value="#{row[18]}"
+						title="Дата на заявление за първоначално вписване">
+						<f:convertDateTime pattern="dd.MM.yyyy"
+							timeZone="#{specialReportsList.timeZone}" />
+					</h:outputText>
+				</p:column>
+
+				<p:column 
+					headerText="#{labels['users.registratura']}" width="120">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_REGISTRATURI, row[19], specialReportsList.currentLang, now)}" />
+				</p:column>
+				
+				<p:column headerText="#{labels['nastrObjList.vidZaiav']}" width="250">
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[20], specialReportsList.currentLang, now)}" />
+				</p:column>
+
+				<p:column 
+					headerText="#{labels['docu.register']}" width="250">
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, row[1], specialReportsList.currentLang, now)}" />
+				</p:column>
+
+
+			</p:dataTable>
+
+		</h:panelGroup>
+
+	</h:panelGroup>
+
+		
+			</h:form>
+		</ui:define>
+
+</ui:composition>

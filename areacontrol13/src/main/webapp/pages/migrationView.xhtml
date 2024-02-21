@@ -1,0 +1,55 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	template="/template/templateView.xhtml">
+
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+		</f:metadata>
+
+	</ui:define>
+
+
+	<ui:define name="title">#{navTexts['/pages/babhZaiavView.xhtml']}</ui:define>
+	<ui:define name="viewname">		
+		<li>#{navTexts['/pages/babhZaiavView.xhtml']}</li>
+	</ui:define>
+
+
+	<ui:define name="content">
+	
+		<div jsf:id="modalMigr">
+			
+				<h:outputText value="#{labels['regTargovtsiFuraj.fromMigr1']}" style="color:red;" rendered="#{migrationView.migrInfoList.size() eq 0}"/>
+
+				<p:dataTable id="tblMigr" var="row" lazy="true" rowIndexVar="idx"
+					value="#{migrationView.migrInfoList}"
+					emptyMessage="#{ui_labels['general.norows']}" 
+					sortMode="single" reflow="true"
+					paginator="false"
+					showGridlines="true" rendered="#{migrationView.migrInfoList.size() ne 0}">
+
+					<p:column width="30" exportable="false"
+						headerText="#{ui_labels['general.No-symbol']}">
+						<h:outputText value="#{idx + 1}" />
+					</p:column>
+
+					<p:column headerText="Колона">
+						<h:outputText value="#{row[0]}" escape="false" />
+					</p:column>
+
+					<p:column headerText="Данни">
+						<h:outputText value="#{row[1]}" escape="false" />
+					</p:column>
+
+				</p:dataTable>
+			</div>
+
+	</ui:define>
+
+</ui:composition>

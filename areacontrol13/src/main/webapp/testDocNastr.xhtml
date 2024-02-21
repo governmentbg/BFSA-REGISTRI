@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<f:view>
+    <h:head></h:head>
+    <h:body>
+    <h:outputLabel value="Hello, world"/>
+
+    <br/>
+    <h:form>
+        <h:panelGrid columns="2" id="alabala">
+        <h:outputLabel for="vidDoc" value="Vid doc"/>
+        <h:inputText value="#{testDocNastr.vidDoc}" id="vidDoc"/>
+        <h:outputLabel for="idElement" value="idElement"/>
+        <h:inputText value="#{testDocNastr.idElement}" id="idElement"/>
+
+        </h:panelGrid>
+        <p:commandButton action="#{testDocNastr.actionTest()}" update="result" value="Check exist id element by vid doc" process="alabala"/>
+
+
+        <p:panel  header="Test panel1"  id="result" style="border-style: solid;">
+            <h:outputText value="You see me? Then it exist."/>#{testDocNastr.vidDoc}
+           -#{systemData.isElementVisible(testDocNastr.vidDoc,testDocNastr.idElement)}
+        </p:panel>
+
+        <hr/>
+        <h:panelGrid columns="2" id="alabala2">
+            <h:outputLabel for="vidDoc2" value="Vid doc"/>
+            <h:inputText value="#{testDocNastr.vidDoc}" id="vidDoc2"/>
+            <p:commandButton update="result2" action="#{testDocNastr.actionTest2()}" value="Check exist id element by vid doc" process="alabala2"/>
+        </h:panelGrid>
+        <p:panel  header="Test panel1"  id="result2" style="border-style: solid;">
+            -#{systemData.registerByVidDoc.size()}-#{testDocNastr.vidDoc} ==#{systemData.registerByVidDoc[testDocNastr.vidDoc]}==
+            #{systemData.docElements[1][2].label}
+        </p:panel>
+        #{systemData.roptions[123].codeMainObject}
+    </h:form>
+
+
+    </h:body>
+
+</f:view>
+</html>

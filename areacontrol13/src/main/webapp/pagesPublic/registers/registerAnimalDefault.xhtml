@@ -1,0 +1,188 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:o="http://omnifaces.org/ui"
+                template="/templateExt/template.xhtml">
+   
+   
+    <ui:define name="title">#{registerAnimalDefault.pageTitle}</ui:define>
+
+	<ui:define name="metadata">
+        <f:metadata>
+        	<f:viewParam name="lang" />
+            <f:viewParam name="locale" />
+        </f:metadata>
+    </ui:define>
+    
+    
+    <ui:define name="head">
+        <style>
+            .layout-content {width: 98% !important;}
+        </style>
+    </ui:define>
+    
+    <ui:define name="panelInfo">
+   		<h:outputText value="#{registerAnimalDefault.pageTitle}" styleClass="section-title" />
+   </ui:define>
+    
+    <ui:define name="content">
+        <h:form id="regForm">
+      
+				<br/><br/>
+                <div class="table-toolbar">
+                       <h:outputText
+                               value="#{ui_labels['general.reportResult']} #{registerAnimalDefault.regsList.rowCount}"
+                               styleClass="form-label p-mr-2"/>
+				</div>
+                
+                <p:dataTable id="tblRegsLst" var="row" value="#{registerAnimalDefault.regsList}" lazy="true"
+                			 scrollable="true"
+                             rowIndexVar="idx" sortMode="single" reflow="true"
+                             emptyMessage="#{labels['doc.listEmptyMsg']}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rows="15" rowsPerPageTemplate="5,15,20,25" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="true" paginator="true" sortBy="#{row.id_vpisvane}" skipChildren="true">
+
+                    <f:facet name="{Exporters}">
+
+                        <div style="float:left">
+
+                            <p:commandLink id="excel"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="excel2.png"/>
+                                <p:dataExporter type="xls" target="tblRegsLst" fileName="regsAnimalDefault"
+                                                postProcessor="#{registerAnimalDefault.postProcessXLS}"/>
+                            </p:commandLink>
+
+                            <p:commandLink id="pdf"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="pdf.png"/>
+                                <p:dataExporter type="pdf" target="tblRegsLst" fileName="regsList"
+                                                encoding="windows-1251"
+                                                preProcessor="#{registerAnimalDefault.preProcessPDF}"
+                                                options="#{registerAnimalDefault.pdfOptions()}"/>
+                            </p:commandLink>
+
+                             <p:commandLink id="csv" update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                 <h:graphicImage library="images" name="csv.png"   />
+                                 <p:dataExporter type="csv" target="tblRegsLst" fileName="regsList"  encoding="CP1251"/>
+                             </p:commandLink> 
+                        </div>
+                    </f:facet>
+                    <!-- Номер по ред-->
+                    <p:column width="40" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+                        <h:outputText value="#{idx + 1}"/>
+                    </p:column>
+                    
+                      <!-- Рег. номер удостоверение рег.-->
+                    <p:column width="140" sortBy="#{row.nomer_licenz}" headerText="#{labels['regPub.udostDocRegN']}">
+                        <h:outputText value="#{row[1]}"/>
+                    </p:column>
+
+                     <!-- Дата на регистрация-->
+                    <p:column width="110" sortBy="#{row.date_licenz}" headerText="#{labels['docu.docDate']}">
+                        <h:outputText value="#{row[2]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{registerAnimalDefault.timeZone}"/>
+                        </h:outputText>
+                    </p:column>
+
+
+                    <!-- GPS - координати-->
+                    <p:column width="180"  sortBy="#{row.gps_coord}" headerText="#{labels['regPub.gpsCoordOEZ']}">
+                        <h:outputText value="#{row[14]}"/>
+                    </p:column>
+
+                     <!-- Ветеринарен рег. номер на ОЕЗ-->
+                    <p:column width="180"  sortBy="#{row.vet_num}" headerText="#{labels['regPub.vetNOEZ']}">
+                        <h:outputText value="#{row[15]}"/>
+                    </p:column>
+
+                     <!-- Оператор (имена )-->
+                    <p:column width="200"  sortBy="#{row.licenziant_name}" headerText="#{labels['regPub.operatorOEZ']}">
+                        <h:outputText value="#{row[8]}"/>
+                    </p:column>
+
+                     <!-- ЕИК (за ЮЛ)-->
+                    <p:column width="100"  sortBy="#{row.licenziant_egn}" headerText="#{labels['admStruct.eik']}">
+                        <h:outputText value="#{row[6]== 4 ? '-':row[9]}"/>
+                    </p:column>
+
+                    <!-- Вид на ОЕЗ-->
+                    <p:column  width="140"  sortBy="#{row.oez_vid}" headerText="#{labels['regOez.vid']}">
+                        <h:outputText value="#{row[16]}"/>
+                    </p:column>
+
+                    <!-- Характеристики на обекта (много)-->
+                    <p:column width="300" sortBy="#{row.harakTXT}" headerText="#{labels['regOez.harakt']}">
+                        <h:outputText value="#{row[23]}" escape="false"/>
+                    </p:column>
+
+                     <!-- Регистратура-->
+                    <p:column width="200" sortBy="#{row.registratura_id}" headerText="#{labels['users.registratura']}">
+                        <h:outputText value="#{systemData.decodeItems(BabhConstants.CODE_CLASSIF_REGISTRATURI, row[3], registerAnimalDefault.currentLang, now)}"/>
+                    </p:column>
+                    
+                     <!-- Област (заявител)-->
+                    <p:column width="140" sortBy="#{row.ref_oblast_text}" headerText="#{labels['regPub.oblastZaiav']}">
+                        <h:outputText value="#{row[18]}"/>
+                    </p:column>
+
+                    <!-- Община (заявител)-->
+                    <p:column  width="140" sortBy="#{row.ref_obshtina_text}" headerText="#{labels['regPub.obstinaZaiav']}">
+                        <h:outputText value="#{row[19]}"/>
+                    </p:column>
+
+                      <!-- Населено място (заявител)-->
+                    <p:column width="180"  sortBy="#{row.ref_ekatte_text}" headerText="#{labels['regPub.nasMestoZaiav']}">
+                        <h:outputText value="#{row[20]}"/>
+                    </p:column>
+
+                    <!-- Улица/сграда (заявител)-->
+                    <p:column width="250"  sortBy="#{row.ref_ulica}" headerText="#{labels['regPub.adresZaiav']}">
+                        <h:outputText value="#{row[21]}"/>
+                    </p:column>
+                    
+                     <!-- Област (ОЕЗ)-->
+                    <p:column width="140" sortBy="#{row.oblast_text}" headerText="#{labels['regPub.oblastOEZ']}">
+                        <h:outputText value="#{row[10]}"/>
+                    </p:column>
+
+                    <!-- Община (ОЕЗ)-->
+                    <p:column  width="140" sortBy="#{row.obshtina_text}" headerText="#{labels['regPub.obstinaOEZ']}">
+                        <h:outputText value="#{row[11]}"/>
+                    </p:column>
+
+                      <!-- Населено място (ОЕЗ)-->
+                    <p:column width="180"  sortBy="#{row.ekatte_text}" headerText="#{labels['regPub.nasMestoOEZ']}">
+                        <h:outputText value="#{row[12]}"/>
+                    </p:column>
+
+                    <!-- Улица/сграда (ОЕЗ)-->
+                    <p:column width="250"  sortBy="#{row.ulica}" headerText="#{labels['regPub.adresOEZ']}">
+                        <h:outputText value="#{row[13]}"/>
+                    </p:column>
+                    
+                    <!-- обстоятелства по вписването -->
+                    <p:column width="250" sortBy="#{row.info}" headerText="#{labels['docu.note']}">
+                        <h:outputText value="#{row[22]}"/>
+                    </p:column>
+
+                    <!-- Рег. номер заявлението.
+                    <p:column width="170" sortBy="#{row.reg_nom_zaqvl_vpisvane}" headerText="#{labels['regPub.zaqvRegN']}">
+                        <h:outputText value="#{row[4]}"/>
+                    </p:column>-->
+
+                     <!-- Дата на заявлението
+                    <p:column width="170" sortBy="#{row.date_zaqvl_vpis}" headerText="#{labels['regPub.zaqvDate']}">
+                        <h:outputText value="#{row[5]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{registerAnimalDefault.timeZone}"/>
+                        </h:outputText>
+                    </p:column>-->
+
+                </p:dataTable>
+          
+        </h:form>
+    </ui:define>
+</ui:composition>

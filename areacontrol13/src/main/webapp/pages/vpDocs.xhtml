@@ -1,0 +1,500 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+	
+	
+	<style>
+		.ui-sticky#docForm\:tabsDoc\:tbtnPanel1t {
+			z-index: 9comand8 !important;
+		}
+		
+		.UrgentOneButtonW.ui-selectonebutton .ui-state-active {
+		    background-color:#FFFFFF !important;
+		    color:black !important;
+		    pointer-events: visible  !important;
+		}
+		.UrgentOneButtonG.ui-selectonebutton .ui-state-active {
+		    background-color:#99ce6b !important;
+		    pointer-events: visible  !important;
+		}
+		.UrgentOneButtonA.ui-selectonebutton .ui-state-active {
+		    background-color:#fdbe02 !important;
+		    pointer-events: visible  !important;
+		}
+		.UrgentOneButtonR.ui-selectonebutton .ui-state-active {
+		    background-color:#FF000B !important;
+		    pointer-events: visible  !important;
+		}
+			
+	</style>
+	
+	<f:event type="preRenderComponent" listener="#{vpDocs.initTab}" /> 
+	
+	<h:panelGroup id="tdPanel" layout="block"  >
+	
+		<div class="#{guestPreferences.containerPosition}">
+			
+			<div  class="title-group">
+				<p:commandLink styleClass="extended-search-toggle expanded"  
+				 onclick="toggleSection(this, '##{clId}:tblDocs')">
+					<h:outputText value="Документи"/>
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>	
+			
+			<div jsf:id="vpDocsList">
+								
+				<p:dataTable id="tblDocs" var="row" value="#{vpDocs.docsList}" lazy="false" 	
+					rowIndexVar="idx" sortMode="single" reflow="true" rowKey="#{row[0]}"
+					emptyMessage=""  scrollable="true" rowExpandMode="single"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+					paginatorAlwaysVisible="false" paginator="true" 
+					showGridlines="true"
+					sortBy="#{row[2]}">
+					
+					<p:ajax event="rowToggle"
+							listener="#{vpDocs.docSelect(row[0])}" />
+					
+					<p:column width="20" exportable="false" style="text-align: center;" headerText="#{ui_labels['general.No-symbol']}">
+							<h:outputText value="#{idx + 1}" />
+					</p:column>	
+					
+					<p:column style="width:2rem">
+		                <p:rowToggler/>
+		            </p:column>			
+							
+					<p:column  width="65" exportable="false" >
+						<div class="ui-inputgroup">
+							<p:commandButton id="btnChP"   styleClass="p-mr-2"
+								    title="#{isView eq 1 ? ui_labels['general.choise'] : ui_labels['general.edit']}"									
+								    action="#{vpDocs.actionLoadDataFromList(idx)}"					
+								    partialSubmit="true" 
+								    process="#{clId}:tbDocBut #{clId}:tbInDoc @this"
+									update="#{clId}:tbDocBut #{clId}:tbInDoc "
+									icon="#{isView eq 1 ? 'fas fa-eye' : 'fas fa-edit'}"	
+									onclick="highlightElement(this ,'tr');"/>
+									
+											
+							<p:button id="btnViewZaiav"  title="Подробно разглеждане на заявлението"
+							 	rendered="#{row[7] eq BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN}"
+								styleClass="ui-button-secondary p-mr-2" icon="fas fa-eye"
+								href="#{vpDocs.actionGotoZaiavView(row[0])}" target="_blank">
+							</p:button> 
+						</div>
+										
+					</p:column> 
+					<p:column sortBy="#{row[3]}" width="450">
+						<f:facet name="header">
+							 <h:outputText value="#{labels['docu.vid']}" />									  
+						</f:facet>  
+						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[3], vpDocs.currentLang, now)}"  />	
+						
+					</p:column>	
+					<p:column sortBy="#{row[1]}" width="80" >
+						<f:facet name="header">
+							 <h:outputText value="#{labels['docu.regNom']}" />									  
+						</f:facet>  
+						<h:outputText value="#{row[1]}"  />	
+					</p:column>						
+					<p:column sortBy="#{row[2]}" width="120" >
+						<f:facet name="header">
+							 <h:outputText value="#{labels['docu.dateDoc']}" />									  
+						</f:facet>  
+						<h:outputText value="#{row[2]}"  >	
+								<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{vpDocs.timeZone}"/>
+						</h:outputText>	
+					</p:column>
+					
+					<p:column   width="350">
+						<f:facet name="header">
+							 <h:outputText value="#{labels['docu.otnosno']}" />									  
+						</f:facet>  
+						<h:outputText value="#{(row[4] ne null and row[4].length() gt 151) ? row[4].substring(0, 150).concat('...')  : row[4]}"  />	
+					</p:column>
+					
+					<p:column  width="200" >
+						<f:facet name="header">
+							 <h:outputText value="#{labels['docu.licePodisal']}" />									  
+						</f:facet>  
+						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ADMIN_STR, row[6], vpDocs.currentLang, now)}"  />	
+					</p:column>
+					
+					<p:rowExpansion id="filesExp" styleClass="expandedRow" >
+														
+						<p:repeat varStatus="rkv" value="#{vpDocs.filesList}" var="file" id="fileList" >
+								
+							<div class="p-grid">								
+									<div class="p-col-6 p-sm-6 p-md-6 p-lg-2" align="left" >
+										<p:commandLink ajax="false" action="#{vpDocs.download(file)}" id="btnDownload">
+											<h:outputText value="#{file.filename}" />
+										</p:commandLink>										
+									</div>
+									
+									<div class="p-col-6 p-sm-6 p-md-6 p-lg-2" align="left">
+										<h:outputText value="#{file.fileInfo}"  />
+									</div>
+									
+									<div class="p-col-12 p-sm-12 p-md-12 p-lg-5" align="left">															 
+										<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID_ATTACH, file.fileType, vpDocs.currentLang, now)}" />
+									</div>									
+													
+								</div>									
+							</p:repeat>
+										 					
+					</p:rowExpansion>
+					  
+				</p:dataTable>
+				
+			</div>
+
+			<h:panelGroup id="tbInDoc"  >
+				<div class="title-group ">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '##{clId}:docData')">
+							<h:outputText value="Документ" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>						 	        
+					    <p:commandButton icon="fas fa-plus"  id="btnNewDoc" 				
+							    value="#{labels['docu.titleNewDoc']}" styleClass="ui-button-success p-mr-2" 				
+								partialSubmit="true"
+								update="#{clId}:tbInDoc #{clId}:tbInDoc" 
+								process="#{clId}:tbInDoc @this" 
+								actionListener="#{vpDocs.actionNew(false)}"
+								rendered="#{isView ne 1}" >						
+						</p:commandButton>
+						
+						<ui:remove> <!-- TODO  -  трябва да се вижда само,
+						        ако вписването е със статус 'вписан' или 'временно преустановен',
+								ако в настройките е указано,че се издава УД
+								не е ръчна миграция
+						 		За сега няма да слагам други ограничения--></ui:remove>						 	 
+						<p:commandButton icon="fas fa-plus"  id="btnNewUDoc" 				
+							    value="Нов УД" styleClass="ui-button-success p-mr-2" 				
+								partialSubmit="true" title="Издаване на нов удостоверителен документ при промяна на обстоятелства"
+								update="#{clId}:tbInDoc #{clId}:tbInDoc" 
+								process="#{clId}:tbInDoc @this" 
+								actionListener="#{vpDocs.actionNew(true)}"
+								rendered="#{isView ne 1 and vpDocs.vpObj.fromМigr ne BabhConstants.CODE_ZNACHENIE_MIGR_MANUAL and  (vpDocs.vpObj.status eq  BabhConstants.STATUS_VP_VPISAN or vpDocs.vpObj.status eq  BabhConstants.STATUS_VP_VR_PREUSTANOVEN) and vpDocs.nastrUd }" >						
+						</p:commandButton>
+						
+				</div>
+				
+				<div jsf:id="docData" style="#{vpDocs.rowIdx eq -2 ? 'display: none;': ''}" >
+					
+					<p:toolbar id="tbDocBut" class="margin-bottom"   rendered="#{isView ne 1}" >
+						<f:facet name="left">	 	 						
+							<p:commandButton icon="fas fa-save" action="#{vpDocs.actionSave}"
+								value="#{ui_labels['general.save']}" id="btnSaveDoc" 
+								partialSubmit="true" process="#{clId}:tbInDoc #{clId}:vpDocsList @this"
+								update="#{clId}:tbInDoc #{clId}:vpDocsList"
+								styleClass="p-mr-2" />
+							 
+							<p:commandButton icon="fas fa-folder" 
+							    rendered = "#{isView ne 1 and vpDocs.doc.docType eq BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN and
+							    			  vpDocs.doc.payType ne null and 
+							    			  vpDocs.doc.payType ne BabhConstants.CODE_ZNACHENIE_PAY_TYPE_NOPAY and
+							    			  vpDocs.viewBtnPayRequest()}"
+				  				value="Заявка за плащане" 
+							    styleClass="ui-button-warning p-mr-2" 				
+								partialSubmit="true"
+								update="@this" 
+								process="@this" 
+								action="#{vpDocs.actionGenEPay}"
+								title="Генерира заявка за плащане към е-Плащане"/> 
+							
+						<!-- and vpDocs.vpObj.idResult eq vpDocs.doc.id TODO -->
+
+							<p:commandButton icon="fas fa-folder" 
+				  				rendered="#{ isView ne 1 and vpDocs.doc.id ne null and vpDocs.udosDoc and vpDocs.doc.valid eq BabhConstants.CODE_ZNACHENIE_DA}"  	
+							    value="#{labels['doc.generUD']}" styleClass="ui-button-warning p-mr-2" 				
+								partialSubmit="true"
+								update="compUdostDoc2" 
+								process="@this" 
+								action="#{vpDocs.actionGenUdoc()}"
+								title="#{labels['doc.titleD1']}"/>
+							
+							
+					<ui:remove>	<!-- 
+						<p:commandButton value="Дубликат на УД"
+								title="Изваждане на дубликат на удостоверителен документ"
+								action="#{vpDocs.generateUdostDublikat}"
+								icon="fas fa-copy"
+								styleClass="ui-button-success"
+								partialSubmit="true"
+								process="@this" 
+								rendered="#{vpDocs.udosDoc and !vpDocs.viewBtnUD}" />
+				 -->	</ui:remove>
+											
+							<ibg:compUdostDokument id="compUdostDoc2"
+								binding="#{vpDocs.bindCompUdostDoc}"
+								docId="#{vpDocs.doc.id}"
+								vpisvaneId="#{vpDocs.vpObj.id}"
+								idRegister="#{vpDocs.vpObj.idRegister}"
+								isEditable="true"
+								isDublikat= "false"
+								actionAfterGenerate="#{vpDocs.actionAfterGenerateUD()}"/>
+								
+						</f:facet>
+						
+						<f:facet name="right" > 
+							<p:selectOneButton  id="tlp" rendered="#{vpDocs.udosDoc}" 
+								        value="#{vpDocs.doc.tlpLevel}"
+										styleClass="#{(vpDocs.doc.tlpLevel eq 1) ? 'UrgentOneButtonW' : (vpDocs.doc.tlpLevel eq 2 ? 'UrgentOneButtonG':((vpDocs.doc.tlpLevel eq 3 ? 'UrgentOneButtonA' : 'UrgentOneButtonR')))}"
+										immediate="true" disabled="#{isView eq 1}" 
+										unselectable="false">
+										<f:selectItems   
+											value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_TLP_LEVEL, now, vpDocs.currentLang)}"
+											itemDescription="#{clPer.tekst}"
+											var="clPer" 
+											itemLabel="#{(clPer.code eq 1) ? 'W' : (clPer.code eq 2 ? 'G':((clPer.code eq 3 ? 'A' : 'R')))}"
+											itemValue="#{clPer.code}">						
+										</f:selectItems>	 	
+										<p:ajax event="change"
+											update="@this tbDocBut"
+											partialSubmit="true" process="@this " />
+							</p:selectOneButton>	
+							
+						
+				
+							<p:commandButton icon="fas fa-times" action="#{vpDocs.actionDelete}"
+								styleClass="ui-button-danger" 
+								value="#{ui_labels['general.delete']}"
+								partialSubmit="true"  process="#{clId}:tbInDoc #{clId}:vpDocsList @this" 
+								update="#{clId}:tbInDoc #{clId}:vpDocsList" 
+								rendered="#{isView ne 1 and vpDocs.removeDoc and vpDocs.doc.id ne null and !vpDocs.udosDoc}">
+								<p:confirm header="#{ui_labels['general.comfirmation']}"
+									message="#{beanMessages['general.confirmDeleteMsg']}"
+									icon="fas fa-exclamation-triangle" />
+							</p:commandButton>
+							<ui:remove><!-- ако позволим изтриване на УД - за сега не може - сложена е проверка в метода за изтриване в DAO-to
+							rendered="#{isView ne 1 and vpDocs.removeDoc and vpDocs.doc.id ne null and (vpDocs.udosDoc and vpDocs.doc.id ne vpDocs.vpObj.idResult and !vpDocs.ud.limitedAccess)}">
+							 --></ui:remove>
+						</f:facet>
+					</p:toolbar>
+				
+			
+					<div class="p-grid ui-fluid" jsf:id="ddata1">
+						<div class="p-col-12">
+							<div class="p-grid ui-fluid">
+								<div class="p-col-12 p-md-12 p-lg-8 p-xl-4" 
+									jsf:rendered="#{!vpDocs.newUdosDoc and !(vpDocs.readonly or isView eq 1 or vpDocs.udosDoc)}">						
+									<h:outputText value="#{labels['docu.vid']}" styleClass="form-label req" disabled="#{vpDocs.readonly}"/>															
+									<ibg:selectOneModalA id="vid" 
+									        readonly = "#{vpDocs.readonly or isView eq 1 or vpDocs.udosDoc}"
+											codeClassif="#{BabhConstants.CODE_CLASSIF_DOC_VID_INPUT}"
+											selectedCode="#{vpDocs.doc.docVid}"											
+											saveStateTree="false" withBtnClear="#{vpDocs.readonly}" compType="2"
+											styleAutoComp="width:99%" minQueryLength="2" update="@this" 
+											onComplete="#{vpDocs.settingsUD(false)}"/>			
+								</div>
+								<div class="p-col-12" 
+									jsf:rendered="#{!vpDocs.newUdosDoc and (vpDocs.readonly or isView eq 1 or (vpDocs.udosDoc and  vpDocs.vpObj.fromМigr ne BabhConstants.CODE_ZNACHENIE_MIGR_MANUAL))}">						
+									<h:outputText value="#{labels['docu.vid']}" styleClass="form-label req" disabled="#{vpDocs.readonly}"/>															
+									<p:inputText readonly="true"  
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID,vpDocs.doc.docVid, vpDocs.currentLang, now)}"/>
+								</div>
+								<!-- ако е нов УД --> 
+								<div class="p-col-12 p-md-12 p-lg-12 p-xl-6" jsf:rendered="#{vpDocs.newUdosDoc or (vpDocs.udosDoc and  vpDocs.vpObj.fromМigr eq BabhConstants.CODE_ZNACHENIE_MIGR_MANUAL)}">
+									<h:outputText value="#{labels['reg.udostDoc']}" styleClass="form-label req" />	
+								  	<p:selectOneMenu  id="vid2"  value="#{vpDocs.doc.docVid}" disabled="#{isView eq 1}" >
+									     <f:selectItem value="#{null}" itemValue="#{null}"/>
+									     <f:selectItems  value="#{vpDocs.listDocsOut}" 
+									         var="clPer" 
+									         itemLabel="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, clPer.vidDoc, vpDocs.currentLang, now)}" 
+									         itemValue="#{clPer.vidDoc}" />
+									     <p:ajax event="change" partialSubmit="true" process="@this" update="@this #{clId}:ddata1" 
+								     		 listener="#{vpDocs.settingsUD(true)}"/>
+								   	</p:selectOneMenu>	
+								</div>	
+							</div>	
+						</div>
+						
+					
+						<div class="p-col-12" >
+							<div class="p-grid ui-fluid">
+								<ui:remove><!-- не се допуска ръчно писане в номера само за заявления и УД
+												Ще има изключение за док. от миграцията 
+											--></ui:remove>
+								<div class="p-col-12 p-md-4 p-lg-2 p-xl-1" >
+									<h:outputText value="#{labels['docu.regNom']}" styleClass="form-label" />	
+									<p:inputText id="rnDoc" value="#{vpDocs.doc.rnDoc}"
+									 readonly="#{vpDocs.readonly or isView eq 1 or (vpDocs.udosDoc and vpDocs.vpObj.fromМigr ne BabhConstants.CODE_ZNACHENIE_MIGR_MANUAL)}" /> 
+								</div> 
+								
+								<div class="p-col-12 p-md-4 p-lg-2 p-xl-2">
+									<h:outputText value="#{labels['docu.dateDoc']}" styleClass="form-label req" />	
+										<p:datePicker   id="dataDoc" showIcon="true"   mask="true"  
+											rendered="#{!(vpDocs.readonly or isView eq 1 or vpDocs.doc.docType eq BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN)}"
+											pattern="dd.MM.yyyy" locale="bg"
+											showTime="false" showSeconds="false"
+											value="#{vpDocs.doc.docDate}" />
+										<p:inputText rendered="#{vpDocs.readonly or isView eq 1 or vpDocs.doc.docType eq BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN}"
+											 	value="#{vpDocs.doc.docDate}"
+											    readonly="true">
+											   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{vpDocs.timeZone}"/>
+										</p:inputText>	
+								</div>
+								
+								<div class="p-col-12 p-md-4 p-lg-2 p-xl-3" jsf:rendered = "#{!vpDocs.readonly}">						
+									<h:outputText value="#{labels['docu.licePodisal']}" styleClass="form-label" />															
+									<ibg:selectOneModalA id="podpisal" readonly="@{isView eq 1}"
+														codeClassif="#{BabhConstants.CODE_CLASSIF_ADMIN_STR}"
+														selectedCode="#{vpDocs.doc.podpisal}"											
+														saveStateTree="false" withBtnClear="true" compType="2"
+														styleAutoComp="width:99%" minQueryLength="2" update="@this" />																		
+								</div>
+							
+								<div class="p-col-4 p-md-4 p-lg-2 p-xl-2" jsf:rendered="#{vpDocs.srokValid}">
+									<h:outputText value="#{labels['docu.validDate']}" styleClass="form-label" />	
+									<p:datePicker   id="vDate" showIcon="true"   mask="true"  
+											rendered="#{!(vpDocs.readonly or isView eq 1)}"
+											pattern="dd.MM.yyyy" locale="bg"
+											showTime="false" showSeconds="false"
+											value="#{vpDocs.doc.dateValidAkt}" />
+									<p:inputText rendered="#{vpDocs.readonly or isView eq 1}"
+										 	value="#{vpDocs.doc.dateValidAkt}"
+										    readonly="true">
+										   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{vpDocs.timeZone}"/>
+									</p:inputText>	
+								</div>	
+							 
+								<div class="p-col-fixed"  style="width:150px"  jsf:rendered="#{vpDocs.udosDoc}">
+									<h:outputText value="#{labels['docu.valid']}" styleClass="form-label" />	
+									<p:selectOneRadio id="valid" value="#{vpDocs.doc.valid}"
+										disabled="#{isView eq 1}" >
+										<f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DANE, vpDocs.decodeDate, vpDocs.currentLang)}"
+												var="itemSc" itemLabel="#{itemSc.tekst}"
+												itemValue="#{itemSc.code}" />	
+										<p:ajax  event="click" update="@this"></p:ajax>									
+									</p:selectOneRadio>						
+									
+								</div>
+										
+								<div class="p-col-4 p-md-4 p-lg-2 p-xl-2"  jsf:rendered="#{vpDocs.udosDoc}">
+									<h:outputText value="Изменение - версия" styleClass="form-label" />	
+									<p:inputText id="ver" value="#{vpDocs.doc.docVersion}" disabled="#{isView eq 1}" />
+								</div>	
+								
+								<div class="p-col-12" jsf:rendered="#{vpDocs.doc.docType ne BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN}">
+									<h:outputText value="#{labels['docu.otnosno']}" styleClass="form-label req" />	
+									<p:inputTextarea id="otnosno" value="#{vpDocs.doc.otnosno}" rows="2" readonly="#{isView eq 1}"/>	
+								</div>	
+								
+								<div class="p-col-12"  jsf:rendered="#{vpDocs.udosDoc}">
+									<h:outputText value="Oписание на изменията на български " styleClass="form-label" />	
+									<p:inputTextarea id="chBg" value="#{vpDocs.doc.changeBg}" rows="4" readonly="#{isView eq 1}"/>	
+								</div>	
+								
+								<div class="p-col-12"  jsf:rendered="#{vpDocs.udosDoc}"> <!-- TODO кога ще се вижда? -->
+									<h:outputText value="Oписание на изменията на английски " styleClass="form-label" />	
+									<p:inputTextarea id="chEn" value="#{vpDocs.doc.changeEn}" rows="4" readonly="#{isView eq 1}"/>	
+								</div>	
+							
+												
+								<!-- СТАТУС НА ДОКУМЕНТА -->
+								<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid" 
+								  jsf:rendered = "#{vpDocs.doc.docType eq BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN}">
+									<h:outputText value="#{labels['babhZaiavList.docStatus']}"
+										styleClass="form-label" />
+									<p:selectOneMenu id="status" autoWidth="false"
+										value="#{vpDocs.doc.status}" filter="true" filterMatchMode="startsWith">
+										 
+										<f:selectItem value="#{null}" itemValue="#{null}" />
+										<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst} " 
+										    itemDisabled="#{itemSc.code eq BabhConstants.CODE_ZNACHENIE_DOC_STATUS_WAIT}"
+											itemValue="#{itemSc.code}"
+											value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOC_STATUS, vpDocs.decodeDate, vpDocs.currentLang)}" />
+									</p:selectOneMenu>
+								</div>
+		
+								<!-- ПРИЧИНА СТАТУСА -->
+								<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid" 
+									jsf:rendered = "#{vpDocs.doc.docType eq BabhConstants.CODE_ZNACHENIE_DOC_TYPE_IN}">
+									<h:outputText value="#{labels['babhZaiavEdit.prichina']}"
+										styleClass="form-label" />
+									<p:selectOneMenu id="reason" autoWidth="false"
+										value="#{vpDocs.doc.statusReason}" filter="true" 	filterMatchMode="startsWith" >
+										<f:selectItem value="#{null}" itemValue="#{null}" />
+										<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst} "
+											itemValue="#{itemSc.code}"
+											value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOC_IRREGULAR, vpDocs.decodeDate, vpDocs.currentLang)}" />
+									</p:selectOneMenu>
+								</div>
+								<div class="p-col-12 p-grid ui-fluid" 
+									jsf:rendered="#{vpDocs.readonly and vpDocs.doc.payType ne null and vpDocs.doc.payType ne BabhConstants.CODE_ZNACHENIE_PAY_TYPE_NOPAY}">
+								
+									<!-- СУМА ЗА ПЛАЩАНЕ (ТАКСАТА ЗА СЪОТВЕТНИЯ ДОКУМЕНТ СПОРЕД НАСТРОЙКИТЕ) -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid" >
+										<h:outputText
+											value="#{labels['babhZaiavEdit.plashtane']} (#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_METOD_PLASHTANE, vpDocs.doc.payType, vpDocs.currentLang, null)})"
+											styleClass="form-label" /> 
+										<p:inputNumber id="paySum" 
+											readonly="#{vpDocs.doc.payType ne BabhConstants.CODE_ZNACHENIE_PAY_TYPE_FLOAD or isView eq 1}"
+											title="#{labels['babhZaiavEdit.payMessage']}"
+											modifyValueOnWheel="false" decimalSeparator="."
+											value="#{vpDocs.doc.payAmount}" />
+									</div>
+			
+									<!-- ПЛАТЕНО (РЕАЛНА СУМА ЗА ПЛАЩАНЕ) -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['babhZaiavEdit.payAmountReal']}"
+											styleClass="form-label" />
+										<p:inputNumber id="paySumReal" minValue="0" readonly="true"
+											value="#{vpDocs.doc.payAmountReal}"
+											modifyValueOnWheel="false" decimalSeparator="." />
+									</div>
+			
+									<!-- ДАТА НА ПЛАЩАНЕ -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['babhZaiavEdit.payDate']}"
+											styleClass="form-label" />
+										<p:inputText id="datePAy" value="#{vpDocs.doc.payDate}" readonly="true">
+											<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{vpDocs.timeZone}" />
+										</p:inputText>
+									</div>
+			
+									<ui:remove> 
+									<!--TODO!!! -  да сложа текст - дали е платено или не  
+									ИНДИКАТОР, ЧЕ ТАКСАТА Е ПЛАТЕНА 
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+										<h:outputText value="#{labels['babhZaiavEdit.indikator']}" styleClass="form-label" />
+										<p:selectOneRadio id="indPlateno" disabled="true"
+											value="#{vpDocs.doc.indPlateno}">
+											<f:selectItem itemLabel="#{ui_labels['general.da']}"
+												itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+											<f:selectItem itemLabel="#{ui_labels['general.ne']}"
+												itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+										</p:selectOneRadio>
+										
+									</div>--></ui:remove>
+												
+								
+								</div>	
+					
+								<div class="p-col-12 p-md-12 p-lg-12">
+									<ibg:compFileUpload listObj="#{vpDocs.filesEditList}"  id="filesDoc" autoSave="#{(vpDocs.doc.id eq null) ? 'false' : 'true'}" 
+											saveFirst="false" showUserUpload="true" onComplete="cmdChangeFile()"  view = "#{isView eq 1}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}" header="false" showTitle="true" verifySign="false"
+											idObj="#{vpDocs.doc.id}"  display="list" showCompareBtn="false" showInfo="true"/>
+									<p:remoteCommand name="cmdChangeFile"
+											update="#{clId}:vpDocsList"
+											partialSubmit="true"
+											process="@this #{clId}:vpDocsList" />
+								</div>	
+								
+							</div>	
+						</div>
+					</div>	
+			
+				</div>
+			</h:panelGroup>	
+					
+		</div>
+
+	</h:panelGroup>
+</ui:composition> 

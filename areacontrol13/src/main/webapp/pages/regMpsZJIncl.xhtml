@@ -1,0 +1,713 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<!-- Рег. на ТС  -->
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(null)}" onPostback="false" />
+		</f:metadata>
+	</ui:define>
+	
+	<script>
+        function transformText() {
+            var inputTextElement = document.getElementById('mpsZJForm:registerTabs:regNTS');
+            
+            var inputText = inputTextElement.value;
+            var transformedText = inputText.toUpperCase().replace(/\s/g, '');
+            
+            inputTextElement.value = transformedText;
+        }
+ 
+    </script>
+	<style>
+		.selectedRow{
+		    background-color:#dddddd !important;
+		}
+	 		
+	</style>
+
+	<h:form id="mpsZJForm">
+		
+		<div class="#{guestPreferences.containerPosition}" jsf:rendered="#{regMpsZJ.access}">
+			<div class="card">
+
+				<h:panelGroup id="vpTitle"
+					style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+					<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regMpsZJ.vpisvane.idRegister, regMpsZJ.currentLang, now)}"
+						styleClass="form-label" />
+					<br />
+					<h:outputText value="#{labels['babhMigr.msgmigr']}" style="color:red" rendered="#{regMpsZJ.vpisvane.fromМigr eq 0}"/>
+					
+				</h:panelGroup>
+				
+				<p:remoteCommand name="onTabChangeProcess" process="registerTabs @this"/> <ui:remove><!-- без това, при местене между табовете не субмитва данните --></ui:remove>
+				<p:tabView id="registerTabs" dynamic="true" cache="true" styleClass="p-mt-4"   onTabChange="onTabChangeProcess()">
+
+  					<p:ajax event="tabChange" listener="#{regMpsZJ.onTabChange}" update="registerTabs" process="registerTabs" partialSubmit="true"/>
+	
+					<!-- ТАБ ОСНОВНИ ДАННИ -->
+					<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+						  
+						  
+						  	<!-- ТАБ ОСНОВНИ ДАННИ -->
+						<h:panelGroup id="tdPanelOsnDanni" layout="block">
+							<p:sticky target="tlbr" margin="125">
+				
+								<!-- ТООЛБАР ОСНОВНИ ДАННИ-->
+								<p:toolbar id="tlbr" styleClass="p-mb-5">
+					
+									<f:facet name="left">
+										<p:commandButton icon="fas fa-save"
+											action="#{regMpsZJ.actionSave}"
+											value="#{ui_labels['general.save']}" id="btnSave"
+											partialSubmit="true" process="tdPanelOsnDanni  @this"
+											update="registerTabs"
+											oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+											styleClass="p-mr-2" 
+											rendered ="#{isView ne 1}"
+											disabled="#{regMpsZJ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}"/>
+											
+										<span class="fas fa-ellipsis-v p-mx-2" />
+						
+										<ibg:compAccess readonly="#{isView eq 1}" 
+											    header="Служители с изричен достъп до вписването"
+												rendered="#{regMpsZJ.vpisvane.id ne null}" 
+												idObj="#{regMpsZJ.vpisvane.id}"
+												infoJournal="#{regMpsZJ.vpisvane.licenziant}" 
+												taskInfo="#{regMpsZJ.zaiavlVp.taskInfo}"
+												codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" 
+												dateClassif="#{regMpsZJ.decodeDate}"/>
+						
+										<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<p:button 
+											value="#{labels['registerMainTab.viewZaiav']}"
+											title="#{ui_labels['general.view']}"
+										 	icon="fas fa-eye" target="_blank"
+										 	styleClass="ui-button-secondary p-mr-2"
+											outcome="#{regMpsZJ.actionGotoZaiav()}" />
+											
+										<p:commandButton  rendered="#{regMpsZJ.filesList ne null and regMpsZJ.filesList.size() ne 0}"
+											value="#{labels['babhZaiavEdit.upFiles']}"
+											styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-paperclip" partialSubmit="true"													
+											update="mpsZJForm:panelAttFiles"
+											oncomplete="PF('attFilesVar').show();"  />
+											
+										<p:button 
+											rendered="#{regMpsZJ.vpisvane.id ne null and regMpsZJ.lastDoc[0] ne null}"
+											value="#{labels['registerMainTab.lastDoc']}"
+											title="#{ui_labels['general.view']}"
+										 	styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-arrow-left" target="_blank"
+											outcome="#{regMpsZJ.actionGotoLastZaiav()}"
+											ajax="false"  />
+										
+									</f:facet>
+					
+									<f:facet name="right">
+									<ui:remove><!-- 
+										<ibg:compVpisvaneZaiav rendered="#{regMpsZJ.referent2.code ne null}" 
+											codeRef="#{regMpsZJ.referent2.code}"
+											idVpisvane ="#{regMpsZJ.vpisvane.id}"
+											onComplete="PF('vpZaiavVar').hide();" /> 
+										<span class="fas fa-ellipsis-v p-mx-2" />
+									 --></ui:remove>
+										<ibg:compSendEmail mailTo="#{regMpsZJ.referent2.contactEmail}" 	subject="Отговор до заявителя..."  />
+			
+										<h:panelGroup id="pRegInfo">
+											<ibg:compObjAudit id="compJ" idObj="#{regMpsZJ.vpisvane.id}"
+												codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+										</h:panelGroup>
+					
+										<span class="fas fa-ellipsis-v p-mx-2" />
+					
+										<p:commandButton icon="fas fa-times" styleClass="ui-button-danger"
+											value="#{ui_labels['general.delete']}" partialSubmit="true"
+											action="#{regMpsZJ.actionDelete}"
+											rendered ="#{isView ne 1 and regMpsZJ.vpisvane.id ne null and !regMpsZJ.ud.limitedAccess}"
+											disabled="#{regMpsZJ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+											<p:confirm header="#{ui_labels['general.comfirmation']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+									</f:facet>
+					
+								</p:toolbar>
+					
+							</p:sticky>
+					
+							<p:divider align="right" type="dashed" style="margin: 0rem;">
+								<!-- ЗАЯВЛЕНИЕ ЗА ВПИСВАНЕ -->
+								<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: " styleClass="form-label" />
+								<h:outputText id="regNumZaiav"
+									value="#{regMpsZJ.vpisvane.regNomZaqvlVpisvane} / " />
+								<h:outputText id="dateZaiav" styleClass="p-mr-2"
+									value="#{regMpsZJ.vpisvane.dateZaqvlVpis}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regMpsZJ.timeZone}" />
+								</h:outputText>
+								
+								<!-- Статус -->
+								<h:outputText value="#{labels['registerMainTab.statusV']}: "
+									styleClass="form-label" />
+								<h:outputText id="statusV"
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regMpsZJ.vpisvane.status, regMpsZJ.currentLang, null)}" />
+								<h:outputText value="   "
+									rendered="#{regMpsZJ.vpisvane.id ne null}" />
+								<h:outputText id="dateSv"
+									rendered="#{regMpsZJ.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+									value="#{regMpsZJ.vpisvane.dateStatus}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regMpsZJ.timeZone}" />
+								</h:outputText>
+								
+								<!-- Дължима такса -->
+								<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+									styleClass="form-label" rendered="#{regMpsZJ.daljimaSuma ne null and regMpsZJ.daljimaSuma gt 0}" />
+								<h:outputText value="#{regMpsZJ.daljimaSuma}" style="color: red"
+									 rendered="#{regMpsZJ.daljimaSuma ne null and regMpsZJ.daljimaSuma gt 0}" />
+									 
+								<!-- УД -->
+								<h:panelGroup  rendered="#{regMpsZJ.vpisvane.regNomResult ne null}">
+									<h:outputText value="#{labels['ud.udNomer']}: "
+										styleClass="form-label" />
+									<h:outputText value="#{regMpsZJ.vpisvane.regNomResult} / " />
+									<h:outputText value="#{regMpsZJ.vpisvane.dateResult}"   >
+										  <f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regMpsZJ.timeZone}" />
+									</h:outputText>
+								</h:panelGroup>
+							</p:divider>
+					
+					
+							
+							<!-- Представляващо лице -->
+							<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}" 
+								refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+								binding = "#{regMpsZJ.bindingReferent1}"
+							  	refObj="#{regMpsZJ.referent1}" 
+								codeRef="#{regMpsZJ.referent1.code}"
+								mainDataLabel="#{labels['docu.podatel']}"
+								saveInComponent="false" 	
+								modal="false"
+								showContacts="false"
+								showRadio="flase"
+								showBtnClear="true"
+								showKachectvoLice="true"/>
+												
+							<!-- ЗАЯВИТЕЛ -->
+							<ibg:refCorrespData id="liceZaqvitel" readonly="#{isView eq 1}"
+						 		binding = "#{regMpsZJ.bindingReferent2}"
+								codeRef="#{regMpsZJ.referent2.code}"
+								refObj="#{regMpsZJ.referent2}"
+								mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+								saveInComponent="false" vidDoc="#{regMpsZJ.zaiavlVp.docVid}"									 
+								dateClassif="#{regMpsZJ.decodeDate}" modal="false"
+								showDopInfo="false" showKorespAdress="true" 
+								showBtnClear="true"
+								showContacts="true"
+								showRadio="true"
+								regixPermAddress="true"
+								btnPostAdress="true"/>
+					
+							
+							<div class="title-group p-mt-3" >
+								<p:commandLink class="extended-search-toggle expanded "
+									onclick="toggleSection(this, '#mpsZJForm:registerTabs:listMps')"
+									title="Всички транспортни средства, подадени с едно заявление за първоначално вписване ">
+									<h:outputText value="#{labels['regMps.listMps']}" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+								<p:commandButton styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+										id="btnClearMps0" title="Зачиства данните, без да прехвърля промените в списъка"
+										partialSubmit="true" process="@this deinostData "
+										update="@this deinostData listMps"
+										action="#{regMpsZJ.actionNewMps(true)}"
+										value="Ново транспортно средство"
+										rendered="#{regMpsZJ.fromZaiav and isView ne 1}" />								
+							</div>
+							
+							<p:focus id="focusRegNTS" for="listMps"  rendered="#{regMpsZJ.focusMps}"/>
+							
+							<div jsf:id="listMps" class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-11">
+								
+								<p:dataTable id="tblMpsList" var="row" binding="#{regMpsZJ.bindigMpsList}" widgetVar="widTblMpsList"
+									value="#{regMpsZJ.mpsList}" showGridlines="true" scrollable="true"
+									rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+									rows="5" sortMode="single" reflow="true"
+									paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+									rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+									paginatorAlwaysVisible="false" paginator="true"
+									rowStyleClass="#{(row[0].nomer eq regMpsZJ.vpisvane.mps.nomer) ? 'selectedRow' :  '' }">
+	 
+									<p:column width="20" exportable="false"
+										headerText="#{ui_labels['general.No-symbol'] }">
+										<h:outputText value="#{idx + 1}" /> 
+									</p:column>
+									<p:column width="30" exportable="false">
+										<ui:remove><!-- вижда се, ако сме влезли през филтър вписвания --></ui:remove>
+										<p:commandButton rendered="#{!regMpsZJ.fromZaiav and row[1] ne regMpsZJ.vpisvane.id}" 
+											action="#{regMpsZJ.actionEditMps(row, idx)}" 
+											icon="#{isView eq 1 ? 'fas fa-eye' : 'fas fa-edit'}" styleClass="ui-button-success" 
+											ajax="false"												
+											title="Препраща към екрана с данни за вписване на трансп. средство (статус на вписване: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[2],regMpsZJ.currentLang,regMpsZJ.decodeDate)} )"/>
+						
+										<i class="fas fa-info-circle"  style="font-size: 20px;" jsf:id="mpsI1"
+										    jsf:rendered="#{!regMpsZJ.fromZaiav and  row[1] eq regMpsZJ.vpisvane.id}"/>
+										<p:tooltip  for="mpsI1" value="вписването на транспортното средство е заредено за обработка в момента"></p:tooltip>
+										
+										<ui:remove><!-- вижда се, ако сме влезли през филтър заявления --></ui:remove>
+										<p:commandButton 
+										    rendered="#{regMpsZJ.fromZaiav and row[1] eq null  and isView ne 1}"
+											action="#{regMpsZJ.actionEditMps(row, idx)}"
+											partialSubmit="true" 
+											update="mpsZJForm:registerTabs:deinostData mpsZJForm:registerTabs:listMps"
+											icon="fas fa-edit"	styleClass="ui-button-secondary" 
+											title="Промяна данни за транспортно средство (статус: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[2],regMpsZJ.currentLang,regMpsZJ.decodeDate)})"> 
+											<p:confirm header="Промяна на данни за транспортно средство" 
+											    disabled="#{!regMpsZJ.disableEdit}" escape="false"
+												message="Данните за текущо избраното транспортно средство не са прехвърлени обратно в списъка!  &lt;br/&gt;
+												 		Ако не бъдат прехвърлени, ще загубите корекциите в тях!  &lt;br/&gt;&lt;br/&gt;
+												 		&lt;b/&gt; Потвърдете избора на трансп. средство от списъка!&lt;b/&gt;"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+										
+										<i class="fas fa-info-circle"  style="font-size: 20px;" jsf:id="mpsI"
+										    jsf:rendered="#{regMpsZJ.fromZaiav and  row[1] ne null }"/>
+										<p:tooltip  for="mpsI" value="Статус на вписване за транспортно средство: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[2],regMpsZJ.currentLang,regMpsZJ.decodeDate)}. Корекциите са възможни през екрана за вписване на конкретното транспортно средство."></p:tooltip>
+										
+		
+									</p:column>
+									<p:column width="120"  sortBy="#{row[0].nomer}" headerText="#{labels['compMPSsearch.regN']}">
+										<h:outputText value="#{row[0].nomer}"  />							    
+									</p:column>
+									
+									<p:column sortBy="#{row[0].vid}" headerText="#{labels['compMPSsearch.vidMps']}" >
+									        <h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_MPS, row[0].vid,regMpsZJ.currentLang,regMpsZJ.decodeDate)}"/>	
+									</p:column>
+									<p:column sortBy="#{row[0].model}" headerText="#{labels['compMPSsearch.model']}" >
+									        <h:outputText value="#{row[0].model}"/>	
+									</p:column>
+									<p:column width="300"  headerText="#{labels['regMps.talon']}" >
+									        <h:outputText value="#{row[0].nomDatReg}"/>	
+									</p:column>
+									<p:column width="100"  headerText="#{labels['regTargovtsiFuraj.plosht']}" >
+									        <h:outputText value="#{row[0].plosht}"/>	
+									</p:column>
+									<!-- премахването е възможно само, ако екрана е отворен през филтъра на заявленията и все още няма вписване за ТС!!! -->
+									<p:column width="30" exportable="false" rendered="#{regMpsZJ.fromZaiav  and isView ne 1}">
+										<p:commandButton
+											rendered="#{row[1] eq null}"
+											action="#{regMpsZJ.actionRemoveMPSFromList(row)}"
+											update=" mpsZJForm:registerTabs:tblMpsList"
+											icon="fas fa-trash" styleClass="ui-button-danger"
+											title="Премахване на транспортно средство">
+											<p:confirm header="#{ui_labels['general.delete']}" 
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+									</p:column>
+	
+								</p:dataTable>
+						 
+							</div>
+							 
+							<div class="title-group p-mt-3" >
+								<p:commandLink class="extended-search-toggle expanded "
+									onclick="toggleSection(this, '#mpsZJForm:registerTabs:deinostData')" 
+									title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_REG_MPS, regMpsZJ.currentLang, now)}" >
+									<h:outputText value="Данни на транспортно средство" />
+									<i class="fas fa-caret-right"></i>										
+								</p:commandLink>
+											
+								<ui:remove><!-- 			
+								<p:commandButton styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+												id="btnClearMps" title="Зачиства данните, без да прехвърля промените в списъка"
+												partialSubmit="true" process="@this deinostData "
+												update="@this deinostData listMps"
+												action="#{regMpsZJ.actionNewMps(true)}"
+												value="Ново транспортно средство"
+												rendered="#{regMpsZJ.fromZaiav and isView ne 1}" />
+								--></ui:remove>
+												<!-- добавяне наново ТС е възможно само, ако екрана е отворен през филтъра на заявленията -->
+								<p:commandButton styleClass="ui-button-success p-mr-3" icon="fas fa-plus"
+												id="btnConfitmMps" title="Прехвърля в списъка текущото трансп. средство и подготвя екрана за въвеждане на ново"
+												partialSubmit="true" process="@this deinostData"
+												update="@this deinostData listMps"
+												action="#{regMpsZJ.actionAddMpsToList(true)}" 
+												value="#{labels['regMps.confirmNewMps']}" 
+												rendered="#{regMpsZJ.fromZaiav and isView ne 1}"/>
+						
+							</div>
+					
+							<div jsf:id="deinostData" style="#{regMpsZJ.hidePlDein ? 'display: none;': ''}" >
+								
+								<div class="p-grid p-ai-stretch vertical-container">
+									<ui:remove><!-- 
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3  ui-fluid">  
+										<h:outputText value="#{labels['deinZj.typeTravel']}" styleClass="form-label req" />						
+											<p:selectOneRadio id="typeTravel" value="#{regMpsZJ.vpisvane.mps.patuvane}"
+												disabled="#{isView eq 1}" unselectable="false">
+												<f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_PATUVANE, regMpsZJ.decodeDate, regMpsZJ.currentLang)}"
+														var="itemSc" itemLabel="#{itemSc.tekst}" 
+														itemValue="#{itemSc.code}" />	
+												<p:ajax  event="click" update="@this"></p:ajax>									
+											</p:selectOneRadio>
+									</div>
+									 --></ui:remove>
+									 
+								
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid" jsf:rendered="#{isView ne 1}">
+										<h:outputText value="#{labels['regMps.regN']}"
+											styleClass="form-label req" /> 
+											<i class="fas fa-warning"  style="font-size: 15px;"
+												title="Транспортното средство е открито в базата. Може да направите корекция в осн. данни, ако е необходимо."
+											    jsf:rendered="#{regMpsZJ.fromZaiav and regMpsZJ.vpisvane.mps.id ne null}"/>
+											<div class=" ui-inputgroup">
+												<p:inputText id="regNTS" oninput="transformText();" 
+													value="#{regMpsZJ.vpisvane.mps.nomer}">
+													<p:ajax event="change" process="@this"
+														update="@this deinostData listMps"
+														listener="#{regMpsZJ.actionChangeRegN(regMpsZJ.vpisvane.mps.nomer)}" />
+												</p:inputText>
+												
+									
+												<ui:remove><!--  <p:keyFilter regEx="/[A-Z0-9]/" preventPaste="false"/> --></ui:remove>
+												<!-- всички МПС - без значение дали имат лиценз  или не -->
+												<ui:remove><!--  
+												<ibg:compMPSsearch
+													titleLoadBtn="#{labels['regTargovtsiFuraj.searchMpsCrit']}"
+													selectedMPS="#{regMpsZJ.mps}" 	registered="null"
+													update="mpsZJForm:registerTabs:deinostData"
+													onComplete="PF('mpsSearchVar').hide(); #{regMpsZJ.actionSrchMPS()};" />
+													--></ui:remove> 
+											</div> 
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2 ui-fluid">
+										<h:outputText value="#{labels['regMps.vidTS']}"
+											styleClass="form-label req" />
+										<p:selectOneMenu id="odobTSvid" autoWidth="false"
+											filter="true" filterMatchMode="startsWith"
+											value="#{regMpsZJ.vpisvane.mps.vid}"
+											disabled="#{isView eq 1}">
+											<f:selectItem value="#{null}" itemValue="#{null}" />
+											<f:selectItems
+												value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_MPS, now, regMpsZJ.currentLang)}"
+												var="slcItem" itemLabel="#{slcItem.tekst}"
+												itemValue="#{slcItem.code}" />
+										</p:selectOneMenu>
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2 ui-fluid">
+										<h:outputText value="#{labels['compMPSsearch.model']}"
+											styleClass="form-label req" />
+										<p:inputText id="model"
+											value="#{regMpsZJ.vpisvane.mps.model}" />
+									</div>
+						
+									<!-- No/дата на рег. талон  -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2 ui-fluid">
+										<h:outputText value="#{labels['regMps.talon']}" styleClass="form-label req" />
+										<p:inputText id="odobTStalon" value="#{regMpsZJ.vpisvane.mps.nomDatReg}" />
+									</div>
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2 ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.plosht']}" styleClass="form-label req" />
+										<p:inputText id="odobTSplosht" value="#{regMpsZJ.vpisvane.mps.plosht}" title="Площ в кв.м."/>
+									</div>
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.navigation']}" styleClass="form-label " />
+										<p:selectOneRadio id="navig" value="#{regMpsZJ.vpisvane.mps.navigation}"
+											disabled="#{isView eq 1}" unselectable="false">
+											<f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DANE, regMpsZJ.decodeDate, regMpsZJ.currentLang)}"
+													var="itemSc" itemLabel="#{itemSc.tekst}" 
+													itemValue="#{itemSc.code}" />	
+											<p:ajax  event="click" update="@this"></p:ajax>									
+										</p:selectOneRadio>
+									</div>
+							
+																	
+									<!-- местодомуване - отпада-->
+									<ui:remove><!-- 
+									<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12">
+										<div class="title-group p-mt-3">
+											<p:commandLink class="extended-search-toggle expanded"
+												onclick="toggleSection(this, '#mpsZJForm:registerTabs:mestodomData')">
+												<h:outputText value="#{labels['regTargovtsiFuraj.mestodom']}" />
+												<i class="fas fa-caret-right"></i>
+											</p:commandLink>
+							
+											<p:commandButton icon="fas fa-clone" id="btnCopyZaiav" styleClass="p-mr-3"
+												partialSubmit="true" process="@this"
+												update="@this mestodomData sobst"
+												action="#{regMpsZJ.actionCopyAdresZaiav}"
+												rendered="#{regMpsZJ.fromZaiav and isView ne 1}"
+												value="#{labels['regTargovtsiFuraj.copyZaiav']}" />
+										
+									
+										</div>
+								
+										<div jsf:id="mestodomData" class="p-grid ui-fluid">
+												
+										
+											<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2">
+												<h:outputText value="#{labels['registerMainTab.city']}"
+													styleClass="form-label " />
+												<ibg:selectOneModalA id="nasMesto" readonly="#{isView eq 1}"
+													update="mpsZJForm:registerTabs:mestodomData"
+													codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+													specifics="#{regMpsZJ.specificsEkatte}"
+													selectedCode="#{regMpsZJ.vpisvane.mps.nasMesto}"
+													emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+													saveStateTree="false" withBtnClear="true" compType="3"
+													minQueryLength="3" dopInfoAutoComp="true" styleAutoComp=""
+													dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+											</div>
+
+											<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3">
+												<h:outputText value="#{labels['registerMainTab.area']}"
+													styleClass="form-label" />
+												<h:panelGroup id="mestodomObsh">
+													<p:inputText readonly="true"
+														value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, regMpsZJ.vpisvane.mps.nasMesto, regMpsZJ.currentLang, now)}" />
+												</h:panelGroup>
+											</div>
+		
+											<div class="p-col-12 p-sm-12 p-md-12 p-lg-7 p-xl-7 ">
+												<h:outputText value="#{labels['registerMainTab.street']}"
+													styleClass="form-label " />
+												<p:inputText id="mestodomUl" style="width:99%"
+													value="#{regMpsZJ.vpisvane.mps.adres}" />
+											</div>
+										</div>
+									</div>
+									 --></ui:remove>
+									
+									
+									<!--Собственик-->
+									<div jsf:id="sobst" class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12">
+								<!-- TODO! ако се въведе ново лице (още го няма в базaта), което съвпадащо със завителя??? Какво ще се случи при записа?
+								 -->	
+									 
+								 		<p:commandButton icon="fas fa-clone" id="btnCopyZaiav" styleClass="p-mr-3"  
+								 				partialSubmit="true" process="@this"
+												update="@this  sobst"
+												action="#{regMpsZJ.actionCopyFromZaiav}"
+												rendered="#{regMpsZJ.fromZaiav and isView ne 1}"
+												value="Копирай собственика от заявителя"/>
+										
+										<ibg:refCorrespData id="liceSobst" readonly="#{isView eq 1}"
+											binding = "#{regMpsZJ.bindingSobstvenik}"
+											codeRef="#{regMpsZJ.sobstvenik.code}"
+											refObj="#{regMpsZJ.sobstvenik}"
+											mainDataLabel="#{labels['mps.owner']}"
+											saveInComponent="false" 
+											dateClassif="#{regMpsZJ.decodeDate}" modal="false"
+											showDopInfo="false"  
+											showBtnClear="true"
+											showContacts="false"
+											showKorespAdress="false"
+											showRadio="true" />											
+									</div>	
+									 
+								
+									<!-- видове животни -->
+									<div class="p-col-12">
+										<div class="title-group p-mt-3">
+											<p:commandLink class="extended-search-toggle expanded"
+												onclick="toggleSection(this, '#mpsZJForm:registerTabs:jivData')">
+												<h:outputText value="#{labels['regMps.vidJiv']}" styleClass="req"/>
+												<i class="fas fa-caret-right"></i>
+											</p:commandLink>
+											<p:commandButton style="width:150px"
+												styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+												title="Добавяне на ново животно" partialSubmit="true"
+												process="@this" action="#{regMpsZJ.actionInpNewVidJiv}"
+												update="@this mpsZJForm:panelBrojJZ"
+												value="#{labels['targovtsiFuraj.vidJivotno']}"
+												oncomplete="PF('dlgVidJiv').show();" 
+												rendered="#{isView ne 1}"/>
+										</div>
+										<div class="p-col-12 ui-fluid">
+											<h:outputText value="Видове животни - текст" styleClass="form-label" />
+										 	<p:inputTextarea rows="2" id="odobTSdopInfo" title="Описание на видовете животни от е-форми"
+												value="#{regMpsZJ.vpisvane.mps.dopInfo}" />
+									 	</div>
+										<div class="p-col-12 p-sm-12 p-md-12 p-lg-12  p-xl-6" jsf:id="jivData" >
+											
+											<p:dataTable id="tblVidJivList" var="row" showGridlines="true" scrollable="true"
+												value="#{regMpsZJ.vpisvane.mps.mpsKapacitetJiv}"
+												rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+												rows="5" sortMode="single" reflow="true"
+												paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+												rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+												paginatorAlwaysVisible="false" paginator="true">
+				
+												<p:column width="20" exportable="false"
+													headerText="#{ui_labels['general.No-symbol'] }">
+													<h:outputText value="#{idx + 1}" />
+												</p:column>
+												<p:column width="30" exportable="false">
+													<p:commandButton
+														action="#{regMpsZJ.actionEditVidJiv(row, idx)}"
+														partialSubmit="true" update="mpsZJForm:panelBrojJZ"
+														icon="fas fa-edit" styleClass="ui-button-success"
+														title="Промяна данни" 
+														rendered="#{isView ne 1}"/>
+												 
+												</p:column>
+				
+												<p:column sortBy="#{row.vidJiv}" headerText="#{labels['regIdent.vidJ']}">
+													<h:outputText
+														value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIVOTNO_PREVOZ, row.vidJiv, regMpsZJ.currentLang, regMpsZJ.decodeDate)}" />
+												</p:column>
+				
+												<p:column width="70" headerText="#{labels['reg.broj']}">
+													<h:outputText value="#{row.broiJiv}" />
+												</p:column>
+												
+												<p:column width="30" exportable="false">
+				
+													<p:commandButton
+														action="#{regMpsZJ.actionRemoveJivFromList(row, idx)}"
+														update="mpsZJForm:registerTabs:tblVidJivList"
+														icon="fas fa-trash" styleClass="ui-button-danger"
+														title="Премахване на ред"
+														rendered="#{isView ne 1}">
+														<p:confirm header="#{ui_labels['general.delete']}"
+															message="#{beanMessages['general.confirmDeleteMsg']}"
+															icon="fas fa-exclamation-triangle" />
+													</p:commandButton>
+												</p:column>
+				
+											</p:dataTable>
+										
+										</div>
+									</div>
+																	
+								</div>
+								
+							
+							</div>								
+							
+							<div class="p-grid ui-fluid p-col-12 ">
+								<h:outputText value="#{labels['reg.dopInfoVpisvane']}"
+									styleClass="form-label" />
+								<p:inputTextarea rows="2" value="#{regMpsZJ.vpisvane.info}" />
+							</div>				
+			
+							
+						</h:panelGroup>
+						  
+						  
+						  
+						  
+					</p:tab>
+
+					<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.danniVpisvaneTab']}" id="danniVpisvaneTab" disabled="#{regMpsZJ.vpisvane.id eq null}" 	rendered="#{!regMpsZJ.fromZaiav}">
+						  <ui:include src="vpStatusData.xhtml" >
+						 	<ui:param name="clId" value="mpsZJForm:registerTabs" />
+						 </ui:include> 
+					</p:tab>
+
+
+					<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.docsVpisvaneTab']}" id="docVpisvaneTab" disabled="#{regMpsZJ.vpisvane.id eq null}"	rendered="#{!regMpsZJ.fromZaiav}">
+						<ui:include src="vpDocs.xhtml" >
+						 	<ui:param name="clId" value="mpsZJForm:registerTabs" />
+						 </ui:include> 
+					</p:tab>
+					
+					<!-- ТАБ Етапи на обработка-->
+					<p:tab title="#{labels['register.etapiVpisvaneTab']}" id="etapiVpisvaneTab" disabled="#{regMpsZJ.vpisvane.id eq null}" rendered="#{!regMpsZJ.fromZaiav }">
+						<ui:include src="procEtaps.xhtml" >
+						 	<ui:param name="clId" value="mpsZJForm:registerTabs" />
+						 </ui:include> 							
+					</p:tab>
+				</p:tabView>
+
+			</div>
+		</div>
+
+	<!-- Модален  за вид животно-->	 
+		<p:dialog header="#{labels['regMps.vidJiv']}" widgetVar="dlgVidJiv"
+			modal="true" closeOnEscape="true" resizable="true" appendTo="@form" width="600px"
+			fitViewport="true" responsive="true" positionType="fixed"
+			dynamic="true">
+		
+			<p:messages id="modalMsg" showDetail="true" closable="false">
+				<p:autoUpdate />
+			</p:messages>
+	 
+			<div class="p-grid ui-fluid" jsf:id="panelBrojJZ">
+				<!-- Вид на животно-->
+
+				<div class=" p-col-8">
+					<h:outputText value="#{labels['regIdent.vidJ']}: "
+						styleClass="form-label req" />
+					<p:selectOneMenu id="typeAnimal" value="#{regMpsZJ.vidJiv}" height="250">
+						<f:selectItem />
+						<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}" itemValue="#{itemSc.code}"
+							value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_JIVOTNO_PREVOZ , regMpsZJ.decodeDate, regMpsZJ.currentLang)}" />
+					</p:selectOneMenu>
+				</div>
+				<div class=" p-col-4">
+					<h:outputText value="#{labels['reg.broj']}" styleClass="form-label" />
+					<p:inputNumber id="brJ" decimalPlaces="0"
+						modifyValueOnWheel="false" minValue="1"
+						value="#{regMpsZJ.broiJiv}">
+					</p:inputNumber>
+				</div>
+			</div>
+ 
+			<f:facet name="footer">
+
+				<p:commandButton id="btnClose"
+					action="#{regMpsZJ.actionAddJiv}" partialSubmit="true"
+					update="mpsZJForm:registerTabs:tblVidJivList "
+					process="@this mpsZJForm:panelBrojJZ"
+					value="#{ui_labels['general.comfirmation']}" />
+
+			</f:facet>
+		 
+		</p:dialog>
+
+	
+		<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+		<h:panelGroup id="panelAttFiles">
+	
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+				modal="true">
+	
+				<p:messages id="attFilesModalMsg" showDetail="true"
+					closable="false" style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+	
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:compFileUpload id="filesDoc"
+						listObj="#{regMpsZJ.filesList}"
+						codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+						header="true" idObj="#{regMpsZJ.zaiavlVp.id}"
+						hideDel="false" view="true" display="list" typeSign="0"
+						saveFirst="true" dragDropSupport="table" 
+						headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+				</div>
+	
+			</p:dialog>
+		</h:panelGroup>
+	</h:form>
+
+</ui:composition>

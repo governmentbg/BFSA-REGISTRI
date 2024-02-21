@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:jsf="http://xmlns.jcp.org/jsf"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<f:view>
+   <h:head></h:head>
+   <h:body>
+
+      <h1><h:outputLabel value="Main Include Page"/></h1>
+
+      <h:outputText value="#{testIncludeMain.testMain1}"/>
+
+      <br/>
+      <h:form>
+         <p:panel  header="Test panel1"  id="result" style="border-style: solid;">
+            <ui:include src="#{testIncludeDetail}"></ui:include>
+         </p:panel>
+
+      </h:form>
+
+
+   </h:body>
+
+</f:view>
+</html>

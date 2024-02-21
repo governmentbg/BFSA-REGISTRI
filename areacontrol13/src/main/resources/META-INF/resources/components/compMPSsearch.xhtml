@@ -1,0 +1,211 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+
+	<cc:interface componentType="compMPSsearch">
+
+		<cc:attribute name="selectedMPSid" 			type="java.lang.Integer" 			shortDescription="Връща ИД на МПС-то избрано от списъка с резултати" deafult="null" />
+		<cc:attribute name="selectedMPS" 			type="java.lang.Object" 			shortDescription="Връща МПС (MPS)" deafult="null" />
+		<cc:attribute name="dateClassif" 			type="java.util.Date" 				shortDescription="Дата, към която да се заредят класификации и за разкодиране. По подразбиране - днешна дата." />
+		<cc:attribute name="update" 				type="java.lang.String" 			shortDescription="Полета, които трябва да се обновят" />
+		<cc:attribute name="onComplete" 			type="java.lang.String" 			shortDescription="Изпълнява функция при връщане на резултата - подава се името на функцията" />
+		<cc:attribute name="titleLoadBtn" 			type="java.lang.String" 			shortDescription="Подсказка за бутон за зареждане. По подразбиране - Избор на МПС" default="Избор на МПС" />
+		<cc:attribute name="registered" 			type="java.lang.Boolean" 			shortDescription="Дали да търси само регистрирани МПС. TRUE - връща МПС-тата, които имат вписване и статус. FALSE - връща тези за които няма вписване и статус. NULL - без ограничия." default="null" />
+		<cc:attribute name="codePage" 			    type="java.lang.Integer" 			shortDescription="Кода на странницата според настройката на регистъра"  />
+
+	</cc:interface>
+
+
+
+	<cc:implementation>
+
+		<f:event type="preRenderComponent" listener="#{cc.initComp()}" />
+
+		<div class="ui-g ui-fluid index-select-component">
+			<div class="ui-g-12 ui-g-nopad">
+				<div class="ui-inputgroup">
+
+					<p:commandButton icon="fa fa-fw fa-list-ul" id="dialogButton"
+						action="#{cc.actionSearchMPS}"
+						process="#{cc.clientId}:mpsSearchPnl"
+						update="#{cc.clientId}:mpsSearchPnl @this"
+						oncomplete="PF('mpsSearchVar').show();"
+						title="#{cc.attrs.titleLoadBtn}" />
+				</div>
+			</div>
+		</div>
+
+		<h:panelGroup id="mpsSearchPnl">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['compMPSsearch.title']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="mpsSearchVar" dynamic="true" id="modalMPS" modal="true"
+				width="70%">
+
+				<h:panelGroup id="panelFilterMPS"
+					onkeypress="if(event.keyCode == 13) {event.preventDefault();  document.getElementById('#{cc.clientId}:btnSearchC1').click();}">
+
+					<div class="card">
+						<div class="p-grid ui-fluid">
+						
+							<!-- РЕГ.Н (текст)-->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2 ui-fluid">
+								<h:outputText value="#{labels['compMPSsearch.regN']}"
+									styleClass="form-label" />
+								<p:inputText id="regNum" value="#{cc.MPSseach.nomer}" />
+							</div>
+
+							<!-- ВИД НА МПС (Автомобил, цистерна, контейнер, ремарке) -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+								<h:outputText value="#{labels['compMPSsearch.vidMps']}"
+									styleClass="form-label" />
+								<p:selectOneMenu id="mpsType" autoWidth="false" filter="true"
+									filterMatchMode="startsWith" value="#{cc.MPSseach.vidMPS}">
+									<f:selectItem value="#{null}" itemValue="#{null}" />
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_MPS, now, cc.lang)}"
+										var="slcItem" itemLabel="#{slcItem.tekst}"
+										itemValue="#{slcItem.code}" />
+								</p:selectOneMenu>
+							</div>
+
+							<!-- МАРКА/МОДЕЛ (текст) ..TODO ТОВА ОСТАВА ЛИ? -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3 ui-fluid">
+								<h:outputText value="#{labels['compMPSsearch.model']}"
+									styleClass="form-label" />
+								<p:inputText id="model" value="#{cc.MPSseach.model}" />
+							</div>
+
+						</div>
+
+						<div class="filter-buttons">
+							<p:commandButton id="btnSearchC1" partialSubmit="true"
+								actionListener="#{cc.actionSearchMPS}"
+								process="@this  #{cc.clientId}:panelFilterMPS"
+								update="#{cc.clientId}:panelTblMPS #{cc.clientId}:panelFilterMPS"
+								icon="fas fa-search" styleClass="p-mr-3"
+								value="#{ui_labels['general.search']}" />
+							<p:defaultCommand target="btnSearchC1" />
+
+							<p:commandButton id="btnClearC1" partialSubmit="true"
+								actionListener="#{cc.actionClear}"
+								process="@this  #{cc.clientId}:panelFilterMPS"
+								update="#{cc.clientId}:panelTblMPS #{cc.clientId}:panelFilterMPS"
+								icon="fas fa-eraser" styleClass="ui-button-warning"
+								value="#{ui_labels['general.clear']}" />
+						</div>
+					</div>
+
+					<h:panelGroup id="panelTblMPS" layout="block"
+						styleClass="margin-top">
+
+						<h:panelGroup layout="block" styleClass="card"
+							rendered="#{cc.MPSList.rowCount ne null}">
+
+							<div class="table-toolbar">
+								<h:outputText
+									value="#{ui_labels['general.reportResult']}: #{cc.MPSList.rowCount}"
+									rendered="#{cc.MPSList.rowCount ne null}"
+									styleClass="form-label" />
+							</div>
+
+							<p:dataTable id="tblMPSList" var="row" lazy="true" showGridlines="true"
+								value="#{cc.MPSList}" rowIndexVar="idx"
+								emptyMessage="#{ui_labels['general.norows']}" rows="15"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="true" paginator="true"
+								sortMode="single" reflow="true"
+								sortBy="#{cc.attrs.registered ? ( cc.attrs.codePage eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_LICENZ_REG_MPS_ZJ ? row.a5 : row.a7 ) : row.a1 }">
+								
+								<ui:remove> <!--   
+								<f:facet name="{Exporters}">
+									<div style="float: left">
+										<p:commandLink id="excel" update="tblMPSList"
+											process="tblMPSList" partialSubmit="true">
+											<h:graphicImage library="images" name="excel2.png" />
+											<p:dataExporter type="xls" target="tblMPSList"
+												fileName="mpsList" postProcessor="#{cc.postProcessXLS}" />
+										</p:commandLink>
+
+										<p:commandLink id="csv" update="tblMPSList"
+											process="tblMPSList" partialSubmit="true">
+											<h:graphicImage library="images" name="csv.png" />
+											<p:dataExporter type="csv" target="tblMPSList"
+												fileName="mpsList" encoding="CP1251" />
+										</p:commandLink>
+
+										<p:commandLink id="pdf" update="tblMPSList"
+											process="tblMPSList" partialSubmit="true">
+											<h:graphicImage library="images" name="pdf.png" />
+											<p:dataExporter type="pdf" target="tblMPSList"
+												fileName="mpsList" encoding="windows-1251"
+												preProcessor="#{cc.preProcessPDF}"
+												options="#{cc.pdfOptions()}" />
+										</p:commandLink>
+									</div>
+								</f:facet>
+								 --> </ui:remove>
+								
+								<p:column width="20"
+									headerText="#{ui_labels['general.No-symbol']}">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+
+								<p:column width="50" exportable="false">
+									<p:commandButton id="btnChCorr"
+										action="#{cc.actionSelectMPS(row)}"
+										process="#{cc.clientId}:panelTblMPS @this"
+										update="#{cc.clientId}:panelTblMPS @this #{cc.attrs.update}"
+										title="#{ui_labels['general.choise']}" partialSubmit="true"
+										icon="fas fa-hand-point-down" styleClass="btn-normal" 
+										rendered="#{cc.attrs.registered ? ( cc.attrs.codePage eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_LICENZ_REG_MPS_ZJ ? row[5] eq BabhConstants.STATUS_VP_VPISAN : true) : true }"/>
+								</p:column>
+
+								<p:column headerText="#{labels['compMPSsearch.vidMps']}"
+									sortBy="#{row.a1}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_MPS, row[1], cc.lang, now)}" />
+								</p:column>
+
+								<p:column headerText="#{labels['compMPSsearch.model']}"
+									sortBy="#{row.a3}">
+									<h:outputText value="#{row[3]}" />
+								</p:column>
+
+								<p:column headerText="#{labels['compMPSsearch.regN']}"
+									sortBy="#{row.a4}">
+									<h:outputText value="#{row[4]}" />
+								</p:column>
+	
+								<p:column rendered="#{cc.attrs.registered and cc.attrs.codePage eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_LICENZ_REG_MPS_ZJ}" 
+									headerText="#{labels['compReg.statusVpisvane']}" 	sortBy="#{row.a5}">
+									
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[5], cc.lang, now)}" />
+								</p:column>
+								
+								<p:column rendered="#{cc.attrs.registered and cc.attrs.codePage eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_LICENZ_REG_MPS}" 
+									headerText="#{labels['compReg.statusVpisvane']}" 	sortBy="#{row.a7}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[7], cc.lang, now)}" />
+								</p:column>
+								
+							</p:dataTable>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGroup>
+
+			</p:dialog>
+		</h:panelGroup>
+
+	</cc:implementation>
+</ui:composition>

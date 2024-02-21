@@ -1,0 +1,423 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:pt="http://xmlns.jcp.org/jsf/passthrough">
+
+	<h:form id="zaiavEditForm">
+
+		<div class="#{guestPreferences.containerPosition}">
+			<div class="card" jsf:rendered="#{babhZaiavEditBean.showPanel}">
+
+				<p:sticky target="tlbr" margin="100">
+
+					<!-- ТООЛБАР -->
+					<p:toolbar id="tlbr" styleClass="margin-bottom"
+						rendered="#{babhZaiavEditBean.isView eq 0}">
+
+						<f:facet name="left">
+							<p:commandButton icon="fas fa-save"
+								value="#{ui_labels['general.save']}" id="btnSave"
+								partialSubmit="true" update="@form" process="@form"
+								oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+								styleClass="p-mr-2" action="#{babhZaiavEditBean.actionSave}" />
+
+							<span class="fas fa-ellipsis-v p-mx-2" />
+
+							<ibg:compAccess readonly="#{isView eq 1}" 
+							    header="Служители с изричен достъп до заявлението"
+								idObj="#{babhZaiavEditBean.doc.id}"
+								infoJournal="#{babhZaiavEditBean.doc.identInfo}" 
+								taskInfo="#{babhZaiavEditBean.doc.taskInfo}"
+								codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}" 
+								dateClassif="#{babhZaiavEditBean.decodeDate}"/>
+
+							<span class="fas fa-ellipsis-v SoftGray p-mr-2"
+								jsf:rendered="#{babhZaiavEditBean.notSave}" />
+							<h:outputText value="За да запомните извлечените настройки, свързани с плащане на заявлението, натиснете бутона Запис!"  rendered="#{babhZaiavEditBean.notSave}"
+								styleClass="form-label"  style="color:red;"/>
+								
+						</f:facet>
+
+						<f:facet name="right">
+								
+							<p:commandButton icon="fas fa-folder" 
+							    rendered = "#{isView ne 1 and babhZaiavEditBean.doc.payType ne null and 
+							    			  babhZaiavEditBean.doc.payType ne BabhConstants.CODE_ZNACHENIE_PAY_TYPE_NOPAY and
+							    			  babhZaiavEditBean.viewBtnPayRequest()}"
+				  				value="Заявка за плащане" 
+							    styleClass="ui-button-warning p-mr-2" 				
+								partialSubmit="true"
+								update="@this" 
+								process="@this" 
+								action="#{babhZaiavEditBean.actionGenEPay}"
+								title="Генерира заявка за плащане към е-Плащане"/> 
+							
+							<span class="fas fa-ellipsis-v p-mx-2" />
+							
+							<ibg:compSendEmail mailTo="#{babhZaiavEditBean.referent2.contactEmail}"
+							 subject="#{babhZaiavEditBean.subjectEmail()}"  />
+							
+							<span class="fas fa-ellipsis-v p-mx-2" />				
+							<h:panelGroup id="pRegInfo">
+								<ibg:compObjAudit id="compJ" idObj="#{babhZaiavEditBean.doc.id}"
+									codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}" />
+							</h:panelGroup>
+						</f:facet>
+
+					</p:toolbar>
+
+				</p:sticky>
+
+
+				<!-- ОСНОВНИ ДАННИ -->
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#zaiavEditForm:basicData')">
+						<h:outputText value="#{labels['nastrObjInc.basicData']}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="basicData">
+
+					<div class="p-grid ui-fluid">
+						<!-- Код на админ услуга -->
+						<div class="p-col-fixed"  style="width:200px" jsf:id="usluga">
+							<h:outputText value="Услуга №" styleClass="form-label" />
+							<div class=" ui-inputgroup">
+							<p:inputText id="codeUsluga" title="Номер на административна услуга"
+								readonly="#{isView eq 1 or !babhZaiavEditBean.chCodeAdmUsluga}"
+								value="#{babhZaiavEditBean.doc.codeAdmUsluga}" >
+								<p:ajax event="change" listener="#{babhZaiavEditBean.actionChAdmUsluga}" 
+								partialSubmit="true" process="basicData" update="basicData"/>
+							</p:inputText>
+							<p:toggleSwitch value="#{babhZaiavEditBean.chCodeAdmUsluga}"
+								rendered="#{isView ne 1 and babhZaiavEditBean.doc.vpisvaneId eq null and !babhZaiavEditBean.ud.limitedAccess}"
+								style="width:60px" id="tSwitch">
+					            <p:ajax partialSubmit="true" process="@this" update="usluga" />
+					        </p:toggleSwitch>
+					        <p:tooltip for="tSwitch" value="Ако е включено, позволява промяна на код на услуга"></p:tooltip>
+					        </div>
+						</div>
+						
+						<!-- ДЕЛОВОДЕН НОМЕР -->
+						<div class="p-col-fixed"  style="width:200px" >
+							<h:outputText value="#{labels['babhZaiavEdit.delNum']}"
+								styleClass="form-label" />
+							<p:inputText id="delNumDoc" readonly="true"
+								value="#{babhZaiavEditBean.doc.rnDoc}" />
+						</div>
+
+						<!-- ДАТА НА ДОКУМЕНТ -->
+						<div class="p-col-fixed"  style="width:200px">
+							<h:outputText value="#{labels['docDoc.dateDoc']}"
+								styleClass="form-label" />
+							<p:inputText id="dateDoc"
+								value="#{babhZaiavEditBean.doc.docDate}" readonly="true">
+								<f:convertDateTime pattern="dd.MM.yyyy"
+									timeZone="#{babhZaiavEditBean.timeZone}" />
+							</p:inputText>
+						</div>
+
+
+						<!-- РЕГИСТЪР /разглеждане/-->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['nastrScreenFormsList.vidRegis']}"
+								styleClass="form-label req" />
+							<p:inputText readonly="true"
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, babhZaiavEditBean.doc.registerId, babhZaiavEditBean.currentLang, null)}" />
+						</div>
+
+
+						<!-- ВИД НА ДОКУМЕНТА /разглеждане/ -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['nastrScreenForm.vidDoc']}"
+								styleClass="form-label req" />
+							<p:inputText readonly="true"
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, babhZaiavEditBean.doc.docVid, babhZaiavEditBean.currentLang, null)}" />
+						</div>
+						
+					</div>	
+						
+					<div class="title-group">
+						<p:commandLink class="extended-search-toggle expanded "
+							onclick="toggleSection(this, '#zaiavEditForm:pData')">
+							<h:outputText value="Такси" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>		
+					<div jsf:id="pData">							
+						
+						<div class="p-grid ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.doc.payType ne null and babhZaiavEditBean.doc.payType eq BabhConstants.CODE_ZNACHENIE_PAY_TYPE_NOPAY}">
+							<div class="p-col-12">
+								<h:outputText value="Не се дължи такса" styleClass="form-label" style="color:red" />
+							</div>
+						</div>
+					
+						<div class="p-grid ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.doc.payType ne null and babhZaiavEditBean.doc.payType ne BabhConstants.CODE_ZNACHENIE_PAY_TYPE_NOPAY}">
+							<!-- СУМА ЗА ПЛАЩАНЕ (ТАКСАТА ЗА СЪОТВЕТНИЯ ДОКУМЕНТ СПОРЕД НАСТРОЙКИТЕ) -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid"
+								jsf:rendered="#{babhZaiavEditBean.registerOptions ne null}">
+								<h:outputText
+									value="#{labels['babhZaiavEdit.plashtane']} (#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_METOD_PLASHTANE, babhZaiavEditBean.doc.payType, babhZaiavEditBean.currentLang, null)})"
+									styleClass="form-label" />
+								<p:inputNumber id="paySum"
+									readonly="#{babhZaiavEditBean.doc.payType eq BabhConstants.CODE_ZNACHENIE_PAY_TYPE_FLOAD ? babhZaiavEditBean.isView ne 0 : true}"
+									title="#{labels['babhZaiavEdit.payMessage']}"
+									modifyValueOnWheel="false" decimalSeparator="."
+									value="#{babhZaiavEditBean.doc.payAmount}" />
+							</div>
+	
+							<!-- колко РЕАЛНО е платено -  ще се вижда, ако има дата на плащане-->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid" jsf:rendered="#{babhZaiavEditBean.doc.payDate ne null}">
+								<h:outputText value="#{labels['babhZaiavEdit.payAmountReal']}"
+									styleClass="form-label" />
+								<p:inputNumber id="paySumReal" minValue="0" readonly="true"
+									value="#{babhZaiavEditBean.doc.payAmountReal}"
+									modifyValueOnWheel="false" decimalSeparator="." />
+							</div>
+	
+							<!-- ДАТА НА ПЛАЩАНЕ -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid" jsf:rendered="#{babhZaiavEditBean.doc.payDate ne null}">
+								<h:outputText value="#{labels['babhZaiavEdit.payDate']}"
+									styleClass="form-label" />
+								<p:inputText id="datePAy"
+									value="#{babhZaiavEditBean.doc.payDate}" readonly="true">
+									<f:convertDateTime pattern="dd.MM.yyyy HH:mm"
+										timeZone="#{babhZaiavEditBean.timeZone}" />
+								</p:inputText>
+							</div>
+	
+						</div>
+						
+						</div>
+							
+					<!-- Представляващо лице -->
+					<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1 or babhZaiavEditBean.doc.vpisvaneId ne null}" 
+						binding = "#{babhZaiavEditBean.bindingReferent1}"
+					  	refObj="#{babhZaiavEditBean.referent1}" 
+						codeRef="#{babhZaiavEditBean.doc.codeRefCorresp}"
+						mainDataLabel="#{labels['docu.podatel']}"
+						refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+						saveInComponent="false" 	
+						modal="false"
+						showContacts="false"
+						showRadio="flase"
+						showBtnClear="true"
+						showKachectvoLice="true"/>
+				
+					<!--  заявител -->
+					<ibg:refCorrespData id="liceZaqvitel" readonly="#{isView eq 1 or babhZaiavEditBean.doc.vpisvaneId ne null}" 
+					 	binding = "#{babhZaiavEditBean.bindingReferent2}"
+						refObj="#{babhZaiavEditBean.referent2}"
+						codeRef="#{babhZaiavEditBean.doc.codeRefZaiavitel}"
+						mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+						saveInComponent="false" 
+						vidDoc="#{babhZaiavEditBean.doc.docVid}"		
+						dateClassif="#{babhZaiavEditBean.decodeDate}" modal="false"
+						showDopInfo="false" showKorespAdress="true" btnPostAdress="true" 
+						showBtnClear="true"
+						showContacts="false"
+						showRadio="true"
+						showBirthPlace="false"
+						regixPermAddress="true"		/>
+					
+						
+					<br/>
+
+					<div class="p-grid ui-fluid">
+
+						<!-- ОТНОСНО -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['general.otnosno']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="otnosno" rows="2"
+								readonly="#{babhZaiavEditBean.isView ne 0}"
+								value="#{babhZaiavEditBean.doc.otnosno}" />
+						</div>
+					</div>
+
+
+					<div class="p-grid ui-fluid">
+
+
+						<!-- ДОП.ИНФОРМАЦИЯ ЗА ДОКУМЕНТА -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['docu.dopInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="dopInfo" rows="2"
+								readonly="#{babhZaiavEditBean.isView ne 0}"
+								value="#{babhZaiavEditBean.doc.docInfo}" />
+						</div>
+
+						<!-- СТАТУС НА ДОКУМЕНТА -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.isView eq 0}">
+							<h:outputText value="#{labels['babhZaiavList.docStatus']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="status" autoWidth="false"
+								value="#{babhZaiavEditBean.doc.status}" filter="true"
+								filterMatchMode="startsWith">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst} "
+									itemValue="#{itemSc.code}"
+									itemDisabled="#{itemSc.code eq BabhConstants.CODE_ZNACHENIE_DOC_STATUS_WAIT and babhZaiavEditBean.doc.idLicenziant ne null}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOC_STATUS, babhZaiavEditBean.decodeDate, babhZaiavEditBean.currentLang)}" />
+									 <p:ajax event="change" process="@this zaiavEditForm:reason" update="@this zaiavEditForm" partialSubmit="true"/>   
+							</p:selectOneMenu>
+						</div>
+
+						<!-- СТАТУС НА ДОКУМЕНТА /разглеждане/ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.isView ne 0}">
+							<h:outputText value="#{labels['babhZaiavList.docStatus']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true"
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_STATUS, babhZaiavEditBean.doc.status, babhZaiavEditBean.currentLang, null)}" />
+						</div>
+
+						<!-- ПРИЧИНА СТАТУСА -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.isView eq 0 and babhZaiavEditBean.doc.status ne BabhConstants.CODE_ZNACHENIE_DOC_STATUS_WAIT and babhZaiavEditBean.doc.status ne BabhConstants.CODE_ZNACHENIE_DOC_STATUS_OBRABOTEN}">
+							<h:outputText value="#{labels['babhZaiavEdit.prichina']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="reason" autoWidth="false"
+								value="#{babhZaiavEditBean.doc.statusReason}" filter="true"
+								filterMatchMode="startsWith">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst} "
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOC_IRREGULAR, babhZaiavEditBean.decodeDate, babhZaiavEditBean.currentLang)}" />				
+							</p:selectOneMenu>
+						</div>
+
+						<!-- ПРИЧИНА СТАТУСА /разглеждане/-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.isView ne 0 and babhZaiavEditBean.doc.status ne BabhConstants.CODE_ZNACHENIE_DOC_STATUS_WAIT and babhZaiavEditBean.doc.status ne BabhConstants.CODE_ZNACHENIE_DOC_STATUS_OBRABOTEN}">
+							<h:outputText value="#{labels['babhZaiavEdit.prichina']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true" 
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_IRREGULAR, babhZaiavEditBean.doc.statusReason, babhZaiavEditBean.currentLang, null)}" />
+						</div>
+
+						<!-- ДАТА НА СТАТУСА -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['docu.statusDate']}"
+								styleClass="form-label" />
+							<p:datePicker id="dateStatus" mask="true" showIcon="true"
+								locale="bg" pattern="dd.MM.yyyy"
+								rendered="#{babhZaiavEditBean.isView eq 0}"
+								value="#{babhZaiavEditBean.doc.statusDate}">
+							</p:datePicker>
+
+							<p:inputText rendered="#{babhZaiavEditBean.isView ne 0}"
+								value="#{babhZaiavEditBean.doc.statusDate}" readonly="true">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm"
+									timeZone="#{babhZaiavEditBean.timeZone}" />
+							</p:inputText>
+						</div>
+
+						<!-- ПРИЧИНА СТАТУСА - ДОП.ИНФОРМАЦИЯ  -->
+						<div class="p-col-12   ui-fluid">
+							<h:outputText
+								value="#{labels['babhZaiavEdit.statusReasonDopInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="statusDopInfo" rows="2"
+								readonly="#{babhZaiavEditBean.isView ne 0}"
+								value="#{babhZaiavEditBean.doc.dopInfoStatus}" />
+						</div>
+					</div>
+				</div>
+
+				<br />
+
+				<!-- ПРИКАЧЕНИ ФАЙЛОВЕ -->
+				<ibg:compFileUpload id="filesDoc"
+					listObj="#{babhZaiavEditBean.filesList}"
+					codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+					header="false" idObj="#{babhZaiavEditBean.doc.id}" hideDel="false"
+					view="#{babhZaiavEditBean.isView eq 1}" display="list" typeSign="0"
+					saveFirst="false" dragDropSupport="true" autoSave="true"
+					headerLabel="#{labels['babhZaiavEdit.upFiles']}" />
+
+				<c:if test="#{systemData.isElementVisible(babhZaiavEditBean.doc.docVid, BabhConstants.EKRAN_ATTR_UDOST_DOC)}">
+
+					<!-- НАЧИН НА ПОЛУЧАВАНЕ -->
+					<div class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '#zaiavEditForm:udostDoc')">
+							<h:outputText value="#{labels['targovtsiFuraj.udostDoc']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+	
+					<div jsf:id="udostDoc">
+
+					<div class="p-grid ui-fluid">
+
+						<!-- НАЧИН НА ПУЛАЧАНЕ НА РЕЗУЛТАТ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.isView eq 0}">
+							<h:outputText value="#{labels['babhZaiavEdit.rezultat']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="result" autoWidth="false"
+								value="#{babhZaiavEditBean.doc.receiveMethod}" filter="true"
+								filterMatchMode="startsWith">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_NACHIN_POLUCHAVANE, now, babhZaiavEditBean.currentLang)}"
+									var="nachinP" itemLabel="#{nachinP.tekst}"
+									itemValue="#{nachinP.code}" />
+							</p:selectOneMenu>
+						</div>
+
+						<!-- НАЧИН НА ПУЛАЧАНЕ НА РЕЗУЛТАТ /разглеждане/-->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid"
+							jsf:rendered="#{babhZaiavEditBean.isView ne 0}">
+							<h:outputText value="#{labels['babhZaiavEdit.rezultat']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true"
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_NACHIN_POLUCHAVANE, babhZaiavEditBean.doc.receiveMethod, babhZaiavEditBean.currentLang, null)}" />
+						</div>
+
+						<!-- АДРЕС ЗА ПОЛУЧАВАНЕ НА РЕЗУЛТАТ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['babhZaiavEdit.adres']}"
+								styleClass="form-label" />
+							<p:inputText id="adres"
+								readonly="#{babhZaiavEditBean.isView ne 0}"
+								value="#{babhZaiavEditBean.doc.adressRezultat}" />
+						</div>
+
+						<!-- ДОПЪЛНИТЕЛНА ИНФОРМАЦИЯ -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.dopInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="dopInfoUdost"
+								value="#{babhZaiavEditBean.doc.receivedBy}"
+								readonly="#{babhZaiavEditBean.isView ne 0}"
+								style="min-width:100%; max-width:100%;" rows="2" />
+						</div>
+
+					</div>
+				</div>
+				
+				</c:if>
+
+
+			</div>
+
+		</div>
+
+	</h:form>
+
+
+
+</ui:composition>

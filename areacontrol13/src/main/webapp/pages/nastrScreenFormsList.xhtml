@@ -1,0 +1,190 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">
+
+	<ui:remove>
+		<!-- 15.05.23Г. НОВ ЕКРАН ЗА ВЪВЕЖДАНЕ НА НАСТРОЙКИ НА ЕКРАННИ ФОРМИ. ОПИСАНИЕТО НА МОДУЛА СЕ НАМИРА В src/docs -> Модул за въвеждане на настройки на ИИСР.docx -->
+	</ui:remove>
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			<f:viewAction action="#{userData.checkPageAccess(108)}"
+				onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="title">#{navTexts['/pages/nastObjList.xhtml']}</ui:define>
+
+	<ui:define name="viewname">
+		<li>#{navTexts['/pages/nastObjList.xhtml']}</li>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formNastrScreenList">
+
+			<div class="container #{guestPreferences.containerPosition}">
+
+				<!-- FILTER -->
+				<h:panelGroup id="panelFilter">
+
+					<div class="card">
+						<div class="p-grid">
+						
+							<!-- КОД НА УСЛУГА -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['nastrScreenForm.uslugaNum']}"
+									styleClass="form-label" />
+								<p:inputText id="numUslDlg"
+									value="#{nastrScreenFormsListBean.formsSearch.meuNumber}" />
+							</div>
+
+							<!-- ВИД РЕГИСТЪР -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+								<h:outputText value="#{labels['nastrScreenFormsList.vidRegis']}"
+									styleClass="form-label" />
+								<ibg:selectOneModalA
+									codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_REGISTRI}"
+									selectedCode="#{nastrScreenFormsListBean.formsSearch.registerId}"
+									id="vidRegist" styleAutoComp="width: 100%;"
+									modalPosition="top"
+									dateClassif="#{nastrScreenFormsListBean.decodeDate}"
+									filtered="false" sortByName="false" saveStateTree="false"
+									withBtnClear="true" compType="2" isSelectNode="true" />
+							</div>
+							
+
+							<!-- ТИП НА ОБЕКТ -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+								<h:outputText value="#{labels['nastrScreenFormsList.objType']}"
+									styleClass="form-label" />
+								<p:selectOneMenu id="objType" autoWidth="false"
+									value="#{nastrScreenFormsListBean.formsSearch.objType}">
+									<f:selectItem value="#{null}" itemValue="#{null}" />
+									<f:selectItems
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_TIP_OBEKT_LICENZ, now, nastrScreenFormsListBean.currentLang)}"
+										var="objType" itemLabel="#{objType.tekst}"
+										itemValue="#{objType.code}" />
+								</p:selectOneMenu>
+							</div>
+						</div>
+
+						<!-- БУТОНИ ЗА ТЪРСЕНЕ -->
+						<div class="filter-buttons">
+							<p:commandButton icon="fas fa-search"
+								value="#{ui_labels['general.search']}" id="btnSearchDoc"
+								update="resultTable panelFilter" partialSubmit="true"
+								action="#{nastrScreenFormsListBean.actionSearch}"
+								process="@this panelFilter resultTable" styleClass="p-mr-3" />
+
+
+							<p:commandButton icon="fas fa-eraser"
+								value="#{ui_labels['general.clear']}" id="btnClear"
+								update="resultTable panelFilter" partialSubmit="true"
+								process="@this panelFilter resultTable"
+								action="#{nastrScreenFormsListBean.actionClear}"
+								styleClass="ui-button-warning" />
+						</div>
+
+					</div>
+				</h:panelGroup>
+			</div>
+
+
+			<!-- РЕЗУЛТАТ -->
+			<h:panelGroup id="resultTable" layout="block" styleClass="margin-top">
+				<h:panelGroup layout="block" styleClass="card"
+					rendered="#{nastrScreenFormsListBean.formsList.rowCount ne null}">
+
+					<!-- НОВ РЕГИСТЪР -->
+					<div class="table-toolbar">
+						<p:commandButton icon="fas fa-file" ajax="false"
+							action="#{nastrScreenFormsListBean.actionGotoNew}"
+							value="#{labels['nastrScreenFormsList.newRegis']}"
+							styleClass="ui-button-success  p-mr-2" />
+
+						<span class="fas fa-ellipsis-v p-mx-2"
+							jsf:rendered="#{nastrScreenFormsListBean.formsList ne null}" />
+
+						<h:outputText
+							value="#{ui_labels['general.reportResult']}: #{nastrScreenFormsListBean.formsList.rowCount}"
+							styleClass="form-label"
+							rendered="#{nastrScreenFormsListBean.formsList.rowCount ne null}" />
+					</div>
+
+
+					<p:dataTable id="tblRegisList" var="row" lazy="true"
+						value="#{nastrScreenFormsListBean.formsList}" rowIndexVar="idx"
+						rendered="#{nastrScreenFormsListBean.formsList.rowCount ne null}"
+						emptyMessage="#{ui_labels['general.norows']}" rows="15"
+						sortMode="single" reflow="true"
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+						paginatorAlwaysVisible="true" paginator="true" showGridlines="true">
+
+
+						<!-- ЕКСПОРТИ -->
+						<f:facet name="{Exporters}">
+
+							<div style="float: left">
+								<p:commandLink id="excel" update="tblRegisList"
+									process="tblRegisList" partialSubmit="true">
+									<h:graphicImage library="images" name="excel2.png" />
+									<p:dataExporter type="xls" target="tblRegisList"
+										fileName="nastrScreenFormsList"
+										postProcessor="#{nastrScreenFormsListBean.postProcessXLS}" />
+								</p:commandLink>
+
+								<p:commandLink id="csv" update="tblRegisList"
+									process="tblRegisList" partialSubmit="true">
+									<h:graphicImage library="images" name="csv.png" />
+									<p:dataExporter type="csv" target="tblRegisList"
+										fileName="nastrScreenFormsList" encoding="CP1251" />
+								</p:commandLink>
+								
+								<p:commandLink id="pdf" update="tblRegisList"
+									process="tblRegisList" partialSubmit="true">
+					        	 	  <h:graphicImage library="images" name="pdf.png" />
+					        	 	  <p:dataExporter type="pdf" target="tblRegisList"
+										fileName="nastrScreenFormsList" encoding="windows-1251"
+					        			preProcessor="#{nastrScreenFormsListBean.preProcessPDF}" options="#{nastrScreenFormsListBean.pdfOptions()}"/>
+					    		</p:commandLink>
+							</div>
+						</f:facet>
+
+						<p:column width="20"
+							headerText="#{ui_labels['general.No-symbol']}">
+							<h:outputText value="#{idx + 1}" />
+						</p:column>
+
+						<p:column exportable="false" width="30">
+							<p:commandButton icon="fas fa-edit" ajax="false"
+								action="#{nastrScreenFormsListBean.actionGotoEdit(row[0])}"
+								styleClass="btn-new" title="#{ui_labels['general.edit']}" />
+						</p:column>
+
+						<p:column headerText="#{labels['nastrScreenFormsList.vidRegis']}">
+							<h:outputText
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, row[1], nastrScreenFormsListBean.currentLang, null)}" />
+						</p:column>
+
+						<p:column headerText="#{labels['nastrScreenFormsList.objType']}" width="400">
+							<h:outputText
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_TIP_OBEKT_LICENZ, row[2], nastrScreenFormsListBean.currentLang, null)}" />
+						</p:column>
+
+						
+
+					</p:dataTable>
+				</h:panelGroup>
+			</h:panelGroup>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

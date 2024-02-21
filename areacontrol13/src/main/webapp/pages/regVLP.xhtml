@@ -1,0 +1,776 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(null)}"
+				onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+		<h:form id="vlpTargForm">
+			
+			<div class="#{guestPreferences.containerPosition}" jsf:rendered="#{regVLP.access}">
+
+				<div class="card">
+
+					<h:panelGroup id="vpTitle"
+						style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+						<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regVLP.vpisvane.idRegister, regVLP.currentLang, now)}"
+							styleClass="form-label" />
+						<br />
+						<h:outputText value="#{labels['babhMigr.msgmigr']}" style="color:red" rendered="#{regVLP.vpisvane.fromМigr eq 0}"/>
+						
+					</h:panelGroup>
+
+					<p:remoteCommand name="onTabChangeProcess" process="registerTabs @this"/> <ui:remove><!-- без това, при местене между табовете не субмитва данните --></ui:remove>
+
+					<p:tabView id="registerTabs" dynamic="true" cache="true"
+						styleClass="p-mt-4" onTabChange="onTabChangeProcess()">
+
+						<p:ajax event="tabChange" listener="#{regVLP.onTabChange}" update="registerTabs" process="registerTabs" partialSubmit="true"/>
+						<!-- ТАБ ОСНОВНИ ДАННИ -->
+						<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+							<p:outputPanel id="mainDataPanel">
+							<p:sticky target="tlbr" margin="125">
+
+								<!-- ТООЛБАР ОСОВНИ ДАННИ-->
+								<p:toolbar id="tlbr" styleClass="p-mb-5">
+
+									<f:facet name="left">
+										<p:commandButton icon="fas fa-save" action="#{regVLP.actionSave}"
+											value="#{ui_labels['general.save']}" id="btnSave"
+											partialSubmit="true" 
+											update="registerTabs"
+											oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+											styleClass="p-mr-2" 
+											rendered ="#{isView ne 1}"
+										    disabled="#{regVLP.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}"/>
+											
+										<span class="fas fa-ellipsis-v p-mx-2" />
+
+									 <ibg:compAccess readonly="#{isView eq 1}" 
+										    header="Служители с изричен достъп до вписването"
+											rendered="#{regVLP.vpisvane.id ne null}" 
+											idObj="#{regVLP.vpisvane.id}"
+											infoJournal="#{regVLP.vpisvane.licenziant}" 
+											taskInfo="#{regVLP.zaiavlVp.taskInfo}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" 
+											dateClassif="#{regVLP.decodeDate}"/>
+										
+									<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<p:button 
+											value="#{labels['registerMainTab.viewZaiav']}"
+											title="#{ui_labels['general.view']}"
+										 	icon="fas fa-eye" target="_blank"
+										 	styleClass="ui-button-secondary p-mr-2"
+											outcome="#{regVLP.actionGotoZaiav()}" />
+											
+										<p:commandButton rendered="#{regVLP.filesList.size() ne 0}"
+											value="#{labels['babhZaiavEdit.upFiles']}"
+											styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-paperclip" partialSubmit="true"													
+											update="vlpTargForm:panelAttFiles"
+											oncomplete="PF('attFilesVar').show();"  />
+											
+										<p:button 
+											rendered="#{regVLP.vpisvane.id ne null and regVLP.lastDoc[0] ne null}"
+											value="#{labels['registerMainTab.lastDoc']}"
+											title="#{ui_labels['general.view']}"
+										 	styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-arrow-left" target="_blank"
+											outcome="#{regVLP.actionGotoLastZaiav()}"
+											ajax="false"  />			
+										
+										 
+									</f:facet>
+									
+
+									<f:facet name="right">
+									
+									<ibg:compVpisvaneZaiav rendered="#{regVLP.referent2.code ne null}" 
+										codeRef="#{regVLP.referent2.code}"
+										idVpisvane ="#{regVLP.vpisvane.id}"
+										onComplete="PF('vpZaiavVar').hide();" /> 
+									<span class="fas fa-ellipsis-v p-mx-2" />
+									
+									<ibg:compSendEmail mailTo="#{regVLP.referent2.contactEmail}" 	subject="Отговор до заявителя..."  />
+			
+									<h:panelGroup id="pRegInfo">
+										<ibg:compObjAudit id="compJ" idObj="#{regVLP.vpisvane.id}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+									</h:panelGroup>
+				
+									<span class="fas fa-ellipsis-v p-mx-2" />
+										<p:commandButton icon="fas fa-times"
+											styleClass="ui-button-danger"
+											action="#{regVLP.actionDelete}"
+											value="#{ui_labels['general.delete']}" partialSubmit="true"
+											rendered ="#{isView ne 1 and regVLP.vpisvane.id ne null and !regVLP.ud.limitedAccess}"
+											disabled="#{regVLP.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+											<p:confirm header="#{ui_labels['general.comfirmation']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+										
+									</f:facet>
+
+								</p:toolbar>
+
+							</p:sticky>
+
+							<p:divider align="right" type="dashed" style="margin: 0rem;">
+								
+								<h:outputText
+									value="#{labels['registerMainTab.regNumZaiav']}: "
+									styleClass="form-label" />
+								<h:outputText id="regNumZaiav1"
+									value="#{regVLP.vpisvane.regNomZaqvlVpisvane} / " />
+								<h:outputText id="dateZaiav" styleClass="p-mr-2"
+									value="#{regVLP.vpisvane.dateZaqvlVpis}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regVLP.timeZone}" />
+								</h:outputText>
+								
+								<h:outputText value="#{labels['registerMainTab.statusV']}: "
+									styleClass="form-label" />
+								<h:outputText id="statusV"
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regVLP.vpisvane.status, regVLP.currentLang, null)}" />
+								<h:outputText value="   "
+									rendered="#{regVLP.vpisvane.id ne null}" />
+								<h:outputText id="dateSv"
+									rendered="#{regVLP.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+									value="#{regVLP.vpisvane.dateStatus}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regVLP.timeZone}" />
+								</h:outputText>
+								
+								<!-- Дължима такса -->
+								<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+									styleClass="form-label" rendered="#{regVLP.daljimaSuma ne null and regVLP.daljimaSuma gt 0}" />
+								<h:outputText value="#{regVLP.daljimaSuma}" style="color: red"
+									 rendered="#{regVLP.daljimaSuma ne null and regVLP.daljimaSuma gt 0}" />
+									 
+									 <!-- УД -->
+								<h:panelGroup  rendered="#{regVLP.vpisvane.regNomResult ne null}">
+									<h:outputText value="#{labels['ud.udNomer']}: "
+										styleClass="form-label" />
+									<h:outputText value="#{regVLP.vpisvane.regNomResult} / " />
+									<h:outputText value="#{regVLP.vpisvane.dateResult}"   >
+										  <f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}" />
+									</h:outputText>
+								</h:panelGroup>
+							</p:divider>
+
+
+
+							<!-- Представляващо лице -->
+						<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}" 
+								refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+								binding = "#{regVLP.bindingReferent1}"
+							  	refObj="#{regVLP.referent1}" 
+								codeRef="#{regVLP.referent1.code}"
+								mainDataLabel="#{labels['docu.podatel']}"
+								saveInComponent="false" 	
+								modal="false"
+								showContacts="false"
+								showRadio="flase"
+								showBtnClear="true"
+								showKachectvoLice="true"/>
+								
+						<!-- ЗАЯВИТЕЛ -->
+							<ibg:refCorrespData id="liceZaqvitel"  readonly="#{isView eq 1}"
+								 codeRef="#{regVLP.referent2.code}"
+								 refObj="#{regVLP.referent2}"				 				 
+								 mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+								 saveInComponent="false"
+								 showKorespAdress="true"
+								 showContacts="true"
+								 regixPermAddress="true"
+								 btnPostAdress="true"								 
+								 showBtnClear="true"								 								 
+								 showChujdiLica="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+								 showIdentNom="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL_F)}"
+								 showLnch="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+								 showDocs="false"
+								 refType="#{regVLP.ref2Type}"
+								 showRadio="#{regVLP.showRadioRef2}"	
+								 vidDoc="#{regVLP.zaiavlVp.docVid}"
+								 searchTxt="#{regVLP.txtRef2}" 
+								 dateClassif="#{regVLP.decodeDate}"
+								 modal="false"/>	
+							 
+					<c:if test="#{regVLP.zaiavlVp.registerId==28 || regVLP.zaiavlVp.registerId==27}">
+								
+								<div class="title-group p-mt-3">
+									<!-- Притежател на сертификата. -->
+									<ibg:refCorrespData id="licePritejatel"  readonly="#{isView eq 1}"
+										 codeRef="#{regVLP.referent3.code}"
+										 refObj="#{regVLP.referent3}"				 				 
+										 mainDataLabel="Притежател на разрешение"
+										 saveInComponent="false"
+										 showKorespAdress="true"
+										 btnPostAdress="true"
+										 showContacts="true"
+										 regixPermAddress="true"
+										 showBtnClear="true"
+										 showRadio="false"					
+										 englishBirthPlace="true"			 
+										 showChujdiLica="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+										 showIdentNom="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL_F)}"
+										 showLnch="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+										 showDocs="false"
+										 english="true"
+										 refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}"
+										 vidDoc="#{regVLP.zaiavlVp.docVid}"
+										 searchTxt="#{regVLP.txtRef3}" 
+										 dateClassif="#{regVLP.decodeDate}"
+										 modal="false"/>
+								</div>		 									
+						</c:if>
+
+				
+
+	<c:if
+		test="#{regVLP.zaiavlVp.docVid eq BabhConstants.CODE_ZNACHENIE_ZAIAV_VNOS_PROIZV_VLP or regVLP.zaiavlVp.docVid eq BabhConstants.CODE_ZNACHENIE_ZAIAV_TARG_RAZST_PARALEL_VLP}">
+			<!-- ПОДВИД НА ЗАЯВЛЕНИЕТО /САМО ЗА ОБЕДИНЕНИТЕ/-->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle expanded"
+					onclick="toggleSection(this, '#vlpTargForm:registerTabs:slcData')">
+					<h:outputText value="#{labels['regTargovtsiFuraj.podvidZaiav']}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="slcData">
+				<div class="p-grid p-ai-stretch vertical-container">
+					<div class="p-col-12  ui-fluid">
+						
+						<p:selectOneMenu id="vidPodzaiav" filter="true"
+							disabled="#{regVLP.vpisvane.id ne null or regVLP.zaiavlVp.docPodVid!=null}"
+							filterMatchMode="startsWith" autoWidth="false"
+							value="#{regVLP.zaiavlVp.docPodVid}">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems value="#{regVLP.podZaiavList}"
+								var="classif" itemLabel="#{classif.tekst}"
+								itemValue="#{classif.code}" />
+							<p:ajax event="change" partialSubmit="true"
+								update="@this detailData" process="@this"
+								listener="#{regVLP.actionChangePodvid}" />
+						</p:selectOneMenu>
+					</div>
+				</div>
+			</div>
+		</c:if>
+
+				<p:outputPanel id="detailData">
+							<!-- ДЕЙНОСТ /ЗА ВСЕКИ РЕГИСТЪР СА РАЗЛИЧНИ.. ВСЕКИ ДОБАВЯ КАКВОТО МУ Е НУЖНО/ -->
+							
+							<!-- 1.  Панел за дейността "Търговия на едро с ветеринарни лекарствени продукти" -->
+							<div jsf:rendered="#{systemData.isActionVisible(regVLP.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_VLP_TR_EDRO)}">
+								<div class="title-group p-mt-3">
+									<p:commandLink class="extended-search-toggle expanded"
+										onclick="toggleSection(this, '#vlpTargForm:registerTabs:deinostData1')">
+										<h:outputText value="#{labels['registerMainTab.deinost']}: Търговия на едро с ветеринарни лекарствени продукти " />
+										<i class="fas fa-caret-right"></i>
+									</p:commandLink>
+								</div>
+		
+							</div>
+							<!-- 1.  Панели за различните заявления -->
+							
+							<!--Дейности с нарк. в-ва -->
+							<c:if test="#{regVLP.zaiavlVp.registerId==26}">
+								
+								<div>
+									<ui:include src="/pages/regVLPVidInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="panelEventDeinLabel" value="Дейностите с наркотични в-ва" />
+										<ui:param name="classifEventDeinVid" value="#{BabhConstants.CODE_CLASSIF_DEIN_NARK_VESHT}" />
+										<ui:param name="vidVlpLabel" value="Вид на дейностите, които ще се извършват" />
+										<ui:param name="nomDatLicenzLabel" value="№ и дата на разрешително" />
+									</ui:include>	
+								</div>
+							
+								<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_PREDMET_MANY)}">
+									<ui:include src="/pages/regVLPPredmetInc.xhtml">
+										<ui:param name="clId" value="vlpTargForm:registerTabs" />
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="predmetLabel" value="Наркотичните вещества и лекарствени продукти, съдържащи наркотични вещества, с които ще се извършват дейностите" />
+										<ui:param name="codeClassif" value="#{BabhConstants.CODE_CLASSIF_NARK_VESHTESTVA}" />
+									</ui:include>	
+								</div>
+								<div>
+									<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+									</ui:include>	
+								</div>
+								<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_EDNO)}">
+									<ui:include src="/pages/regVLPObektDeinInc.xhtml">
+										<ui:param name="clId" value="vlpTargForm:registerTabs" />
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="prednaznachenieLabel" value="Предназначение на обекта" />
+										<ui:param name="obektDeinDopInfoLabel" value="Допълнителна информация" />
+										<ui:param name="obektDeinAktNomDocLabel" value="Номер и дата на издаване на акта за въвеждане в експлоатация" />
+									</ui:include>	
+								</div>
+								<div>
+									<ui:include src="/pages/regVLPLicaMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelLiceLabel" value="Ветеринарен лекар, отговорен за производството по чл. 35, ал. 2 от Закона за контрол върху наркотичните вещества и прекурсорите (ЗКНВП)" />
+											<ui:param name="codeClassifLiceRole" value="#{BabhConstants.CODE_CLASSIF_VRAZ_SYBITIE_OBEKT}" />
+											<ui:param name="hideDropDownRole" value="true" />
+											<ui:param name="showDocs" value="true" />
+											<ui:param name="showRadio" value="false" />											 
+										</ui:include>
+								</div>								
+							</c:if>
+							
+							
+							
+							<!-- Търговци от разстояние -->
+							<c:if test="#{regVLP.zaiavlVp.docPodVid==BabhConstants.CODE_ZNACHENIE_ZAIAV_TARG_RAZST_VLP}">
+								<div>
+									<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="danniKontragentLabel" value="Лице създало страницата" />
+										<ui:param name="emailLabel" value="Интернет страница" />
+										<ui:param name="nomDatLicenzLabel" value="Номер и дата на издаване на разрешението за търговия" />
+										<ui:param name="eventDeinDopInfoLabel" value="Допълнителна информация" />
+									</ui:include>	
+								</div>
+								<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docPodVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_EDNO)}">
+									<ui:include src="/pages/regVLPObektDeinInc.xhtml">
+										<ui:param name="clId" value="vlpTargForm:registerTabs" />
+										<ui:param name="isView" value="#{isView}" />
+									</ui:include>	
+								</div>
+								
+							</c:if>
+							
+							<!-- Паралелна търговия -->
+							<c:if test="#{regVLP.zaiavlVp.docPodVid==BabhConstants.CODE_ZNACHENIE_ZAIAV_PARALELNA_VLP}">
+								<div>
+									<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="danniKontragentArea" value="Данни за контрагента на  търговията" />
+										<ui:param name="nomDatLicenzLabel" value="Номер и дата на издаване на разрешението за търговия" />
+										<ui:param name="eventDeinDopInfoLabel" value="Допълнителна информация" />
+									</ui:include>	
+								</div>
+								<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docPodVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_EDNO)}">
+									<ui:include src="/pages/regVLPObektDeinInc.xhtml">
+										<ui:param name="clId" value="vlpTargForm:registerTabs" />
+										<ui:param name="isView" value="#{isView}" />
+									</ui:include>	
+								</div>
+							</c:if>
+							<!-- Реклама-->
+							<c:if test="#{regVLP.zaiavlVp.registerId==28}">
+								
+								 
+								<div class="title-group p-mt-3">
+									<p:commandLink class="extended-search-toggle expanded">
+										<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_VLP_REKLAMA, regVLP.currentLang, now)} " />
+									</p:commandLink>
+								</div>
+								<div>
+									<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="vlpReklamaLabel" value="ВЛП, които ще се рекламират" />
+										<ui:param name="prednReklamaLabel" value="Предназначение" />
+										<ui:param name="nomDatLicenzLabelLong" value="№ и дата на разрешение" />
+										<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+									</ui:include>	
+								</div>
+							</c:if>
+							<!-- Търговия дребно с ВЛП-->
+							<c:if test="#{regVLP.zaiavlVp.registerId==24}">
+								<div class="title-group p-mt-3">
+									<p:commandLink class="extended-search-toggle expanded">
+										<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_VLP_DREBNO, regVLP.currentLang, now)} " />
+									</p:commandLink>
+								</div>
+								<div>
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_PREDMET_MANY)}">
+										<ui:include src="/pages/regVLPPredmetInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="predmetLabel" value="Фармакологични групи" />
+											<ui:param name="codeClassif" value="#{BabhConstants.CODE_CLASSIF_PREDMET_TARGOVIA_EDRO_VLP}" />
+											<ui:param name="dopInfoLabel" value="Допълнителна информация" />
+											
+										</ui:include>
+									</div>
+									 
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_EDNO)}">
+										<ui:include src="/pages/regVLPObektDeinInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="obektDeinAktNomDocLabel" value="Номер и дата на издаване на акта за въвеждане в експлоатация" />
+										</ui:include>	
+									</div>
+									<div>
+										<ui:include src="/pages/regVLPLicaMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelLiceLabel" value="Лица, имащи отношение към обекта" />
+											<ui:param name="codeClassifLiceRole" value="#{BabhConstants.CODE_CLASSIF_TIP_VRAZKA_TARG_DREBNO_VLP}" />
+											<ui:param name="showDocs" value="true" />
+											<ui:param name="showRadio" value="false" />
+										</ui:include>	
+									</div>
+									
+								</div>
+							</c:if>
+							<!-- Сертификат инвитро с ВЛП-->
+							<c:if test="#{regVLP.zaiavlVp.registerId==27}">
+								<div class="title-group p-mt-3">
+									<p:commandLink class="extended-search-toggle expanded">
+										<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_VLP_INVITRO, regVLP.currentLang, now)} " />
+									</p:commandLink>
+								</div>
+								<div>
+									
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_PREDMET_ONE)}">
+										<ui:include src="/pages/regVLPEventDeinPredmetEdnoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelEventDeinPredmetEdnoLabel" value="Инвитро-диагностично ветеринарномедицинско средство" />
+											<ui:param name="dopInfoPredmetOneLabel" value="Описание на инвитро диагностично ветеринарномедицинско средство" />
+											<ui:param name="reqNaim" value="req" />
+										</ui:include>	
+									</div>
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_LICA_MNOGO)}">
+										<ui:include src="/pages/regVLPLicaMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelLiceLabel" value="Лица, имащи отношение към инвитро диагностичното ветеринарномедицинско средство" />
+											<ui:param name="codeClassifLiceRole" value="#{BabhConstants.CODE_CLASSIF_TIP_VRAZ_LICE_INVITRO}" />
+											<ui:param name="showDocs" value="false" />
+											<ui:param name="showRadio" value="true" />
+											<ui:param name="english" value="true" />
+										</ui:include>	
+									</div>
+									<div>
+									<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />										
+										<ui:param name="eventDeinOpisanieLabel" value="Информация на производителя, съдържаща общите технологични и аналитични характеристики, производствените процеси и контрол на качеството" />
+										<ui:param name="eventDeinAkredLabLabel" value="Акредитирана лаборатория по чл. 410б, ал. 1, т. 4 ЗВД за провеждане на изпитвания за съответствие на инвитро диагностично ветеринарномедицинско средство с техническата спецификация на производителя" />
+										<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+									</ui:include>	
+								</div>
+								</div>
+							</c:if>
+							<!-- Дейност с активни в-ва ВЛП-->
+							<c:if test="#{regVLP.zaiavlVp.registerId==30}">
+								<div>
+									<div>
+										<ui:include src="/pages/regVLPVidInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="classifEventDeinVid" value="#{BabhConstants.CODE_CLASSIF_DEIN_ACTIVE_VESHT}" />
+											<ui:param name="vidVlpLabel" value="Дейности с активни вещества" />
+										</ui:include>	
+									</div>
+									
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_M)}">
+										<ui:include src="/pages/regVLPObektDeinMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="licaOtnLabel" value="Квалифицирани лица, имащи отношение към обекта" />
+											<ui:param name="panelObektDeinMnogoLabel" value="Обекти на дейност" />
+											<ui:param name="codeClassifLiceRoleObDein" value="#{BabhConstants.CODE_CLASSIF_TIP_VRAZKA_LICE_OB_DEIN}" />
+										</ui:include>	
+									</div>
+									
+									<div>
+										<ui:include src="/pages/regVLPPredmetManyInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelPredmetMLabel" value="Активни в-ва" />
+											<ui:param name="activeVesth" value="true" />
+											<ui:param name="classifVidEvDeinP" value="#{BabhConstants.CODE_CLASSIF_VID_AKT_VESHT}" />
+											<ui:param name="dopInfoPredmetMLabel" value="Доп. инфо" />
+										</ui:include>	
+									</div>
+									
+									<div>
+										<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+										</ui:include>	
+									</div>										
+								</div>
+							</c:if>
+							<!-- Заявление за внос на ВЛП-->
+							<c:if test="#{regVLP.zaiavlVp.docPodVid==BabhConstants.CODE_ZNACHENIE_ZAIAV_VNOS_VLP}">
+								<div>
+									<div>
+										<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="vidDeinVlpLabel" value="#{BabhConstants.CODE_ZNACHENIE_DEIN_VLP_VNOS}" />
+											<ui:param name="eventDeinOpisanieLabel" value="Описание" />
+											<ui:param name="datInspekciaLabel" value="Дата на инспекция" />
+											<ui:param name="obhvatInspekciaLabel" value="Обхват на инспекцията" />
+											<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+										</ui:include>	
+									</div>
+									 
+									<div>
+										<ui:include src="/pages/regVLPPredmetManyInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelPredmetMLabel" value="Фармацевтични форми и дейности, които ще се изпълняват" />
+											<ui:param name="classifVidEvDeinP" value="#{BabhConstants.CODE_CLASSIF_FORMI_DEINOST_VNOS_VLP}" />
+											<ui:param name="dopInfoPredmetMLabel" value="Пояснение" />
+										</ui:include>	
+									</div>
+									
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_M)}">
+										<ui:include src="/pages/regVLPObektDeinMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="licaOtnLabel" value="Лица, имащи отношение към обекта" />
+											<ui:param name="obektDeinAktNomDocLabel" value="№ и дата на акт" />
+											<ui:param name="obektDeinDogovorNomDocLabel" value="№ и дата на договор" />
+											<ui:param name="panelObektDeinMnogoLabel" value="Обекти на дейност" />
+											<ui:param name="codeClassifLiceRoleObDein" value="#{BabhConstants.CODE_CLASSIF_TIP_VRAZKA_LICE_VNOS_PROIZV_VLP}" />
+											<ui:param name="showDocs" value="true" />
+											<ui:param name="showOpit" value="true" />
+											
+										</ui:include>	
+									</div>
+									
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_PRVNOS_PROIZV_MANY_TABLE)}">
+										<ui:include src="/pages/regVLPVnosInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelVnosMLabel" value="ВЛП, заявени за внос" />											
+										</ui:include>	
+									</div>
+																		
+								</div>
+							</c:if>
+							<!-- Заявление за Производство на ВЛП-->
+							<c:if test="#{regVLP.zaiavlVp.docPodVid==BabhConstants.CODE_ZNACHENIE_ZAIAV_PROIZV_VLP}">
+								<div>
+									<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+										<ui:param name="isView" value="#{isView}" />
+										<ui:param name="vidDeinVlpLabel" value="#{BabhConstants.CODE_ZNACHENIE_DEIN_VLP_PROIZV}" />
+										<ui:param name="eventDeinOpisanieLabel" value="Описание" />
+										<ui:param name="datInspekciaLabel" value="Дата на инспекция" />
+										<ui:param name="obhvatInspekciaLabel" value="Обхват на инспекцията" />
+										<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+									</ui:include>	
+								</div>
+								<div>
+									<div>
+										<ui:include src="/pages/regVLPPredmetManyInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelPredmetMLabel" value="Фармацевтични форми и дейности, които ще се изпълняват" />
+											<ui:param name="classifVidEvDeinP" value="#{BabhConstants.CODE_CLASSIF_FARM_FORM_PROIZV}" />
+											<ui:param name="dopInfoPredmetMLabel" value="Пояснение" />
+										</ui:include>	
+									</div>
+									
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_M)}">
+										<ui:include src="/pages/regVLPObektDeinMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="licaOtnLabel" value="Лица, имащи отношение към обекта" />
+											<ui:param name="obektDeinAktNomDocLabel" value="№ и дата на акт" />
+											<ui:param name="obektDeinDogovorNomDocLabel" value="№ и дата на договор" />
+											<ui:param name="panelObektDeinMnogoLabel" value="Обекти на дейност" />
+											<ui:param name="codeClassifLiceRoleObDein" value="#{BabhConstants.CODE_CLASSIF_TIP_VRAZKA_LICE_VNOS_PROIZV_VLP}" />
+											<ui:param name="showDocs" value="true" />
+											<ui:param name="showOpit" value="true" />
+											
+										</ui:include>	
+									</div>
+									
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_PRVNOS_PROIZV_MANY_TABLE)}">
+										<ui:include src="/pages/regVLPVnosInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelVnosMLabel" value="Заявени ВЛП" />											
+										</ui:include>	
+									</div>
+																		
+								</div>
+							</c:if>
+							
+							
+							<!-- Заявление за търговия на едро с ВЛП-->
+							<c:if test="#{regVLP.zaiavlVp.registerId==23}">
+								<div>
+									 
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_PREDMET_MANY)}">
+										<ui:include src="/pages/regVLPPredmetInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="predmetLabel" value="Фармакологични групи, с които ще се търгува" />
+											<ui:param name="codeClassif" value="#{BabhConstants.CODE_CLASSIF_PREDMET_TARGOVIA_EDRO_VLP}" />
+											<ui:param name="predmetManyReq" value="req" />
+										</ui:include>
+									</div>
+									<div>
+										<ui:include src="/pages/regVLPEventDeinInc.xhtml">
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="eventDeinDopInfoLabel" value="Допълнителна инфoрмация" />
+										</ui:include>	
+									</div>	
+											
+									<div jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_VLP_OBEKT_DEIN_EDNO)}">
+										<ui:include src="/pages/regVLPObektDeinInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="obektDeinAktNomDocLabel" value="Номер и дата на издаване на акта за въвеждане в експлоатация" />
+										</ui:include>	
+									</div>							
+									<div>											
+										<ui:include src="/pages/regVLPLicaMnogoInc.xhtml">
+											<ui:param name="clId" value="vlpTargForm:registerTabs" />
+											<ui:param name="isView" value="#{isView}" />
+											<ui:param name="panelLiceLabel" value="Лица, имащи отношение към обекта" />
+											<ui:param name="codeClassifLiceRole" value="#{BabhConstants.CODE_CLASSIF_VRAZ_LICE_OBEKT}" />
+											<ui:param name="hideDropDownRole" value="true" />
+											<ui:param name="showDocs" value="true" />
+											<ui:param name="showRadio" value="false" />
+											<ui:param name="showAddress" value="false" />	
+										</ui:include>
+									</div>	
+								</div>
+							</c:if>
+							
+							<!-- ДОПЪЛНИТЕЛНА ИНФОРМАЦИЯ ЗА ВПИСВАНЕТО-->
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#vlpTargForm:registerTabs:vpisvaneInfo')">
+									<h:outputText value="#{labels['reg.dopInfoVpisvane']}" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+
+							<div jsf:id="vpisvaneInfo">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 ui-fluid">
+										<p:inputTextarea rows="4"
+											value="#{regVLP.vpisvane.info}" />
+									</div>
+								</div>
+							</div>
+							
+							
+							
+							
+							<!-- TODO от настройките да ли да се вижда или не -->
+							
+							<!--
+							<div class="title-group p-mt-3" jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UDOST_DOC)}">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#vlpTargForm:registerTabs:udostDoc')">
+									<h:outputText value="Удостоверителен документ" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+							
+							 <div jsf:id="udostDoc" jsf:rendered="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UDOST_DOC)}">
+							 ДА се уточни кои са точно полетата от завлението!!
+							да се изтрият излипните полета от документа
+								<div class="p-grid ui-fluid">
+									<div class="p-col-4 ">
+										<h:outputText value="Начин на получаване на удостоверителния документ" styleClass="form-label" />
+									
+										<p:selectOneMenu id="udoc1" value="#{regVLP.zaiavlVp.receiveMethod}">
+										     <f:selectItem value="#{null}" itemValue="#{null}"/>
+										     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DVIJ_METHOD, now, regVLP.currentLang)}" 
+										         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+									    </p:selectOneMenu>	
+									</div>
+									<div class="p-col-8 ">
+										<h:outputText value="Адрес за получаване" styleClass="form-label" />
+										<p:inputTextarea id="udocAdr" value="#{regVLP.zaiavlVp.adressRezultat}"  rows="1" />
+									</div>
+									<div class="p-col-12 ">
+										<h:outputText value="Допълнителна информация за начина на получаване" styleClass="form-label" />
+										<p:inputTextarea id="udocDopinfo" value="#{regVLP.zaiavlVp.receivedBy}"  rows="1" />
+									</div>
+								</div>
+							</div> -->
+							
+						</p:outputPanel>	
+							</p:outputPanel>
+						</p:tab>
+
+						<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+						<p:tab title="#{labels['register.danniVpisvaneTab']}"
+							id="danniVpisvaneTab" disabled="#{regVLP.vpisvane.id eq null}">
+							<ui:include src="vpStatusData.xhtml" >
+							 	<ui:param name="isView" value="#{isView}" />
+							 	<ui:param name="clId" value="vlpTargForm:registerTabs" />
+							 </ui:include> 
+						</p:tab>
+
+
+						<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+						<p:tab title="#{labels['register.docsVpisvaneTab']}"
+							id="docVpisvaneTab" disabled="#{regVLP.vpisvane.id eq null}">
+							<ui:include src="vpDocs.xhtml" >
+							 	<ui:param name="isView" value="#{isView}" />
+							 	<ui:param name="clId" value="vlpTargForm:registerTabs" />
+							 </ui:include> 
+						</p:tab>
+						
+						<!-- ТАБ Етапи на обработка-->
+					  	<p:tab title="#{labels['register.etapiVpisvaneTab']}" id="etapiVpisvaneTab"  disabled="#{regVLP.vpisvane.id eq null}">
+                            <ui:include src="procEtaps.xhtml" >
+							 	<ui:param name="clId" value="vlpTargForm:registerTabs" />
+							 </ui:include>
+                        </p:tab>
+
+					</p:tabView>
+
+				</div>
+			</div>
+		
+			<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+			<h:panelGroup id="panelAttFiles">
+
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+					responsive="true" resizable="true" position="top"
+					widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+					modal="true">
+
+					<p:messages id="attFilesModalMsg" showDetail="true"
+						closable="false" style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+
+					<div class="container #{guestPreferences.containerPosition}">
+						<ibg:compFileUpload id="filesDoc"
+							listObj="#{regVLP.filesList}"
+							codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+							header="true" idObj="#{regVLP.zaiavlVp.id}"
+							hideDel="false" view="true" display="list" typeSign="0"
+							saveFirst="true" dragDropSupport="table" 
+							headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+			
+		</h:form>
+
+</ui:composition>

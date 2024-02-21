@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ibg="http://java.sun.com/jsf/composite/components"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                template="/template/template.xhtml">
+
+	<ui:define name="title">#{labels['general.systemName']}</ui:define>
+	
+	<ui:define name="head"> 
+		<style>
+			@media (max-width: 1600px) {
+			   .dbCol200 {width:200px !important}
+			} 
+			.layout-dashboard .overview-box {min-height: 50px;}
+			
+			.widget-overview-box {padding:6px;}
+			
+			.lineDataResult{ 
+				
+				min-height: 0px; margin-top: -12px; margin-left:-12px; margin-right:-12px; margin-bottom:5px; width: auto;
+			}
+						
+		</style>
+				
+	</ui:define>
+	
+	
+	<ui:define name="content">
+		<h:form id="dashboard">
+		   <br/>
+		   <div class="p-grid layout-dashboard">
+			   	<div class="p-col-12 p-xl-3 p-md-6"  >
+			   		<p:commandLink action="#{dashboard.actionSelectMenuOnject(1)}" update="dashboard">
+	                <div class="p-grid p-nogutter overview-box overview-box-1"  style="cursor:pointer">
+	                   <div class="p-col-fixed overview-box-icon" style="width: 60px">
+	                        <i class="fas #{dashboard.selectedCodeMenuObject==1?'fa-folder-open':'fa-folder'}" style="font-size:30px"></i>
+	                    </div>
+	                    <div class="p-col overview-box-text">
+	                        <h5>Незавършени процедури по заявления за които отговарям</h5>
+	                      
+	                    </div>
+	                    
+	                </div>
+	                </p:commandLink>
+	            </div>
+	            
+	            <div class="p-col-12 p-xl-3 p-md-6">
+	                <p:commandLink action="#{dashboard.actionSelectMenuOnject(2)}" update="dashboard">
+	                <div class="p-grid p-nogutter overview-box overview-box-3"  style="cursor:pointer">
+	                    <div class="p-col-fixed overview-box-icon" style="width: 60px">
+	                        <i class="fas #{dashboard.selectedCodeMenuObject==2?'fa-folder-open':'fa-folder'}" style="font-size:30px"></i>
+	                    </div>
+	                    <div class="p-col overview-box-text">
+	                        <h5>Новопостъпили заявления за които още няма вписване и  за които отговарям</h5>
+	                        
+	                    </div>
+	                </div>
+	                </p:commandLink>
+	            </div>
+	            <div class="p-col-12 p-xl-3 p-md-6">
+	                <p:commandLink action="#{dashboard.actionSelectMenuOnject(3)}" update="dashboard">
+	                <div class="p-grid p-nogutter overview-box overview-box-4"  style="cursor:pointer">
+	                    <div class="p-col-fixed overview-box-icon" style="width: 60px">
+	                        <i class="fas #{dashboard.selectedCodeMenuObject==3?'fa-folder-open':'fa-folder'}" style="font-size:30px"></i>
+	                    </div>
+	                    <div class="p-col overview-box-text">
+	                        <h5>Незавършени процедури по заявления </h5>
+	                       
+	                    </div>
+	                </div>
+	                </p:commandLink>
+	            </div> 
+		   		
+		   		<div class="p-col-12 p-xl-3 p-md-6" >
+	                <p:commandLink action="#{dashboard.actionSelectMenuOnject(4)}" update="dashboard">
+	                <div class="p-grid p-nogutter overview-box overview-box-2"  style="cursor:pointer" >
+	                    <div class="p-col-fixed overview-box-icon" style="width: 60px">
+	                        <i class="fas #{dashboard.selectedCodeMenuObject==4?'fa-folder-open':'fa-folder'}" style="font-size:30px"></i>
+	                    </div>
+	                    <div class="p-col overview-box-text">
+	                        <h5>Новопостъпили заявления</h5>
+	                       
+	                    </div>
+	                </div>
+	                </p:commandLink>
+	            </div>
+		   </div>
+		   
+		  
+		   
+		   <div class="card" style="min-height: 400px; margin-top: -5px" jsf:id="panelDataResult">
+		   		<div class="widget-overview-box #{dashboard.styleLineDataResult} lineDataResult"></div>
+		   		<p:dataTable>
+		   			<p:column width="40" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+                        <h:outputText value="#{idx + 1}"/>
+                    </p:column>
+		   		</p:dataTable>
+		   </div>
+		</h:form>
+	
+	</ui:define>
+	
+</ui:composition>

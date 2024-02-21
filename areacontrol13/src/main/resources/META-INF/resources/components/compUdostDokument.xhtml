@@ -1,0 +1,155 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:cc="http://java.sun.com/jsf/composite">
+	
+<cc:interface componentType="compUdostDokument">
+	<cc:attribute name="style" type="java.lang.String"
+		shortDescription="Стилове за компонента" />
+		
+	<cc:attribute name="styleClass" type="java.lang.String"
+		shortDescription="CSS класове за компонента" />
+	
+	<cc:attribute name="docId" type="java.lang.Integer" required="true"
+		shortDescription="ID на деловоден документ, за който се генерира файл" />
+	
+	<cc:attribute name="vpisvaneId" type="java.lang.Integer" required="true"
+		shortDescription="ID на вписването на документа" />
+	
+	<cc:attribute name="isEditable" type="java.lang.Boolean"
+		shortDescription="Дали да позволи да се редактират стойностите на букмарковете преди генериране. За да може да се редактира една стойност, трябва да е настроена в екрана за попълване на шаблони." />
+	
+	<cc:attribute name="idRegister" type="java.lang.Integer" required="true"
+		shortDescription="ИД на регистъра" />
+	
+	<cc:attribute name="actionAfterGenerate" method-signature="void action(javax.faces.event.ActionEvent)" required="false"
+		shortDescription="Метод,който да се извика след генерирането на новия уърдпвски файл." />
+	
+	<cc:attribute name="isDublikat" type="java.lang.Boolean" default="false"
+		shortDescription="Дали файлът да има надпис 'Дубликат'" />
+</cc:interface>
+
+<cc:implementation>
+	<style type="text/css">
+		.udost-modal.ui-dialog .ui-dialog-content {
+			background: #eceff4;
+		}
+		
+		.udost-modal .udost-modal-wrapper {
+			height: 700px;
+		}
+		
+		.udost-modal .doc-preview-wrapper {
+			height: 800px;
+			overflow-y: scroll;
+			font-weight: normal;
+		}
+		
+		.udost-modal .doc-preview-wrapper > div {
+			background: #ffffff;
+			border: 1px solid #ced4da;
+			padding: 1rem 2rem;
+			border-radius: 4px;
+		}
+		
+		.udost-modal .fields-wrapper,
+		.udost-modal .toolbar-wrapper {
+			background: #ffffff;
+			margin-top: 0;
+		}
+	</style>
+	
+	<div id="#{cc.clientId}"
+		class="comp-udost-dok-wrapper #{cc.attrs.styleClass}" 
+		style="#{cc.attrs.style}">
+		
+		<p:dialog styleClass="udost-modal" widgetVar="udost" modal="true" 
+				width="1400px" height="800px"
+				header="Генериране на удостоверителен документ">
+			<div jsf:id="udostWrapper" class="udost-modal-wrapper">
+					
+				<div jsf:id="panelChooseShablon" jsf:rendered="#{cc.creator.needsToChooseShablon()}">
+					<div>Изберете шаблон:</div>
+					<p:selectOneListbox value="#{cc.chosenShablon}">
+						<f:selectItems value="#{cc.creator.shabloni}" 
+							var="s" itemLabel="#{s.filename}" itemValue="#{s.id}" />
+							
+						<p:ajax event="valueChange" update="udostWrapper" process="panelChooseShablon"
+							listener="#{cc.onChooseShablon()}"/>
+					</p:selectOneListbox>
+				</div>
+					
+				<div jsf:id="panelGenerateShablon" jsf:rendered="#{!cc.creator.needsToChooseShablon()}">
+					<div class="p-grid">
+						<div class="p-col-5" jsf:id="leftColWrapper">
+							<div class="p-grid toolbar-wrapper p-mb-2">
+								<div class="p-col-12">
+									<p:toolbar id="toolbar">
+										<p:toolbarGroup align="left">
+											<p:commandButton icon="fas fa-save" 
+												rendered="#{!cc.editing and cc.creator.savedUdostDokument eq null}"
+												styleClass="ui-button-success" 
+												value="Генериране на файл"
+												partialSubmit="true" process="@this"
+												update="toolbar"
+												actionListener="#{cc.generateDoc()}"/>
+											<p:commandButton icon="fas fa-download" 
+												rendered="#{!cc.editing and cc.creator.savedUdostDokument ne null}"
+												value="Сваляне"
+												ajax="false"
+												partialSubmit="true" process="@this"
+												actionListener="#{cc.downloadDoc()}"/>
+												
+											<span jsf:rendered="#{cc.editing}">Редакция</span>
+										</p:toolbarGroup>
+									</p:toolbar>
+								</div>
+							</div>
+
+							<ui:repeat value="#{cc.creator.bookmarks}" var="b">
+								<div class="p-col-12" jsf:rendered="#{b.fillStrategy eq 'ADVANCED'}">
+									<div jsf:rendered="#{b.fillComponent eq 'ADM_STRUCT'}">
+										<div class="form-label">#{b.description}</div>
+										<ibg:selectOneModalA
+											codeClassif="#{BabhConstants.CODE_CLASSIF_ADMIN_STR}"
+											selectedCode="#{cc.creator.advancedBookmarkValues[b.label]}" filtered="false"
+											withBtnClear="true" saveStateTree="true" showRadioBtn="true"
+											styleAutoComp="width:100%;" compType="2" />
+									</div>
+									
+									<!-- <div jsf:rendered="{b.fillComponent eq 'TEXT, REFERENT...'}"> -->
+								</div>
+							</ui:repeat>
+							<div class="p-col-12" jsf:rendered="#{cc.showApplyEditButton()}" style="text-align: right;">
+								<p:commandButton 
+									value="Потвърди" 
+									title="Потвърждаване на промените в документа"
+									icon="fas fa-check"
+									styleClass="ui-button-success"
+									actionListener="#{cc.finishEditing()}"
+									update="docPreviewWrapper"
+									partialSubmit="true"
+									process="@this" />
+							</div>
+							
+						</div>
+						
+						<div class="p-col-7">
+							<div jsf:id="docPreviewWrapper" class="doc-preview-wrapper">
+								<h:outputText value="#{cc.html}" escape="false"/>
+							</div>
+						</div>
+					</div>
+				</div>
+					
+			</div>
+		</p:dialog>
+	
+	</div>
+	
+</cc:implementation>
+</ui:composition>

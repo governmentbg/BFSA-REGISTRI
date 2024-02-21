@@ -1,0 +1,396 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:jsf="http://xmlns.jcp.org/jsf">
+	
+	<h:form id="formUnpaidZaivList" >
+			
+		<div class="container #{guestPreferences.containerPosition}">
+			
+				<!-- FILTER -->	
+				<h:panelGroup id="panelFilter" >
+
+					<div class="card">
+	
+						<div class="p-grid ui-fluid">
+							<!-- ВИД НА ДОКУМЕНТА-->
+							<div class="p-col-12  ui-fluid">
+								<h:outputText value="#{labels['nastrObjList.vidZaiav']}"
+									styleClass="form-label" />
+								<ibg:selectManyModalA id="vidDoc" compType="2" maxResults="50"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_ZAIAVLENIA}"
+									selectedCodes="#{unpaidZaivList.docSearch.docVidList}"
+									selectedClassifs="#{unpaidZaivList.docVidList}"
+									dateClassif="#{now}" filtered="false"
+									saveStateTree="false" showRadioBtn="true"
+									styleAutoComp="width:990%;" withBtnClear="true" />
+	
+							</div>
+							<!--ДЕЛОВОДЕН НОМЕР-->
+								<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2 ui-fluid">
+									<h:outputText value="Рег. номер на заявление"
+										styleClass="form-label" />
+									<p:inputText id="egNum"
+										value="#{unpaidZaivList.docSearch.rnDoc}" />
+								</div>
+		
+								<!-- ПЕРИОД-->
+								<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-4  ui-fluid">
+									<h:outputText value="#{labels['babhZaiavList.docDatReg']}"
+										styleClass="form-label" />
+									<p:selectOneMenu id="period" value="#{unpaidZaivList.periodR}">
+										<f:selectItem value="#{null}" itemValue="#{null}" />
+										<f:selectItems
+											value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIOD_NOFUTURE, now, unpaidZaivList.currentLang)}"
+											var="clPer" itemLabel="#{clPer.tekst}"
+											itemValue="#{clPer.code}" />
+										<p:ajax event="change" update="period dateOt dateDo"
+											listener="#{unpaidZaivList.changePeriodR}" />
+									</p:selectOneMenu>
+								</div>
+		
+								<!-- ДАТА ОТ -->
+								<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+									<h:outputText value="#{ui_labels['general.dataOt']}"
+										styleClass="form-label" />
+									<p:datePicker id="dateOt" mask="true" showIcon="true" locale="bg"
+										pattern="dd.MM.yyyy"
+										value="#{unpaidZaivList.docSearch.docDateFrom}">
+										<p:ajax event="change" update="period"
+											listener="#{unpaidZaivList.changeDate}" />
+										<p:ajax event="dateSelect" update="period"
+											listener="#{unpaidZaivList.changeDate}" />
+									</p:datePicker>
+								</div>
+		
+								<!-- ДАТА ДО-->
+								<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+									<h:outputText value="#{ui_labels['general.dataDo']}"
+										styleClass="form-label" />
+									<p:datePicker id="dateDo" mask="true" showIcon="true" locale="bg"
+										pattern="dd.MM.yyyy"
+										value="#{unpaidZaivList.docSearch.docDateTo}">
+										<p:ajax event="change" update="period"
+											listener="#{unpaidZaivList.changeDate}" />
+										<p:ajax event="dateSelect" update="period"
+											listener="#{unpaidZaivList.changeDate}" />
+									</p:datePicker>
+								</div>
+																
+									
+							<!-- лиценизант -->
+							<div class="p-col-6">							
+								<h:outputText value="Заявител" styleClass="form-label"/>
+								<div class="selectModalA-with-buttons">
+									
+									<h:panelGroup id="refCorrInp" layout="block"
+										styleClass="koresp-input">
+										<ibg:selectReferents id="findCoresp" update="@form" typeSearch="EIK"
+											dateClassif="#{now}"
+											corespCompCommand="PF('mCorrD').show();"
+											selectedCode="#{unpaidZaivList.docSearch.codeRefCorresp}"
+											searchWord="#{unpaidZaivList.txtCorresp}" />
+									</h:panelGroup>
+									<!--  Разширено търсене на кореспондент -->
+										<p:commandButton id="btnCorrS" 
+											icon="fas fa-list-ul" partialSubmit="true"
+											process="formUnpaidZaivList:dpCorrSearch @this"
+											update="formUnpaidZaivList:dpCorrSearch"
+											oncomplete="PF('mCorrS').show(); "
+											title="#{labels['search.extendRef']}" />
+								
+								</div>
+								
+							</div>
+							<div class="p-col-6">	
+								<h:outputText value="Платено" styleClass="form-label"/>
+								<p:selectOneRadio value="#{unpaidZaivList.docSearch.triCheckPlateno}">
+									<f:selectItem itemLabel="Да" itemValue="1"/>
+									<f:selectItem itemLabel="Не" itemValue="2"/>
+									<f:selectItem itemLabel="Всички" itemValue="0"/>
+								</p:selectOneRadio>															
+							</div>
+							
+							
+							
+						</div>
+						<div class="filter-buttons">
+							
+							<p:commandButton icon="fas fa-search" value="#{ui_labels['general.search']}" 
+											id="btnSearchSF" update="resultTable panelFilter" partialSubmit="true"
+											process="@this panelFilter resultTable" actionListener="#{unpaidZaivList.actionSearch()}" styleClass="p-mr-3"/>
+							<p:defaultCommand target="btnSearchSF" scope="panelFilter" />
+	
+							<p:commandButton icon="fas fa-eraser" value="#{ui_labels['general.clear']}"  
+											 id="btnClear" update="resultTable panelFilter" partialSubmit="true"
+											 process="@this panelFilter resultTable" action="#{unpaidZaivList.actionClear}"
+											 styleClass="ui-button-warning" />	
+						</div>
+	
+					</div>
+				</h:panelGroup>
+				
+			</div>
+			
+			<h:panelGroup id="resultTable" layout="block" styleClass="margin-top">
+
+			<h:panelGroup layout="block" styleClass="card">
+
+				<div class="table-toolbar">
+
+					<h:outputText value="#{ui_labels['general.reportResult']}: #{unpaidZaivList.docsList.rowCount}" styleClass="form-label" rendered="#{unpaidZaivList.docsList.rowCount > 0}"/>
+
+				</div>
+
+				<p:dataTable id="tblSFList" var="row" value="#{unpaidZaivList.docsList}" lazy="true" rendered="#{unpaidZaivList.docsList != null}"
+					rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}" rows="15" sortMode="single" reflow="true" styleClass="ui-datatable-gridlines"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="true" paginator="true">
+
+					<f:facet name="{Exporters}">
+
+						<div style="float: left">
+
+							<p:commandLink id="excel" update="tblSFList" process="tblSFList" partialSubmit="true">
+								<h:graphicImage library="images" name="excel2.png" />
+								<p:dataExporter type="xls" target="tblSFList" fileName="sportFormListXls" postProcessor="#{unpaidZaivList.postProcessXLS}"/>
+							</p:commandLink>
+
+							<p:commandLink id="pdf" update="tblSFList" process="tblSFList" partialSubmit="true">
+								<h:graphicImage library="images" name="pdf.png" />
+								 <p:dataExporter type="pdf"  target="tblSFList" fileName="sportFormListPdf" encoding="windows-1251"
+								 	preProcessor="#{unpaidZaivList.preProcessPDF}" options="#{unpaidZaivList.pdfOptions()}"/>						
+							</p:commandLink>
+
+							<p:commandLink id="csv" update="tblSFList" process="tblSFList" partialSubmit="true">
+								<h:graphicImage library="images" name="csv.png" />
+								<p:dataExporter type="csv" target="tblSFList" fileName="sportFormListCsv" encoding="CP1251" />
+							</p:commandLink>
+
+						</div>
+
+					</f:facet>
+
+					<p:column width="30" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+						<h:outputText value="#{idx + 1}" />
+					</p:column>
+
+					<p:column width="30" exportable="false">
+						<p:commandButton update="formUnpaidZaivList:modalPayZ" oncomplete="PF('mPayZ').show()" icon="far fa-credit-card" rendered="#{row[6] == null and row[12] ne 1}"
+										 partialSubmit="true" process="@this"	 title="Плащане на дължима такса за заявление" action="#{unpaidZaivList.openModal(row)}">
+			            </p:commandButton>				
+						<p:commandButton update="formUnpaidZaivList:modalEditZ" oncomplete="PF('mEditZ').show()" icon="fas fa-edit" rendered="#{row[6] == null and row[12] eq 1}"
+										 partialSubmit="true"	 title="Редакция на дължима такса за заявление" action="#{unpaidZaivList.openModalEditTax(row)}">
+			                <f:setPropertyActionListener value="#{udoc}" target="#{unpaidZaivList.unpaidDoc}" />
+			            </p:commandButton>				
+			            
+						<p:commandButton icon="fas fa-lock" id="lockButton" rendered="#{row[6] != null}" action="#" 
+											alt="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ADMIN_STR, row[7], unpaidZaivList.currentLang, now)}"
+							   				title="#{beanMessages['unpaidZaivList.locked']}#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ADMIN_STR, row[7], unpaidZaivList.currentLang, now)}">
+						   <p:tooltip for="lockButton">
+					 			#{beanMessages['docList.lockedDoc']} #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ADMIN_STR, row[7], unpaidZaivList.currentLang, now)} на 
+					 			<h:outputText value="#{row[8]}" >
+					 				<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeZone="#{unpaidZaivList.timeZone}"/>
+					 			</h:outputText>
+					 		</p:tooltip>	
+			            </p:commandButton>				
+			            
+			            
+			            				
+					</p:column>
+					
+					<p:column  headerText="#{labels['docu.vid']}" sortBy="#{row.a3}">
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[3], unpaidZaivList.currentLang, now)}" />
+					</p:column>
+
+					<p:column headerText="#{labels['babhZaiavList.regNum']}"
+						width="120" sortBy="#{row.a1}">
+						<h:outputText value="#{row[1]}" />
+					</p:column>
+
+					<p:column headerText="#{labels['docDoc.dateDoc']}" width="180"
+						sortBy="#{row.a4}">
+						<h:outputText value="#{row[4]}">
+							<f:convertDateTime pattern="dd.MM.yyyy"
+								timeZone="#{unpaidZaivList.timeZone}" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column width="270" sortBy="#{row.a5}" headerText="Заявител">
+						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_REFERENTS, row[5], unpaidZaivList.currentLang, now)}" />
+					</p:column>
+					
+					<p:column headerText="Платено"  width="90" sortBy="#{row.a12}">
+						<h:outputText value="Да" rendered="#{row[12] eq 1}" />
+						<h:outputText value="Не" rendered="#{row[12] ne 1}" />
+					</p:column>
+
+				</p:dataTable>
+
+			</h:panelGroup>
+
+		</h:panelGroup>	
+		
+			<p:dialog appendTo="@form"  closeOnEscape="true" header="#{unpaidZaivList.dialogHeader}"
+			    fitViewport="true"	
+			    responsive="true" 
+			    resizable="true"
+			    position="top"	
+				widgetVar="mPayZ" id="modalPayZ" modal="true">
+			
+				<p:messages>
+					<p:autoUpdate />
+				</p:messages>
+						
+				<div class="container #{guestPreferences.containerPosition}">		
+					<p:outputPanel id="multiCarDetail">
+					 	<div class="p-grid ui-fluid">
+							<div class="p-col-12">
+								<h:outputText value=" Такса за Вид заявление: " styleClass="form-label"/>  
+								<h:outputText value=" #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, unpaidZaivList.unpaidDoc[3], unpaidZaivList.currentLang, now)} " style="color: #0000FF;" /> 
+								<h:outputText value=" с Рег. номер: " styleClass="form-label" />
+								<h:outputText value=" #{unpaidZaivList.unpaidDoc[1]} " style="color: #0000FF;"/>
+								<h:outputText value=" / " styleClass="form-label" escape="true"/>
+								<h:outputText value=" #{unpaidZaivList.unpaidDoc[4]}" style="color: #0000FF;">
+								</h:outputText>
+							</div>
+							<div class="p-col-12 ">
+								<h:outputText value=" #{labels['registerMainTab.zaiavitel']} " styleClass="form-label"/>  
+								<h:outputText value=" #{unpaidZaivList.unpaidDoc[11]} ( #{unpaidZaivList.unpaidDoc[10]} )" style="color: #0000FF;"/>
+							</div>
+							
+							<div class="p-col-2 ">
+								<h:outputText value="Такса" styleClass="form-label" />
+								<p:inputText id="owedAmount" value="#{unpaidZaivList.unpaidDoc[9]}" readonly="#{!unpaidZaivList.willEdit }"/>
+							</div>
+							<div class="p-col-2 ">
+								<h:outputText value="Платена сума" styleClass="form-label" />
+								<p:inputText id="paidAmount" value="#{unpaidZaivList.paidAmount}" readonly="#{!unpaidZaivList.willEdit}"/>
+							</div>
+							<div class="p-col-2 ">
+								<h:outputText value="Дата на плащане" styleClass="form-label" />
+								<p:datePicker id="datePlashtane" mask="true" showIcon="true" locale="bg" showTime="true" pattern="dd.MM.yyyy HH:mm:ss" value="#{unpaidZaivList.payDate}" />
+							</div>
+							<div class="p-col-6 ">
+							</div>
+							
+							<div class="p-col-1">
+								<p:commandButton value="Плащане" action="#{unpaidZaivList.actionPayTax()}" partialSubmit="true" update="formUnpaidZaivList:resultTable" 
+													rendered="#{!unpaidZaivList.willEdit}" process="@this modalPayZ">
+								</p:commandButton>
+							</div>
+							<div class="p-col-9 ">
+							</div>
+							<div class="p-col-2 " style="align-right">
+							<h:panelGroup rendered="#{!unpaidZaivList.willEdit}">
+							<ibg:compSendEmail mailTo="" 
+												subject="#{labels['regTargovtsiFuraj.otnosno']} : Заявление за издаване на разрешение за износ на живи животни и зародишни продукти с Рег. номер: #{unpaidZaivList.unpaidDoc[1]} / #{unpaidZaivList.unpaidDoc[4]} " 
+												 />
+								</h:panelGroup>
+							</div>
+						</div>
+							
+					</p:outputPanel>
+				</div>
+							
+			</p:dialog>	
+			
+			
+			<p:dialog appendTo="@form"  closeOnEscape="true" header="Редакция на такса за заявление" fitViewport="true"	 responsive="true"  resizable="true" position="top"	 widgetVar="mEditZ" id="modalEditZ" modal="true">
+				<p:messages>
+					<p:autoUpdate />
+				</p:messages>
+						
+				<div class="container #{guestPreferences.containerPosition}">		
+					<p:outputPanel id="editZaiavlenie">
+					 	<div class="p-grid ui-fluid">
+							<div class="p-col-12">
+								<h:outputText value=" Такса за Вид заявление: " styleClass="form-label"/>  
+								<h:outputText value=" #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, unpaidZaivList.unpaidDoc[3], unpaidZaivList.currentLang, now)} " style="color: #0000FF;" /> 
+								<h:outputText value=" с Рег. номер: " styleClass="form-label" />
+								<h:outputText value=" #{unpaidZaivList.unpaidDoc[1]} " style="color: #0000FF;"/>
+								<h:outputText value=" / " styleClass="form-label" escape="true"/>
+								<h:outputText value=" #{unpaidZaivList.unpaidDoc[4]}" style="color: #0000FF;">
+								</h:outputText>
+							</div>
+							<div class="p-col-12 ">
+								<h:outputText value=" #{labels['registerMainTab.zaiavitel']} " styleClass="form-label"/>  
+								<h:outputText value=" #{unpaidZaivList.unpaidDoc[11]} ( #{unpaidZaivList.unpaidDoc[10]} )" style="color: #0000FF;"/>
+							</div>
+							
+							<div class="p-col-2 ">
+								<h:outputText value="Такса" styleClass="form-label" />
+								<p:inputText id="owedAmountEdit" value="#{unpaidZaivList.unpaidDoc[9]}" />
+							</div>
+							<div class="p-col-2 ">
+								<h:outputText value="Платена сума" styleClass="form-label" />
+								<p:inputText id="paidAmountEdit" value="#{unpaidZaivList.paidAmount}" />
+							</div>
+							<div class="p-col-2 ">
+								<h:outputText value="Дата на плащане" styleClass="form-label" />
+								<p:datePicker id="datePlashtaneEdit" mask="true" showIcon="true" locale="bg" showTime="true" pattern="dd.MM.yyyy HH:mm:ss" value="#{unpaidZaivList.payDate}" />
+							</div>
+							<div class="p-col-6 ">
+							</div>
+							
+							<div class="p-col-1">
+								<p:commandButton icon="fas fa-save" value="#{ui_labels['general.save']}" action="#{unpaidZaivList.actionPayTax()}" partialSubmit="true" process="@this modalEditZ"
+													update="formUnpaidZaivList:resultTable formUnpaidZaivList:owedAmountEdit formUnpaidZaivList:paidAmountEdit formUnpaidZaivList:datePlashtaneEdit" >
+								</p:commandButton>
+							</div>
+							<div class="p-col-9 ">
+							</div>
+							<div class="p-col-2 " style="align-right">
+							<h:panelGroup rendered="#{unpaidZaivList.willEdit}">
+								<ibg:compSendEmail id="mailFormPayZ" mailTo="" 
+												subject="#{labels['regTargovtsiFuraj.otnosno']} : Заявление за издаване на разрешение за износ на живи животни и зародишни продукти с Рег. номер: #{unpaidZaivList.unpaidDoc[1]} / #{unpaidZaivList.unpaidDoc[4]} " 
+												 />
+								</h:panelGroup>
+							</div>
+						</div>
+							
+					</p:outputPanel>
+				</div>
+							
+			</p:dialog>	
+		
+		<!-- ТЪРСЕНЕ НА КОРЕСПОНДЕНТ -->
+			<h:panelGroup id="dpCorrSearch">
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="Търсене на заявител" fitViewport="true"
+					responsive="true" resizable="true" position="top"
+					widgetVar="mCorrS" dynamic="true" id="modalCorrS" modal="true">
+
+					<div class="container #{guestPreferences.containerPosition}">
+						<ibg:refCorrespSearch id="mCorrS1"
+							codeRef="#{unpaidZaivList.docSearch.codeRefCorresp}"
+							searchTxt="#{unpaidZaivList.txtCorresp}"
+							dateClassif="#{now}" modal="true"
+							update="formUnpaidZaivList"
+							onComplete="PF('mCorrS').hide();  cmdSelectCorresp()" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+			
+			
+			<!-- ИЗПРАЩАНЕ НА Е-МЕЙЛ -->
+			<h:panelGroup id="panelMail">
+				<p:dialog appendTo="@form" widgetVar="eMail" closeOnEscape="true" header="Изпращане на съобщение" fitViewport="true" responsive="true" 
+							positionType="fixed" position="top" modal="true" dynamic="true">
+						
+					<p:messages id="messagesMail" showDetail="true" closable="false" style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+					<ibg:sendMail  readonly="#{viewOnly eq 1}" onComplete="#{unpaidZaivList.closeModalMail()}" codeSluj="#{unpaidZaivList.userData.userId}"></ibg:sendMail>
+					
+				</p:dialog>
+			</h:panelGroup>
+	
+	</h:form>	
+
+</html>

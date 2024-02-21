@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+	xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+
+	<persistence-unit name="hibernate" transaction-type="RESOURCE_LOCAL">
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+		${jndi.begin}
+		<non-jta-data-source>${docu.data.source}</non-jta-data-source>
+		${jndi.end}
+
+		<!-- Дефолтно името е orm.xml и не е нужно да се сетва изрично но това създава проблеми когато има повече от 1 persistance-unit -->
+		<mapping-file>META-INF/orm_babh.xml</mapping-file>
+
+		<class>com.ib.system.db.dto.SystemJournal</class>
+		<class>com.ib.system.db.dto.SystemOption</class>
+		<class>com.ib.system.db.dto.SystemClassifOpis</class>
+		<class>com.ib.system.db.dto.SystemClassif</class>
+		<class>com.ib.system.db.dto.SyslogicListOpisEntity</class>
+		<class>com.ib.system.db.dto.SyslogicListEntity</class>
+		<class>com.ib.system.db.dto.Files</class>
+		<class>com.ib.system.db.dto.FileObject</class>
+
+		<class>com.ib.indexui.db.dto.AdmGroupRole</class>
+		<class>com.ib.indexui.db.dto.AdmGroup</class>
+		<class>com.ib.indexui.db.dto.AdmUserRole</class>
+		<class>com.ib.indexui.db.dto.AdmUser</class>
+
+		<!--<class>com.ib.babhregs.db.dto.AdmNastrObekt</class>
+		<class>com.ib.babhregs.db.dto.AdmNastrObektAtt</class>-->
+
+		<class>com.ib.indexui.db.dto.ModelAis</class>
+		<class>com.ib.indexui.db.dto.ModelAttribute</class>
+		<class>com.ib.indexui.db.dto.ModelMultilang</class>
+		<class>com.ib.indexui.db.dto.ModelObject</class>
+		<class>com.ib.indexui.db.dto.ModelTable</class>
+		<class>com.ib.indexui.db.dto.ModelTableJoin</class>
+		<class>com.ib.indexui.db.dto.MultilangKey</class>
+		<class>com.ib.indexui.db.dto.ModelPersistence</class>
+
+		<class>com.ib.indexui.db.dto.StatElement</class>
+		<class>com.ib.indexui.db.dto.StatTable</class>
+
+		<class>com.ib.indexui.db.dto.UniversalReport</class>
+
+		<class>com.ib.system.db.dto.JobHistory</class>
+		<class>com.ib.babhregs.db.dto.Doc</class>
+		<class>com.ib.babhregs.db.dto.DocAccess</class>
+		<class>com.ib.babhregs.db.dto.DocVidSetting</class>
+		<class>com.ib.babhregs.db.dto.Referent</class>
+		<class>com.ib.babhregs.db.dto.ReferentAddress</class>
+		<class>com.ib.babhregs.db.dto.ReferentDoc</class>
+		<class>com.ib.babhregs.db.dto.Register</class>
+		<class>com.ib.babhregs.db.dto.Registratura</class>
+		<class>com.ib.babhregs.db.dto.RegistraturaGroup</class>
+		<class>com.ib.babhregs.db.dto.RegistraturaReferent</class>
+		<class>com.ib.babhregs.db.dto.RegistraturaSetting</class>
+		<class>com.ib.babhregs.db.dto.RegistraturaMailBox</class>
+		<class>com.ib.babhregs.db.dto.RegistraturaMailBoxVar</class>
+
+		<class>com.ib.babhregs.db.dto.NotificationPatterns</class>
+		<class>com.ib.babhregs.db.dto.NotificationPatternVariables</class>
+
+		<class>com.ib.babhregs.db.dto.UserNotifications</class>
+
+		<class>com.ib.babhregs.db.dto.EgovMessages</class>
+		<class>com.ib.babhregs.db.dto.EgovMessagesFiles</class>
+		<class>com.ib.babhregs.db.dto.EgovMessagesCoresp</class>
+
+		<class>com.ib.babhregs.db.dto.ProcDef</class>
+		<class>com.ib.babhregs.db.dto.ProcDefEtap</class>
+		<class>com.ib.babhregs.db.dto.ProcExe</class>
+		<class>com.ib.babhregs.db.dto.ProcExeEtap</class>
+		<class>com.ib.babhregs.db.dto.Praznici</class>
+
+		<class>com.ib.babhregs.db.dto.RegisterOptions</class>
+		<class>com.ib.babhregs.db.dto.RegisterOptionsDocsIn</class>
+		<class>com.ib.babhregs.db.dto.RegisterOptionsDocinActivity</class>
+		<class>com.ib.babhregs.db.dto.RegisterOptionsDocsOut</class>
+		<class>com.ib.babhregs.db.dto.RegisterOptionsDisplay</class>
+
+
+
+		<class>com.ib.babhregs.db.dto.Mps</class>
+		<class>com.ib.babhregs.db.dto.MpsCategory</class>
+		<class>com.ib.babhregs.db.dto.MpsKapacitetJiv</class>
+		<class>com.ib.babhregs.db.dto.MpsLice</class>
+		<class>com.ib.babhregs.db.dto.MpsVidProducts</class>
+
+		<class>com.ib.babhregs.db.dto.Vpisvane</class>
+		<class>com.ib.babhregs.db.dto.VpisvaneDoc</class>
+		<class>com.ib.babhregs.db.dto.VpisvaneStatus</class>
+		<class>com.ib.babhregs.db.dto.VpisvaneAccess</class>
+
+		<class>com.ib.babhregs.db.dto.ObektDeinost</class>
+		<class>com.ib.babhregs.db.dto.ObektDeinostDeinost</class>
+		<class>com.ib.babhregs.db.dto.ObektDeinostLica</class>
+		<class>com.ib.babhregs.db.dto.ObektDeinostPrednaznachenie</class>
+
+		<class>com.ib.babhregs.db.dto.EventDeinJiv</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivPredmet</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivIdentif</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivVid</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivLice</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivDarj</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivGkpp</class>
+		<class>com.ib.babhregs.db.dto.EventDeinJivObuchenie</class>
+		<class>com.ib.babhregs.db.dto.MpsDeinost</class>
+
+		<class>com.ib.babhregs.db.dto.EventDeinostFuraji</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiPrednaznJiv</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiVid</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiPredmet</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiKategoria</class>
+		<class>com.ib.babhregs.db.dto.MpsFuraji</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiSgp</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiGip</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostFurajiSert</class>
+
+		<class>com.ib.babhregs.db.dto.EventDeinostVlp</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpPredmet</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpVid</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpLice</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpPrvnos</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpPrvnosSubst</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpBolesti</class>
+		<class>com.ib.babhregs.db.dto.EventDeinostVlpPrvnosOpakovka</class>
+
+		<class>com.ib.babhregs.db.dto.Substance</class>
+
+		<class>com.ib.babhregs.db.dto.Vlp</class>
+		<class>com.ib.babhregs.db.dto.VlpLice</class>
+		<class>com.ib.babhregs.db.dto.VlpVeshtva</class>
+		<class>com.ib.babhregs.db.dto.VlpVidJiv</class>
+		<class>com.ib.babhregs.db.dto.VlpFarmForm</class>
+		<class>com.ib.babhregs.db.dto.VlpPrilagane</class>
+		<class>com.ib.babhregs.db.dto.VlpPrilaganeVid</class>
+		<class>com.ib.babhregs.db.dto.VlpOpakovka</class>
+
+		<class>com.ib.babhregs.db.dto.OezReg</class>
+		<class>com.ib.babhregs.db.dto.OezHarakt</class>
+		<class>com.ib.babhregs.db.dto.OezSubOez</class>
+		<class>com.ib.babhregs.db.dto.OezSubOezHarakt</class>
+		<class>com.ib.babhregs.db.dto.OezNomKadastar</class>
+
+		<class>com.ib.babhregs.db.dto.ShablonLogic</class>
+		<class>com.ib.babhregs.db.dto.ShablonBookmark</class>
+		
+		<class>com.ib.babhregs.db.dto.TempVMP</class>
+		<class>com.ib.babhregs.db.dto.TempVMPEU</class>
+
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+
+		<properties>
+			<property name="db.vendor.name" value="${db.vendor.name}" />
+
+			${conn.params.begin}
+			<property name="hibernate.connection.driver_class" value="${hibernate.connection.driver_class}" />
+			<property name="hibernate.connection.url" value="${hibernate.connection.url}" />
+			<property name="hibernate.connection.username" value="${hibernate.connection.username}" />
+			<property name="hibernate.connection.password" value="${hibernate.connection.password}" />
+			<property name="hibernate.connection.isolation" value="${hibernate.connection.isolation}" />
+			${conn.params.end}
+
+			<property name="hibernate.dialect" value="${hibernate.dialect}" />
+			<property name="hibernate.current_session_context_class" value="${hibernate.current_session_context_class}" />
+			<property name="hibernate.show_sql" value="${hibernate.show_sql}" />
+			<property name="hibernate.format_sql" value="${hibernate.format_sql}" />
+
+			<!-- експериментално -->
+			<property name="hibernate.jdbc.batch_size" value="10" />
+			<property name="hibernate.order_inserts" value="true" />
+			<property name="hibernate.order_updates" value="true" />
+			<property name="hibernate.jdbc.fetch_size" value="40" />
+
+
+
+			 <property name="hibernate.search.default.directory_provider"
+					  value="filesystem"/>
+
+			<property name="hibernate.search.default.indexBase"
+					 value="../lucene/indexes"/>
+
+			<!-- <property name="hibernate.search.elasticsearch.host" value="http://10.29.1.169:9200" />
+			<property name="hibernate.search.default.indexmanager" value="elasticsearch"/>
+			<property name="hibernate.search.default.elasticsearch.required_index_status" value="yellow"/>
+			<property name="hibernate.search.default.elasticsearch.index_schema_management_strategy" value="CREATE"/>
+			<property name="hibernate.search.default.elasticsearch.refresh_after_write" value="true"/> -->
+
+
+		</properties>
+	</persistence-unit>
+	
+	<persistence-unit name="vetis" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+			<properties>
+				<property name="db.vendor.name" value="Oracle" />
+				<property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver" />
+				<property name="hibernate.connection.url" value="jdbc:oracle:thin:@//10.29.0.202:1521/orcl" />
+				<property name="hibernate.connection.username" value="transform" />
+				<property name="hibernate.connection.password" value="transform" />				
+				<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
+				<property name="hibernate.connection.isolation" value="2" />
+				<property name="hibernate.current_session_context_class" value="thread" />
+				<!--<property name="exclude-unlisted-classes" value="true"/>
+				<property name="javax.persistence.exclude-unlisted-classes" value="true"/>-->
+			<!--	<property name="hibernate.archive.autodetection" value="none"/>-->
+
+
+
+			</properties>
+
+	</persistence-unit>
+	
+	<persistence-unit name="vetisReal" transaction-type="RESOURCE_LOCAL">
+
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+			<properties>
+				<property name="db.vendor.name" value="Oracle" />
+				<property name="hibernate.connection.driver_class" value="oracle.jdbc.driver.OracleDriver" />
+				<property name="hibernate.connection.url" value="jdbc:oracle:thin:@192.168.100.100:1521:orcl1" />
+				<property name="hibernate.connection.username" value="transform" />
+				<property name="hibernate.connection.password" value="tran$f0rm" />				
+				<property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect" />
+				<property name="hibernate.connection.isolation" value="2" />
+				<property name="hibernate.current_session_context_class" value="thread" />
+				<!--<property name="exclude-unlisted-classes" value="true"/>
+				<property name="javax.persistence.exclude-unlisted-classes" value="true"/>-->
+			<!--	<property name="hibernate.archive.autodetection" value="none"/>-->
+
+
+
+			</properties>
+
+	</persistence-unit>
+	
+	
+</persistence>

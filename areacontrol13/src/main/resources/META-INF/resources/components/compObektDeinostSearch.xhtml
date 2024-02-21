@@ -1,0 +1,243 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<cc:interface componentType="compObektDeinostSearch">
+
+		<cc:attribute name="vidOd" type="java.lang.Integer" shortDescription="Вид на обект на дейност" deafult="null" />
+		<cc:attribute name="selIdObDein" type="java.lang.Integer" shortDescription="Връща id на избрания обект на дейност" deafult="null" />
+  	 	<cc:attribute name="selNaimObDein" type="java.lang.String"  shortDescription="Връща наименованието на избрания обект на дейност" deafult="null" />
+		<cc:attribute name="dateClassif" type="java.util.Date" shortDescription="Дата, към която да се заредят класификации и за разкодиране. По подразбиране - днешна дата." />
+		<cc:attribute name="update" type="java.lang.String" shortDescription="Полета, които трябва да се обновят" />
+		<cc:attribute name="readonly" type="java.lang.Boolean" shortDescription="Само за разглеждане" default="false" />
+		<cc:attribute name="onComplete" type="java.lang.String" shortDescription="Изпълнява функция при връщане на резултата - подава се името на функцията" />
+		<cc:attribute name="modal" type="java.lang.Boolean" shortDescription="Tърсенето е отворено в модален диалог(true) или не(false)." default="true" />
+		<cc:attribute name="myId" type="java.lang.String" shortDescription="" />
+		<cc:attribute name="registered" type="java.lang.Boolean" shortDescription="Дали да връша само регистрираните обекти" default="false" />
+	
+	</cc:interface>
+
+	<cc:implementation>
+
+		<f:event type="preRenderComponent" listener="#{cc.initOdS(true)}" />
+		<!--  За да се инициализира компонентата-->
+
+		<!-- Разширено търсене на обект на дейност -->
+
+		<p:messages id="mssModal" autoUpdate="true" showDetail="true" />
+		
+		<h:panelGroup id="panelFilterOd" rendered="#{cc.showMe}" onkeypress="if(event.keyCode == 13) {event.preventDefault();  document.getElementById('#{cc.clientId}:btnSearch').click();}">
+
+			<div class="card">
+
+				<div class="p-grid ui-fluid">
+
+					<div class="p-grid p-col-12" jsf:id="searchData"> 						
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2" jsf:rendered="#{cc.odSearch.vid ne null and cc.odSearch.vid eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_OEZ}">
+							<h:outputText value="#{labels['compObektDeinSearch.regNomReglament']}" styleClass="form-label" />
+							<p:inputText id="regNomerReglament" value="#{cc.odSearch.regNom}" />
+						</div>	
+						
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2" jsf:rendered="#{cc.odSearch.vid ne null and cc.odSearch.vid eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_OEZ}">
+							<h:outputText value="#{labels['compObektDeinSearch.regNomStar']}" styleClass="form-label" />
+							<p:inputText id="regNomerStar" value="#{cc.odSearch.regNomerStar}" />
+						</div>
+						<!-- 
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2">
+							<h:outputText value="#{labels['compObektDeinSearch.regNom']}" styleClass="form-label" />
+							<p:inputText id="regNom" value="#{cc.odSearch.regNom}" />
+						</div> -->
+						
+						<div class="#{cc.odSearch.vid ne null and cc.odSearch.vid ne BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_OEZ ? 'p-col-12 p-sm-12 p-md-12 p-lg-10' : 'p-col-12 p-sm-12 p-md-12 p-lg-6'}">
+							<h:outputText value="#{labels['compObektDeinSearch.naimenovanie']}" styleClass="form-label" />
+							<p:inputText id="naimenovanie" value="#{cc.odSearch.naimenovanie}" />
+						</div>						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4">
+							<h:outputText value="#{ui_labels['general.ekatte']}" styleClass="form-label" />
+							<ibg:selectOneModalA id="mestoC" update="#{cc.clientId}:cOblObsh"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+								selectedCode="#{cc.odSearch.ekatte}"
+								emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3"
+								minQueryLength="3" styleAutoComp="" dopInfoAutoComp="true"
+								dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4">
+							<h:outputText value="#{ui_labels['general.ekatteObshObl']}" styleClass="form-label" />
+							<h:panelGroup id="cOblObsh">
+								<p:inputText readonly="true" value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, cc.odSearch.ekatte, cc.lang, now)}" />
+							</h:panelGroup>
+						</div>
+
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4">
+							<h:outputText value="#{ui_labels['general.country']}" styleClass="form-label" />
+							<ibg:selectOneModalA id="cntryC" codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+								selectedCode="#{cc.odSearch.country}"
+								emptyMessage="#{labels['docu.countryEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3"
+								minQueryLength="2" styleAutoComp="" />
+						</div>						
+
+					</div>
+
+				</div>
+
+				<div class="filter-buttons">
+
+					<p:commandButton id="btnSearch" actionListener="#{cc.actionSearchObektDein}" partialSubmit="true"
+						process="@this  #{cc.clientId}:panelFilterOd" update="#{cc.clientId}:panelTblCorr #{cc.clientId}:mssModal"
+						icon="fas fa-search" styleClass="p-mr-3" value="#{ui_labels['general.search']}" />
+					<p:defaultCommand target="btnSearch" />
+
+					<p:commandButton id="btnClear" actionListener="#{cc.actionClearObektDein}" partialSubmit="true"
+						process="@this  #{cc.clientId}:panelFilterOd" update="#{cc.clientId}:panelFilterOd" icon="fas fa-eraser"
+						styleClass="ui-button-warning" value="#{ui_labels['general.clear']}" />
+
+				</div>
+
+			</div>
+
+			<h:panelGroup id="panelTblCorr" layout="block" styleClass="margin-top">
+
+				<h:panelGroup layout="block" styleClass="card">
+
+					<div class="table-toolbar">
+
+						<h:outputText value="#{ui_labels['general.reportResult']}: #{cc.obektDeisnostList.rowCount}" id="result" styleClass="form-label"
+							rendered="#{cc.obektDeisnostList ne null and cc.obektDeisnostList.rowCount gt 0}"/>
+
+					</div>
+
+					<p:dataTable id="tblOdList" var="row" value="#{cc.obektDeisnostList}" lazy="true" rendered="#{cc.obektDeisnostList != null}" 
+						rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" "
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="false" paginator="true"
+						showGridlines="true">
+
+						<f:facet name="{Exporters}">
+
+							<div style="float: left">
+								<h:commandLink id="excel" rendered="#{cc.obektDeisnostList.rowCount le BabhConstants.ROW_LIMITS_REPORTS}">
+									<h:graphicImage library="images" name="excel2.png" />
+									<p:dataExporter type="xls" target="tblOdList" fileName="obektDeisnostList" postProcessor="#{cc.postProcessXLS}" />
+								</h:commandLink>
+								<!-- TODO -->
+								<h:commandLink id="pdf" rendered="#{cc.obektDeisnostList.rowCount le BabhConstants.ROW_LIMITS_REPORTS}">
+									<h:graphicImage library="images" name="pdf.png" />
+									<p:dataExporter type="pdf" target="tblOdList" fileName="obektDeisnostList" encoding="windows-1251"
+										preProcessor="#{cc.preProcessPDF}" options="#{cc.pdfOptions()}" />
+								</h:commandLink>
+							</div>
+							
+						</f:facet>
+
+						<p:column style="text-align: center" width="50" exportable="false" rendered="#{cc.attrs.modal}">
+
+							<p:commandButton id="btnChCorr" rendered="#{cc.attrs.modal}" title="#{ui_labels['general.choise']}"
+								action="#{cc.actionModalSelectOd(row)}" partialSubmit="true"
+								process="#{cc.attrs.update}  #{cc.clientId}:panelFilterOd @this"
+								update="#{cc.attrs.update}  #{cc.clientId}:panelFilterOd"
+								icon="fas fa-hand-point-down" styleClass="btn-normal" />
+						
+						</p:column>
+						
+						<p:column width="180" sortBy="#{row.a14}" rendered="#{cc.attrs.vidOd eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_OEZ}">
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinSearch.regNomReglament']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{row[2]}" />
+						</p:column>
+						
+						<p:column width="120" sortBy="#{row.a13}" rendered="#{cc.attrs.vidOd eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_OEZ}">
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinSearch.regNomStar']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{row[13]}" />
+						</p:column>
+						<ui:remove> <!-- 
+						<p:column width="120" sortBy="#{row.a2}" >
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinSearch.regNom']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{row[2]}" title="id: #{row[0]}" />
+						</p:column> --></ui:remove>
+
+						<p:column sortBy="#{row.a3}"  >
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinSearch.naimenovanie']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{row[3]}" />
+						</p:column>
+						
+						<p:column width="200" sortBy="#{row.a1}"  rendered="#{cc.attrs.vidOd eq null}">
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinSearch.vid']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_TIP_OBEKT, row[1], cc.lang, cc.currentDate)}" />
+						</p:column>
+
+						<p:column width="220" sortBy="#{row.a7}">
+							<f:facet name="header">
+								<h:outputText value="#{ui_labels['general.ekatte']}" style="margin-left:-8px" />
+							</f:facet>
+
+							<h:outputText value="#{row[5]} #{row[6]}" title="#{cc.titleContancts(row[7], row[8], row[9],row[10],row[11])}" />							
+
+							<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_COUNTRIES, row[4], cc.lang, cc.currentDate)}"
+								rendered="#{row[4] ne cc.countryBG}" title="#{cc.titleContancts(row[7], row[8], row[9],row[10],row[11])} " />							
+						</p:column>
+						
+						<p:column width="160" sortBy="#{row.a12}" >
+							<f:facet name="header">
+								<h:outputText value="#{labels['compReg.statusVpisvane']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, row[12], cc.lang, cc.currentDate)}" />
+						</p:column>
+
+						<p:column width="80" rendered="#{cc.attrs.vidOd eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_FURAJI}">
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinostSearch.registered']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{row[2] eq null ? ui_labels['general.ne'] : ui_labels['general.da']}" />
+						</p:column>
+						
+						<p:column width="100" sortBy="#{row.a2}" rendered="#{cc.attrs.vidOd eq BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_FURAJI and cc.attrs.registered}">
+							<f:facet name="header">
+								<h:outputText value="#{labels['compObektDeinostSearch.regN']}" style="margin-left:-8px" />
+							</f:facet>
+							<h:outputText value="#{row[2]}" />
+						</p:column>
+						
+			<ui:remove> <!-- 
+						<p:column width="140" sortBy="#{row.a7}">
+							<f:facet name="header">
+								 <h:outputText value="#{ui_labels['general.ekatteObsh']}" style="margin-left:-8px"/>									  
+							</f:facet>
+				   		    <h:outputText value="#{row[7]}" />	
+						</p:column>
+						
+						<p:column width="140" sortBy="#{row.a8}">
+							<f:facet name="header">
+								 <h:outputText value="#{ui_labels['general.ekatteObl']}" style="margin-left:-8px"/>									  
+							</f:facet>
+				   		    <h:outputText value="#{row[8]}" />	
+						</p:column> --> </ui:remove>
+
+					</p:dataTable>
+
+				</h:panelGroup>
+
+			</h:panelGroup>
+
+		</h:panelGroup>
+
+	</cc:implementation>
+
+</ui:composition>

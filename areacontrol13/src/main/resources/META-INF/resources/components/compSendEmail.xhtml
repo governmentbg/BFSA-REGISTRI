@@ -1,0 +1,33 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+
+	<cc:interface componentType="compSendEmail">
+
+		<cc:attribute name="mailTo" 			    type="java.lang.String" 			shortDescription="Имейла от контактите на заявителя" required="true"  deafult="null" />
+		<cc:attribute name="subject" 				type="java.lang.String" 			shortDescription="Относно" deafult="null" />
+		<cc:attribute name="rendered" 				type="java.lang.Boolean" 			shortDescription="Дали да се вижда компонентата" default="true" />
+
+	</cc:interface>
+
+
+
+	<cc:implementation>
+	
+		<f:event type="preRenderComponent" listener="#{cc.initComp()}" />
+
+		<p:button icon="fas fa fa-envelope"
+			href="mailto:#{cc.attrs.mailTo}?subject=#{cc.attrs.subject}" 
+			value="#{labels['compSendEmail.titleBtn']}"
+			styleClass="ui-button p-mx-2" rendered="#{cc.attrs.rendered}"  
+			target="_blank" />
+
+	</cc:implementation>
+</ui:composition>

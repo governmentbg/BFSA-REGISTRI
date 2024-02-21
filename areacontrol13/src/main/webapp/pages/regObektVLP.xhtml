@@ -1,0 +1,867 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components" >
+
+
+		<h:form id="obektVlpForm">
+			<div class="#{guestPreferences.containerPosition}" jsf:rendered="#{!regObektVLP.access}">
+				Достъп отказан! 
+			</div>
+			<div class="#{guestPreferences.containerPosition}" jsf:rendered="#{regObektVLP.access}">
+
+				<div class="card">
+
+					<h:panelGroup  id="vpTitle"
+						style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+						<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regObektVLP.vpisvane.idRegister, regObektVLP.currentLang, now)}" 
+							styleClass="form-label" />
+						<br />
+						<h:outputText value="#{labels['babhMigr.msgmigr']}" style="color:red" rendered="#{regObektVLP.vpisvane.fromМigr eq 0}"/>
+						
+					</h:panelGroup>
+
+					<p:remoteCommand name="onTabChangeProcess" process="registerTabs @this"/> <ui:remove><!-- без това, при местене между табовете не субмитва данните --></ui:remove>
+
+					<p:tabView id="registerTabs" dynamic="true" cache="true"
+						styleClass="p-mt-4" onTabChange="onTabChangeProcess()">
+
+						<p:ajax event="tabChange" listener="#{regObektVLP.onTabChange}" update="registerTabs" process="registerTabs" partialSubmit="true"/>
+						<!-- ТАБ ОСНОВНИ ДАННИ -->
+						<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+							<p:outputPanel id="mainDataPanel">
+							<p:sticky target="tlbr" margin="125">
+
+								<!-- ТООЛБАР ОСОВНИ ДАННИ-->
+								<p:toolbar id="tlbr" styleClass="p-mb-5">
+
+									<f:facet name="left">
+										<p:commandButton icon="fas fa-save" action="#{regObektVLP.actionSave}"
+											value="#{ui_labels['general.save']}" id="btnSave"
+											partialSubmit="true" 
+											update="registerTabs"
+											oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+											styleClass="p-mr-2" rendered="#{regObektVLP.isView == 0}"
+											disabled="#{regObektVLP.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}"/>
+										
+										<span class="fas fa-ellipsis-v p-mx-2" />
+
+										<ibg:compAccess readonly="#{regObektVLP.isView eq 1}" 
+											    header="Служители с изричен достъп до вписването"
+												rendered="#{regObektVLP.vpisvane.id ne null}" 
+												idObj="#{regObektVLP.vpisvane.id}"
+												infoJournal="#{regObektVLP.vpisvane.licenziant}" 
+												taskInfo="#{regObektVLP.zaiavlVp.taskInfo}"
+												codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" 
+												dateClassif="#{now}"/>
+						
+										<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<p:button id="btnViewZaiav"  title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, regObektVLP.zaiavlVp.docVid, regObektVLP.currentLang, now)}"
+											value="#{labels['registerMainTab.viewZaiav']}"  
+											styleClass="ui-button-secondary p-mr-2" icon="fas fa-eye"
+											href="#{regObektVLP.actionGotoZaiav()}" target="_blank">
+										</p:button>	
+										
+										<p:commandButton rendered="#{regObektVLP.filesList.size() ne 0}"
+												value="#{labels['babhZaiavEdit.upFiles']}"
+												styleClass="ui-button-secondary p-mr-2"
+												icon="fas fa-paperclip" partialSubmit="true"													
+												update="obektVlpForm:panelAttFiles"
+												oncomplete="PF('attFilesVar').show();"  />
+										
+										<p:button 
+												rendered="#{regObektVLP.vpisvane.id ne null and regObektVLP.lastDoc[0] ne null}"
+												value="#{labels['registerMainTab.lastDoc']}"
+												title="#{ui_labels['general.view']}"
+											 	styleClass="ui-button-secondary p-mr-2"
+												icon="fas fa-arrow-left" target="_blank"
+												outcome="#{regObektVLP.actionGotoLastZaiav()}"
+												ajax="false"  />
+												
+									</f:facet>
+
+									<f:facet name="right">
+										
+										<p:fileUpload label="Импорт на eAF XML" rendered="#{regObektVLP.vpisvane.id == null}"
+												uploadButtonTitle="Импорт на eAF XML" allowTypes="/(\.|\/)(xml)$/" update="obektVlpForm"
+												multiple="false"  sequential="true" auto="true" listener="#{regObektVLP.uploadVlpXml}"></p:fileUpload>
+										
+										<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<ibg:compVpisvaneZaiav rendered="#{regObektVLP.referent2.code ne null}" 
+											codeRef="#{regObektVLP.referent2.code}"
+											idVpisvane ="#{regObektVLP.vpisvane.id}"
+											onComplete="PF('vpZaiavVar').hide();" /> 
+										<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<ibg:compSendEmail mailTo="#{regObektVLP.referent2.contactEmail}" 	
+												subject="#{labels['regTargovtsiFuraj.otnosno']} : Заявление за издаване на разрешение за търговия с ВЛП	с рег. номер: #{regObektVLP.vpisvane.regNomZaqvlVpisvane}" 
+													rendered="#{regObektVLP.referent2.contactEmail ne null}"  />
+			
+										<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<h:panelGroup id="pRegInfo">
+											<ibg:compObjAudit id="compJ" idObj="#{regObektVLP.vpisvane.id}"
+												codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+										</h:panelGroup>
+					
+										<span class="fas fa-ellipsis-v p-mx-2" />
+										
+										<p:commandButton icon="fas fa-times" 
+											styleClass="ui-button-danger" action="#{regObektVLP.actionDelete()}"
+											value="#{ui_labels['general.delete']}" partialSubmit="true" 
+											rendered ="#{isView ne 1 and regObektVLP.vpisvane.id ne null and !regObektVLP.ud.limitedAccess}"
+											disabled="#{regObektVLP.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+											<p:confirm header="#{ui_labels['general.comfirmation']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+									</f:facet>
+
+								</p:toolbar>
+
+							</p:sticky>
+
+					
+							<p:divider align="right" type="dashed" style="margin: 0rem; margin-bottom: -15px; margin-top: -20px" >
+								<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: " styleClass="form-label" />
+																	
+								<h:outputText  value="#{regObektVLP.zaiavlVp.rnDoc}" />
+								<h:outputText  value=" / " />
+								<h:outputText  value="#{regObektVLP.zaiavlVp.docDate}" >
+								   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regObektVLP.timeZone}"/>
+								</h:outputText>	 
+								
+								<h:outputText value="  " />
+								
+								<h:outputText value="#{labels['registerMainTab.statusV']}: "
+									styleClass="form-label" />
+								<h:outputText id="statusV"
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regObektVLP.vpisvane.status, regObektVLP.currentLang, null)}" />
+								<h:outputText value="  "	rendered="#{regObektVLP.vpisvane.id ne null}" />
+								<h:outputText id="dateSv"
+									rendered="#{regObektVLP.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+									value="#{regObektVLP.vpisvane.dateStatus}">
+									<f:convertDateTime pattern="dd.MM.yyyy HH:mm:ss"
+										timeZone="#{regObektVLP.timeZone}" />
+								</h:outputText>
+								
+								<!-- Дължима такса -->
+								<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: " styleClass="form-label" rendered="#{regObektVLP.daljimaSuma ne null and regObektVLP.daljimaSuma gt 0}" />
+								<h:outputText value="#{regObektVLP.daljimaSuma}" style="color: red" rendered="#{regObektVLP.daljimaSuma ne null and regObektVLP.daljimaSuma gt 0}" />
+								
+								<!-- УД -->
+								<h:panelGroup  rendered="#{regObektVLP.vpisvane.regNomResult ne null}">
+									<h:outputText value="#{labels['ud.udNomer']}: " styleClass="form-label" />
+									<h:outputText value="#{regObektVLP.vpisvane.regNomResult} / " />
+									<h:outputText value="#{regObektVLP.vpisvane.dateResult}"   >
+										  <f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regObektVLP.timeZone}" />
+									</h:outputText>
+								</h:panelGroup>
+							</p:divider>
+
+				           	<!-- Представляващо лице -->
+							<ibg:refCorrespData id="licеPоdatel" readonly="#{regObektVLP.isView == 1}"
+								binding = "#{regObektVLP.bindingReferent1}"
+							  	refObj="#{regObektVLP.referent1}" 
+								codeRef="#{regObektVLP.referent1.code}"
+								mainDataLabel="#{labels['docu.podatel']}"
+								refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+								saveInComponent="false" 	
+								modal="false"
+								showContacts="false"
+								showRadio="flase" showKorespAdress="false"
+								showBtnClear="true"
+								showKachectvoLice="true"/>
+												
+							<!-- ЗАЯВИТЕЛ -->
+							<ibg:refCorrespData id="liceZaqvitel"  readonly="#{regObektVLP.isView == 1}"
+								 codeRef="#{regObektVLP.referent2.code}"
+								 refObj="#{regObektVLP.referent2}"				 				 
+								 mainDataLabel="Заявител"
+								 saveInComponent="false"
+								 showKorespAdress="true"
+								 regixPermAddress="true"
+								 showDocs="false"
+								 showRadio="false"
+								 showBtnClear="true"
+								 refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}"
+								 vidDoc="#{regObektVLP.zaiavlVp.docVid}"
+								 searchTxt="#{regObektVLP.txtRef2}" 
+								 dateClassif="#{regObektVLP.decodeDate}" btnPostAdress="true"
+								 modal="false"/>		
+								
+								
+							<!-- Притежател на разрешението -->
+							<ibg:refCorrespData id="licePritezatelRaz"  readonly="#{regObektVLP.isView == 1}"
+								 codeRef="#{regObektVLP.referent3.code}"
+								 refObj="#{regObektVLP.referent3}"				 				 
+								 mainDataLabel="Притежател на разрешението"
+								 saveInComponent="false"
+								 showKorespAdress="true"
+								 regixPermAddress="true"
+								 showDocs="false"
+								 showBtnClear="true"
+								 showRadio="false"
+								 refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}"
+								 vidDoc="#{regObektVLP.zaiavlVp.docVid}"
+								 searchTxt="#{regObektVLP.txtRef3}" 
+								 dateClassif="#{regObektVLP.decodeDate}" btnPostAdress="true"
+								 modal="false" english="false" />		
+
+							<!-- ДЕЙНОСТ /ЗА ВСЕКИ РЕГИСТЪР СА РАЗЛИЧНИ.. ВСЕКИ ДОБАВЯ КАКВОТО МУ Е НУЖНО/ -->
+							
+							<!-- 1.  Панел за дейността "Търговия с ветеринарни лекарствени продукти" -->
+							<div jsf:rendered="#{systemData.isActionVisible(regObektVLP.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_VLP_TARGOVIA)}">
+									<div class="title-group p-mt-3">
+										<p:commandLink class="extended-search-toggle expanded"
+											onclick="toggleSection(this, '#obektVlpForm:registerTabs:deinostData1')">
+											<h:outputText value="#{labels['registerMainTab.deinost']}: Търговия с ветеринарни лекарствени продукти " />
+											<i class="fas fa-caret-right"></i>
+										</p:commandLink>
+									</div>
+		
+									<div jsf:id="deinostData1">
+										<div class="p-grid ui-fluid">
+											
+											<div class="p-col-6 ">
+												<h:outputText value="Търговско име на кирилица" styleClass="form-label" />
+												<p:inputText value="#{regObektVLP.vpisvane.vlp.naimenovanieCyr}" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											<div class="p-col-6 ">
+												<h:outputText value="Търговско име на латиница" styleClass="form-label" />
+												<p:inputText value="#{regObektVLP.vpisvane.vlp.naimenovanieLat}" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											<div class="p-col-12 ">
+												<h:outputText value="Фармацевтична форма" styleClass="form-label" />
+													<!-- codeClassif="#{BabhConstants.CODE_CLASSIF_PHARM_FORMI}" -->
+												<ibg:selectManyModalA 
+													codeClassif="#{BabhConstants.CODE_CLASSIF_PHARM_FORMI}"	
+													selectedCodes="#{regObektVLP.selectedFarmFormsList}" minQueryLength="2"
+													selectedClassifs="#{regObektVLP.selectedFarmFormsListSC}" readonly="#{regObektVLP.isView == 1}"
+													compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+											</div>
+											<div class="p-col-6 ">
+												<h:outputText value="Първична опаковка" styleClass="form-label" />
+												<ibg:selectManyModalA 
+													codeClassif="#{BabhConstants.CODE_CLASSIF_PARVICHNA_OPAKOVKA}"
+													selectedCodes="#{regObektVLP.selectOpakovkaList}" minQueryLength="2"
+													selectedClassifs="#{regObektVLP.selectOpakovkaSC}" readonly="#{regObektVLP.isView == 1}"
+													compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+											</div>
+											
+											<div class="p-col-6 ">
+												<h:outputText value="Режим на отпускане" styleClass="form-label" />
+												
+												<ibg:selectOneModalA  codeClassif="#{BabhConstants.CODE_CLASSIF_NACHIN_OTPUSK_VLP}"
+													selectedCode="#{regObektVLP.vpisvane.vlp.rejimOtpuskane}" minQueryLength="3"
+													selectedClassif="#{regObektVLP.selectedRezimOtpuskaneSC}"	readonly="#{regObektVLP.isView == 1}"
+													compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+											</div>
+											<div class="p-col-12 ">
+												<h:outputText value="Количества в първична опаковка" styleClass="form-label" />
+												<p:inputTextarea value="#{regObektVLP.vpisvane.vlp.kolichestvaOpakovka}" rows="4" autoResize="false" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											<div class="p-col-6 ">
+												<h:outputText value="Вид на процедурата за одобряване" styleClass="form-label" />
+												<p:selectOneMenu autoWidth="true" value="#{regObektVLP.vpisvane.vlp.vidProcOdobrenie}" id="selectVidProc" disabled="#{regObektVLP.isView == 1}">
+													<f:selectItems
+														value="#{systemData.getSysClassification(560, now, regObektVLP.currentLang)}"
+														var="vidProc" itemLabel="#{vidProc.tekst}" itemValue="#{vidProc.code}" />
+												</p:selectOneMenu>
+											</div>
+											
+											<div class="p-col-4 ">
+												<h:outputText value="Ветеринарномедицински Анатомо-Терапевтичен Код" styleClass="form-label" />
+												<p:inputText value="#{regObektVLP.vpisvane.vlp.vetMedCode}" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											<div class="p-col-2 ">
+												<h:outputText value="Процедурен Номер" styleClass="form-label" />
+												<p:inputText value="#{regObektVLP.vpisvane.vlp.procNumber}" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											
+											<div class="p-col-6 ">
+												<h:outputText value="Срок на годност" styleClass="form-label" />
+												<p:inputTextarea value="#{regObektVLP.vpisvane.vlp.srok}" rows="4" autoResize="false" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											<div class="p-col-6 ">
+												<h:outputText value="Карентен срок" styleClass="form-label" />
+												<p:inputTextarea value="#{regObektVLP.vpisvane.vlp.karentenSrok}" rows="4" autoResize="false" readonly="#{regObektVLP.isView == 1}"/>
+											</div>
+											
+											<div class="p-col-12 ">
+												<!-- ВИДОВЕ ЖИВОТНИ -->
+												<p:divider align="left">
+													<h:outputText value="Видове животни, за които е предназначен ВЛП" styleClass="form-label" />
+												</p:divider>
+												<div>
+													<ibg:selectManyModalA readonly="#{regObektVLP.isView == 1}" 
+																codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIV_ES}"
+																selectedCodes="#{regObektVLP.selectedVidJivotniList}" minQueryLength="2"
+																selectedClassifs="#{regObektVLP.selectedVidJivotniListSC}"
+																compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+															
+													</div>
+											</div>
+											</div> <!-- krai <p:grid> -->
+													<p:divider align="left">
+														<h:outputText value="Начин на прилагане" styleClass="form-label" />
+													</p:divider>
+													<div>
+													<div >
+														<p:commandButton id="btnAddNachin"
+															value="#{ui_labels['general.add']}" icon="fas fa-plus"
+															styleClass="ui-button-success p-ml-2" 	rendered="#{regObektVLP.isView == 0}"
+															process="@this" update="obektVlpForm:modalNP"
+															action="#{regObektVLP.addNachin()}" 
+															partialSubmit="true"  
+															oncomplete="PF('mNP').show();">
+														</p:commandButton>
+													</div>
+													<p:dataTable id="tblNachin" var="row" lazy="true" widgetVar="tblNachin"
+														rowIndexVar="idx" styleClass="p-mt-1"
+														value="#{regObektVLP.vpisvane.vlp.vlpPrilagane}"
+														emptyMessage="#{ui_labels['general.norows']}" rows="5"
+														sortMode="single" reflow="true"
+														paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+														rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+														paginatorAlwaysVisible="false" paginator="true"
+														showGridlines="true">
+	
+														<p:column width="30" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+															<h:outputText value="#{idx + 1}" />
+														</p:column>
+														
+														<p:column width="30" exportable="false">
+															<p:commandButton id="btnEditSubstance2" title="Редактиране на Начин на прилагане"
+																icon="fas fa-edit" rendered="#{regObektVLP.isView == 0}"
+																styleClass="btn-new"
+																process="@this" update="obektVlpForm:modalNP"
+																action="#{regObektVLP.openModalNachin(idx)}" 
+																partialSubmit="true" 
+																oncomplete="PF('mNP').show();">
+															</p:commandButton>
+															<p:commandButton id="btnEditSubstanceView" title="Разгеждане на Начин на прилагане"
+																icon="fas fa-eye" rendered="#{regObektVLP.isView == 1}"
+																styleClass="btn-new"
+																process="@this" update="obektVlpForm:modalNP"
+																action="#{regObektVLP.openModalNachin(idx)}" 
+																partialSubmit="true" 
+																oncomplete="PF('mNP').show();">
+															</p:commandButton>
+														</p:column>
+														
+														<p:column headerText="Начин" width="200">
+															<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_NACHIN_PRILAGANE, row.codeNachin, regObektVLP.currentLang, now)}" />
+														</p:column>
+						
+														<p:column headerText="#{labels['targovtsiFuraj.jivotni']}">
+															<h:outputText id="vidoveJivotni" value="#{row.vidoveJivotniForNachin}" />
+														</p:column>
+											
+														<p:column exportable="false" width="35">
+															<p:commandButton icon="fas fa-trash" partialSubmit="true"
+																process="@this @form"				rendered="#{regObektVLP.isView == 0}"
+																update="@this obektVlpForm:registerTabs:tblNachin"
+																styleClass="ui-button-danger"
+																title="#{ui_labels['general.delete']}"
+																action="#{regObektVLP.actionDeleteNachin(row)}">
+																<p:confirm header="#{ui_labels['general.comfirmation']}"
+																	message="#{beanMessages['general.confirmDeleteMsg']}"
+																	icon="fas fa-exclamation-triangle" />
+															</p:commandButton>
+														</p:column>
+													</p:dataTable>
+													</div>
+											
+											
+											<p:divider align="left">
+												<h:outputText value="Вещества" styleClass="form-label" />
+											</p:divider>
+											<div>
+												<div>
+													<p:commandButton id="btnAddSubstance"
+														value="#{ui_labels['general.add']}" icon="fas fa-plus"
+														styleClass="ui-button-success p-ml-2"	rendered="#{regObektVLP.isView == 0}"
+														process="@this" update="obektVlpForm:modalS"
+														action="#{regObektVLP.openModalSubstance(null)}" 
+														partialSubmit="true" 
+														oncomplete="PF('modalSubstance').show();">
+													</p:commandButton>
+												</div>
+												<p:dataTable id="tblActiveSubstance" var="rowAS" lazy="true" widgetVar="tblAS"
+													rowIndexVar="idx" styleClass="p-mt-1"
+													value="#{regObektVLP.vpisvane.vlp.vlpVeshtva}"
+													emptyMessage="#{ui_labels['general.norows']}" rows="5"
+													sortMode="single" reflow="true"
+													paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+													rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+													paginatorAlwaysVisible="false" paginator="true"
+													showGridlines="true">
+
+													<p:column width="30" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+														<h:outputText value="#{idx + 1}" />
+													</p:column>
+					
+													<p:column width="30" exportable="false">
+														<p:commandButton id="btnEditSubstance" title="Редактиране на сусбстанция"
+															icon="fas fa-edit"	rendered="#{regObektVLP.isView == 0}"
+															styleClass="btn-new"
+															process="@this" update="obektVlpForm:modalS"
+															action="#{regObektVLP.openModalSubstance(idx)}" 
+															partialSubmit="true" 
+															oncomplete="PF('modalSubstance').show();">
+														</p:commandButton>
+														<p:commandButton id="btnEditSubstanceView" title="Разгеждане на сусбстанция"
+															icon="fas fa-eye"	rendered="#{regObektVLP.isView == 1}"
+															styleClass="btn-new"
+															process="@this" update="obektVlpForm:modalS"
+															action="#{regObektVLP.openModalSubstance(idx)}" 
+															partialSubmit="true" 
+															oncomplete="PF('modalSubstance').show();">
+														</p:commandButton>
+													</p:column>
+										
+													<p:column headerText="Тип" width="200">
+														<h:outputText value="#{systemData.decodeItem(568, rowAS.type, regObektVLP.currentLang, now)}" />
+													</p:column>
+													<p:column headerText="Вид вещество" width="*">
+														<h:outputText value="#{rowAS.vidIdentifier.name}" />														
+													</p:column>
+													<p:column headerText="Количество" width="100">
+														<h:outputText value="#{rowAS.quantity}" />														
+													</p:column>
+													<p:column headerText="Единица мярка" width="100">
+														<h:outputText value="#{rowAS.measurement}" />														
+													</p:column>
+													<p:column headerText="Стандарт / монография" width="100">
+														<h:outputText value="#{rowAS.standart}" />														
+													</p:column>
+													
+													
+													<p:column exportable="false" width="35">
+														<p:commandButton icon="fas fa-trash" partialSubmit="true"
+															process="@this @form"	rendered="#{regObektVLP.isView == 0}"
+															update="@this obektVlpForm:registerTabs:tblActiveSubstance"
+															styleClass="ui-button-danger"
+															title="#{ui_labels['general.delete']}"
+															action="#{regObektVLP.actionDeleteActiveSubstance(rowAS)}">
+															<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}"
+																icon="fas fa-exclamation-triangle" />
+														</p:commandButton>
+													</p:column>
+												</p:dataTable>
+											</div>
+											
+											<p:divider align="left">
+												<h:outputText value="Квалифицирани лица" styleClass="form-label" />
+											</p:divider>
+											
+
+											<div>
+												<div>
+													<p:commandButton id="btnAddLice"
+														value="#{ui_labels['general.add']}" icon="fas fa-plus"
+														styleClass="ui-button-success p-ml-2"	rendered="#{regObektVLP.isView == 0}"
+														process="@this" update="obektVlpForm:modalLica"
+														action="#{regObektVLP.openModalLice(null)}" 
+														partialSubmit="true" 
+														oncomplete="PF('modalLice').show();">
+													</p:commandButton>
+												</div>
+																
+												<p:dataTable id="tblLica" var="rowLice" lazy="true" widgetVar="tblLica"
+													rowIndexVar="idx" styleClass="p-mt-1"
+													value="#{regObektVLP.vpisvane.vlp.vlpLice}"
+													emptyMessage="#{ui_labels['general.norows']}" rows="10"
+													sortMode="single" reflow="true"
+													paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+													rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+													paginatorAlwaysVisible="false" paginator="true"
+													showGridlines="true">
+
+													<p:column width="30" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+														<h:outputText value="#{idx + 1}" />
+													</p:column>
+					
+													<p:column width="30" exportable="false">
+														<p:commandButton id="btnEditSubstance3" title="Редактиране на лице"
+															icon="fas fa-edit"		rendered="#{regObektVLP.isView == 0}"
+															styleClass="btn-new"
+															process="@this" update="obektVlpForm:modalLica"
+															action="#{regObektVLP.openModalLice(idx)}" 
+															partialSubmit="true" 
+															oncomplete="PF('modalLice').show();">
+														</p:commandButton>
+														<p:commandButton id="btnEditSubstanceView" title="Разглеждане на лице"
+															icon="fas fa-eye"	rendered="#{regObektVLP.isView == 1}"
+															process="@this" update="obektVlpForm:modalLica"
+															action="#{regObektVLP.openModalLice(idx)}" 
+															partialSubmit="true" 
+															oncomplete="PF('modalLice').show();">
+														</p:commandButton>
+													</p:column>
+										
+													<p:column headerText="Тип" width="300">
+														<h:outputText value="#{systemData.decodeItem(667, rowLice.tip, regObektVLP.currentLang, now)}" />
+													</p:column>
+													
+													<p:column headerText="Наименование" width="300">
+														<h:outputText value="#{rowLice.referent.refName}" />														
+													</p:column>
+													<p:column headerText="#{labels['docu.dopInfo']}" width="300">
+														<h:outputText value="#{rowLice.dopInfo}" />														
+													</p:column>
+													<p:column headerText="Дата от" width="70">
+														<h:outputText value="#{rowLice.dateBeg}"  >
+															<f:convertDateTime pattern="dd.MM.yyyy"/>
+														</h:outputText>														
+													</p:column>
+													<p:column headerText="Дата до" width="70">
+														<h:outputText value="#{rowLice.dateEnd}" >														
+															<f:convertDateTime pattern="dd.MM.yyyy"/>
+														</h:outputText>
+													</p:column>
+													
+													
+													<p:column exportable="false" width="35">
+														<p:commandButton icon="fas fa-trash" partialSubmit="true"
+															process="@this @form"		rendered="#{regObektVLP.isView != 1}"
+															update="@this obektVlpForm:registerTabs:tblLica"
+															styleClass="ui-button-danger"
+															title="#{ui_labels['general.delete']}"
+															action="#{regObektVLP.actionDeleteLice(rowLice)}">
+															<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}"
+																icon="fas fa-exclamation-triangle" />
+														</p:commandButton>
+													</p:column>
+												</p:dataTable>
+											</div>	
+									</div>
+							</div>
+
+							<ui:remove>
+							<!-- TODO от настройките да ли да се вижда или не -->
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#obektVlpForm:registerTabs:udostDoc')">
+									<h:outputText value="Удостоверителен документ" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+							
+							
+							
+							
+							<div jsf:id="udostDoc">
+							<!--  ДА се уточни кои са точно полетата от завлението!! -->
+							<!-- да се изтрият излипните полета от документа -->
+								<div class="p-grid ui-fluid">
+									<div class="p-col-4 ">
+										<h:outputText value="Начин на получаване на удостоверителния документ" styleClass="form-label" />
+									
+										<p:selectOneMenu id="udoc1" value="#{regObektVLP.zaiavlVp.receiveMethod}" disabled="#{regObektVLP.isView == 1}" >
+										     <f:selectItem value="#{null}" itemValue="#{null}"/>
+										     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DVIJ_METHOD, now, regObektVLP.currentLang)}" 
+										         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+									    </p:selectOneMenu>	
+									</div>
+									<div class="p-col-8 ">
+										<h:outputText value="Адрес за получаване" styleClass="form-label" />
+										<p:inputTextarea id="udocAdr" value="#{regObektVLP.zaiavlVp.adressRezultat}"  rows="1" readonly="#{regObektVLP.isView == 1}" />
+									</div>
+									<div class="p-col-12 ">
+										<h:outputText value="Допълнителна информация за начина на получаване" styleClass="form-label" />
+										<p:inputTextarea id="udocDopinfo" value="#{regObektVLP.zaiavlVp.receivedBy}"  rows="1" readonly="#{regObektVLP.isView == 1}"  />
+									</div>
+								</div>
+							</div>
+							</ui:remove>
+							
+							<!-- ДОПЪЛНИТЕЛНА ИНФОРМАЦИЯ ЗА ВПИСВАНЕТО-->
+								<div class="title-group p-mt-3">
+									<p:commandLink class="extended-search-toggle expanded"
+										onclick="toggleSection(this, '#obektVlpForm:registerTabs:vpisvaneInfo')">
+										<h:outputText value="#{labels['reg.dopInfoVpisvane']}" />
+										<i class="fas fa-caret-right"></i>
+									</p:commandLink>
+								</div>
+
+								<div jsf:id="vpisvaneInfo">
+									<div class="p-grid ui-fluid">
+										<div class="p-col-12 ui-fluid">
+											<p:inputTextarea rows="4" autoResize="false"
+												value="#{regObektVLP.vpisvane.info}" readonly="#{regObektVLP.isView == 1}"/>
+										</div>
+									</div>
+								</div>
+							
+							</p:outputPanel>
+						</p:tab>
+
+						<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+						<p:tab title="#{labels['register.danniVpisvaneTab']}" id="danniVpisvaneTab" disabled="#{regObektVLP.vpisvane.id eq null}">
+							<ui:include src="vpStatusData.xhtml" >
+							 	<ui:param name="isView" value="#{regObektVLP.isView}" />
+							 	<ui:param name="clId" value="obektVlpForm:registerTabs" />
+							 </ui:include> 
+						</p:tab>
+
+
+						<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+						<p:tab title="#{labels['register.docsVpisvaneTab']}"
+							id="docVpisvaneTab" 
+							disabled="#{regObektVLP.vpisvane.id eq null}">
+							<ui:include src="vpDocs.xhtml" >
+							 	<ui:param name="isView" value="#{regObektVLP.isView}" />
+							 	<ui:param name="clId" value="obektVlpForm:registerTabs" />
+							 </ui:include> 
+						</p:tab>
+					    <!-- ТАБ Етапи на обработка-->
+						<p:tab title="#{labels['register.etapiVpisvaneTab']}" id="etapiVpisvaneTab" disabled="#{regObektVLP.vpisvane.id eq null}">
+							<ui:include src="procEtaps.xhtml" >
+							 	<ui:param name="clId" value="obektVlpForm:registerTabs" />
+							 </ui:include> 							
+						</p:tab>
+
+					</p:tabView>
+
+				</div>
+			</div>
+		
+		<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ НА вещества -->
+	<h:panelGroup id="addFurajDlg">
+		<p:dialog appendTo="@form" closeOnEscape="true" header="Въвеждане на вещества" fitViewport="true"
+			responsive="true" position="top" dynamic="true" id="modalS" modal="true" widgetVar="modalSubstance">
+
+			<p:messages id="modalMessSubstance" showDetail="true" closable="false"
+				style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div class="container #{guestPreferences.containerPosition}">
+				<div class="p-grid">
+					<div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="Тип вещества" styleClass="form-label" />
+						<p:selectOneMenu autoWidth="false" value="#{regObektVLP.vlpVestvaForModalObject.type}" id="selectSubstanceOneManu" onchange="handleOptionChange()" disabled="#{regObektVLP.isView == 1}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(568, now, regObektVLP.currentLang)}"
+								var="typeSubstance" itemLabel="#{typeSubstance.tekst}" itemValue="#{typeSubstance.code}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-10  ui-fluid">
+						<h:outputText value="Вид" styleClass="form-label" />
+						
+						<ibg:findSubstance id="findSubstanceInVlp"  selectedSubstanceName="#{regObektVLP.vlpVestvaForModalObject.vidIdentifier.name}" 
+								selectedSubstance="#{regObektVLP.vlpVestvaForModalObject.vidIdentifier}" readonly="#{regObektVLP.isView == 1}"/>
+						
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-3 p-lg-3 p-xl-3  ui-fluid">
+						<h:outputText value="Количество"  styleClass="form-label"/>
+						<p:inputText value="#{regObektVLP.vlpVestvaForModalObject.quantity}"  readonly="#{regObektVLP.isView == 1}"/>						
+					</div>							
+					<div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="Мерна единица"  styleClass="form-label"/>
+						<p:inputText value="#{regObektVLP.vlpVestvaForModalObject.measurement}"  readonly="#{regObektVLP.isView == 1}"/>						
+					</div>							
+					<div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="Стандарт"  styleClass="form-label"/>
+						<p:inputText value="#{regObektVLP.vlpVestvaForModalObject.standart}"  readonly="#{regObektVLP.isView == 1}"/>						
+					</div>			
+					
+					<div class="p-col-12 ui-fluid">
+						<h:outputText value="Производители"  id="activeSubstance1" styleClass="form-label" />
+						<p:textEditor widgetVar="editor1" value="#{regObektVLP.vlpVestvaForModalObject.proizvoditel}" height="300" readonly="#{regObektVLP.isView == 1}"/>
+					</div>
+				</div>
+
+			</div>
+			<div class="p-col-12 filter-buttons">
+				<p:commandButton value="#{ui_labels['general.comfirmation']}"
+					styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+					partialSubmit="true" rendered="#{regObektVLP.isView == 0}"
+					process="@this modalS"
+					action="#{regObektVLP.confirmSubstance()}"
+					update="obektVlpForm:registerTabs:tblActiveSubstance" />
+			</div>
+		</p:dialog>
+	</h:panelGroup>
+	
+	<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ НА ЛИЦА -->
+	<h:panelGroup id="addLica">
+		<p:dialog appendTo="@form" header="Квалифицирно лице" fitViewport="true" width="1300" closeOnEscape="true"
+			responsive="true" position="top" dynamic="true" id="modalLica" modal="true" widgetVar="modalLice">
+
+			<p:messages id="modalMessLice" showDetail="true" closable="false" style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+				<div class="p-grid ">
+					<div class="p-col-6  ui-fluid" >
+						<h:outputText value="Тип" styleClass="form-label" />
+						<p:selectOneMenu autoWidth="false" value="#{regObektVLP.vlpLiceForModalObjectProizvoditel.tip}" id="selectLiceTipOneMenu" disabled="#{regObektVLP.isView == 1}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(667, now, regObektVLP.currentLang)}"
+								var="typeLice" itemLabel="#{typeLice.tekst}" itemValue="#{typeLice.code}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-12 ui-fluid">	
+						<h:outputText value="#{labels['docu.dopInfo']}" styleClass="form-label" />
+						<p:inputTextarea value="#{regObektVLP.vlpLiceForModalObjectProizvoditel.dopInfo}" styleClass="form-label" autoResize="false" rows="1" readonly="#{regObektVLP.isView == 1}"/>
+					</div>
+					<div class="p-col-12">	
+							 
+							 <ibg:refCorrespData id="liceZaqvitel2" readonly="#{regObektVLP.isView == 1}" 
+						 	 mainDataLabel="Лице"
+						 	binding="#{regObektVLP.bindingReferent2}"
+							codeRef="#{regObektVLP.vlpLiceForModalObjectProizvoditel.referent.code}"
+							refObj="#{regObektVLP.vlpLiceForModalObjectProizvoditel.referent}"
+							refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}"
+							saveInComponent="false" vidDoc="#{regObektVLP.zaiavlVp.docVid}"		
+							dateClassif="#{now}" modal="false"
+							showDopInfo="false"  showBtnClear="true"
+							showContacts="true" showRadio="false" 
+							showPostAdress="true" showKorespAdress="true" btnPostAdress="true"
+							labelAdr1Nfzl="Административен офис" labelAdr2="Адрес на производство (ако се различава от административния)" />
+							 	
+					</div>	
+					
+					<div class="p-col-2 ui-fluid ">
+						<h:outputText value="Начална дата" styleClass="form-label" />
+						<p:datePicker id="dateBeg" value="#{regObektVLP.vlpLiceForModalObjectProizvoditel.dateBeg}"  pattern="dd.MM.yyyy" showIcon="true" disabled="#{regObektVLP.isView == 1}"/>
+					</div>
+					<div class="p-col-2 ui-fluid">
+						<h:outputText value="Крайна дата" styleClass="form-label" />
+						<p:datePicker id="dateEnd" value="#{regObektVLP.vlpLiceForModalObjectProizvoditel.dateEnd}"  pattern="dd.MM.yyyy" showIcon="true" disabled="#{regObektVLP.isView == 1}"/>
+					</div>		
+
+			<div class="p-col-12 filter-buttons">
+				<p:commandButton value="#{ui_labels['general.comfirmation']}"
+					styleClass="ui-confirmdialog-yes" icon="fas fa-check" rendered="#{regObektVLP.isView == 0}"
+					partialSubmit="true"
+					process="@this modalLica"
+					action="#{regObektVLP.confirmLice()}"
+					update="obektVlpForm:registerTabs:tblLica" />
+			</div>
+				</div>					
+		</p:dialog>
+	</h:panelGroup>
+	
+		<!-- ТЪРСЕНЕ НА КОРЕСПОНДЕНТ -->
+			<h:panelGroup id="dpCorrSearch">
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['docu.titleExtSrchCoresp']}" fitViewport="true"
+					responsive="true" resizable="true" position="top"
+					widgetVar="mCorrS" dynamic="true" id="modalCorrS" modal="true">
+
+					<div class="container #{guestPreferences.containerPosition}">
+						<ibg:refCorrespSearch id="mCorrS1"
+							codeRef="#{regObektVLP.vlpVestvaForModalObject.codeRefProizvoditel}"
+							searchTxt="#{regObektVLP.txtCorresp}"
+							dateClassif="#{now}" modal="true"
+							update="obektVlpForm:refCorrInp"
+							onComplete="PF('mCorrS').hide();  cmdSelectCorresp()" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+			
+			<!-- ТЪРСЕНЕ НА КОРЕСПОНДЕНТ за модален прозорец на Лица за връзка с ВЛП -->
+			<h:panelGroup id="dpCorrSearchLice">
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['docu.titleExtSrchCoresp']}" fitViewport="true"
+					responsive="true" resizable="true" position="top"
+					widgetVar="mCorrLice" dynamic="true" id="modalCorrSLice" modal="true">
+
+					<div class="container #{guestPreferences.containerPosition}">
+						<ibg:refCorrespSearch id="mCorrLice1"
+							codeRef="#{regObektVLP.vlpLiceForModalObjectProizvoditel.referent.code}"
+							searchTxt="#{regObektVLP.vlpLiceForModalObjectProizvoditel.referent.ime}"
+							dateClassif="#{now}" modal="true"
+							update="obektVlpForm:refCorrInpLice"
+							onComplete="PF('mCorrLice').hide();  cmdSelectCorresp()" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+	
+			<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+			<h:panelGroup id="panelAttFiles">
+
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+					responsive="true" resizable="true" position="top"
+					widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+					modal="true">
+
+					<p:messages id="attFilesModalMsg" showDetail="true"
+						closable="false" style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+
+					<div class="container #{guestPreferences.containerPosition}">
+						<ibg:compFileUpload id="filesDoc"
+							listObj="#{regObektVLP.filesList}"
+							codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+							header="true" idObj="#{regObektVLP.zaiavlVp.id}"
+							hideDel="false" view="true" display="list" typeSign="0"
+							saveFirst="true" dragDropSupport="table" 
+							headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+			
+			<!-- 8.	Начин на прилагане - модален прозорец -->
+			<h:panelGroup id="pgNachinPrilagane">
+				<p:dialog appendTo="@form" closeOnEscape="true" header="Начин на прилагане" fitViewport="true" responsive="true" resizable="true" position="top"
+					widgetVar="mNP"  id="modalNP" modal="true">
+					
+					<p:messages id="modalMessNachin" showDetail="true" closable="false" style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+
+					<div class="container #{guestPreferences.containerPosition}">
+						<div class="p-grid ">
+							<div class="p-col-4 ui-fluid ">
+								<h:outputText value="#{labels['dvijenie.nachin']}" styleClass="form-label" />
+								<p:selectOneMenu autoWidth="false" value="#{regObektVLP.vlpPrilagane.codeNachin}" id="nachin" disabled="#{regObektVLP.isView == 1}">
+									<f:selectItems
+											value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_NACHIN_PRILAGANE, now, regObektVLP.currentLang)}"
+											var="nachin" itemLabel="#{nachin.tekst}" itemValue="#{nachin.code}" />
+								</p:selectOneMenu>
+							</div>
+							<div class="p-col-12 ">
+								<h:outputText value="#{labels['targovtsiFuraj.jivotni']}" styleClass="form-label" />
+								<ibg:selectManyModalA 	readonly="#{regObektVLP.isView == 1}"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIV_ES}"
+									selectedCodes="#{regObektVLP.selectedNachinPrilageneList}" minQueryLength="2"
+									selectedClassifs="#{regObektVLP.selectedNachinPrilageneListSC}"
+									compType="2" styleAutoComp="width:100%;" withBtnClear="true" />
+								<!-- ВИДОВЕ ЖИВОТНИ -->
+								</div>
+								<div class="p-col-12 filter-buttons">
+									<p:commandButton value="#{ui_labels['general.comfirmation']}"
+										styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+										partialSubmit="true" rendered="#{regObektVLP.isView == 0}"
+										process="@this modalNP"
+										action="#{regObektVLP.confirmNachin()}"
+										update="obektVlpForm:registerTabs:tblNachin" />
+								</div>	
+							</div>
+						</div>
+
+				</p:dialog>
+			</h:panelGroup>
+	
+	
+		</h:form>
+
+</ui:composition>

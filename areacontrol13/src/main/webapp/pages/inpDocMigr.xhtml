@@ -1,0 +1,204 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(65)}"
+				onPostback="false" />
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+		</f:metadata>
+
+	</ui:define>
+
+
+	<ui:define name="title">#{navTexts['/pages/inpDocMigr.xhtml']}</ui:define>
+	<ui:define name="viewname">
+	
+		<li>#{navTexts['/pages/inpDocMigr.xhtml']}</li>
+	</ui:define>
+  
+	<ui:define name="content">
+
+	<h:form id="formInpZaiavl">
+
+		<div class="#{guestPreferences.containerPosition}">
+				<!-- ОСНОВНИ ДАННИ -->
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#formInpZaiavl:basicData')">
+						<h:outputText value="Нов документ " rendered= "#{!inpDocMigr.visGOTO }" />         
+						<h:outputText value="#{labels['nastrObjInc.basicData']} за документ " rendered="#{inpDocMigr.visGOTO}" />:
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="basicData">
+
+					<div class="p-grid ui-fluid">
+					
+					<!-- Инстанция, работила по вписване (регистратура) -->
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-8 p-xl-8  ui-fluid">
+						<h:outputText value="Инстанция,работила по вписване"
+							styleClass="form-label req" />
+						<h:panelGroup styleClass="input-group">
+						    <p:remoteCommand name="cmdChangeZapDoc" 
+							update="@form"
+							partialSubmit="true" process=" @this"
+							actionListener="#{inpDocMigr.newDoc()}" />
+						
+							<ibg:selectOneModalA id="idRegistr"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_REGISTRATURI}"
+								 selectedCode="#{inpDocMigr.registrId}"
+								emptyMessage=""  
+								saveStateTree="false" withBtnClear="false" compType="2"
+								minQueryLength="3" dopInfoAutoComp="true"  styleAutoComp="width:70%"
+								dopInfoTitleAutoComp="Избор на регистратура"   onComplete="cmdChangeZapDoc()"  />
+						</h:panelGroup>
+					</div>
+					<!-- Вид заявление -->
+					  	<div class="p-col-12 p-sm-12 p-md-12 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="Вид заявление"
+								styleClass="form-label req" />
+							<h:panelGroup styleClass="input-group">
+							  <p:remoteCommand name="cmdChangeZapDoc2" 
+									update="@form"
+									partialSubmit="true" process=" @this"
+									actionListener="#{inpDocMigr.newDoc()}" />
+								<ibg:selectOneModalA id="vidZ"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_VIDOVE_ZAIAVLENIA}"
+									selectedCode="#{inpDocMigr.vidZaiavl}"
+									emptyMessage=""
+									saveStateTree="false" withBtnClear="false" compType="2"
+									minQueryLength="3" dopInfoAutoComp="true"
+									styleAutoComp="width:70%"  update="@this formInpZaiavl:otn"
+									dopInfoTitleAutoComp="Избор на вид заявление"  onComplete="cmdChangeZapDoc2()" />
+							</h:panelGroup>
+						</div>
+					  
+					  <!-- ДЕЛОВОДЕН НОМЕР -->
+					  <div class="p-grid p-col-12 p-lg-12"  >
+						<div class="p-col-12 p-sm-12 p-md-4 p-lg-2   ui-fluid">
+							<h:outputText value="Рег. номер заявление"
+								styleClass="form-label req" />
+							<p:inputText id="delNumDoc" 
+								value="#{inpDocMigr.rnDoc}"  > 
+								<p:ajax event="change" update="@form "
+										listener="#{inpDocMigr.newDoc()}" />
+							</p:inputText>	
+						</div>
+
+						<!-- ДАТА НА ДОКУМЕНТ -->
+						<div class="p-col-12 p-sm-12 p-md-2 p-lg-2   ui-fluid">
+							<h:outputText value="#{labels['docDoc.dateDoc']}"
+								styleClass="form-label req" />
+							<p:datePicker id="dateDoc" pattern="dd.MM.yyyy" mask="true"
+								showIcon="true" locale="bg"
+								value="#{inpDocMigr.dateDoc}" styleClass="form-control">
+									<p:ajax event="change" update="@form "
+										listener="#{inpDocMigr.changeDateDoc}" />
+									<p:ajax event="dateSelect" update="@form"
+										listener="#{inpDocMigr.changeDateDoc}" />
+						     </p:datePicker>
+						</div>
+					</div>
+					<div class="p-grid p-col-12 p-lg-12"  >
+					      <!--ОТНОСНО /-->
+					   
+								<div class="p-col-12 p-sm-12 p-md-12 p-lg-9 p-xl-9  ui-fluid">
+								<h:outputText value="Относно"
+									styleClass="form-label" />
+									<div class="ui-inputgroup">
+									<p:inputText readonly="true" style="width:65%"  id="otn"
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VIDOVE_ZAIAVLENIA, inpDocMigr.vidZaiavl, inpDocMigr.currentLang, null)}" />
+									</div>
+				           </div>  
+			           
+			        </div>
+			    	<div class="p-grid p-col-12 p-lg-12"  >
+					      <!--Заявител-->
+					   		<div class="p-col-12 p-sm-12 p-md-12 p-lg-8 p-xl-8  ui-fluid">
+								<h:outputText value="Заявител" styleClass="form-label" />
+									<div class="ui-inputgroup">
+								
+									<p:inputText readonly="true" style="width:71%"  id="zaivN"
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_REFERENTS, inpDocMigr.codeZaiavitel, inpDocMigr.currentLang, null)}" />
+																	    	
+										<p:commandButton 	id="delZ" 	rendered="#{inpDocMigr.codeZaiavitel != null}"
+										    partialSubmit="true"  title="Изтриване"
+											process=" @this"
+											update=" @form"
+											actionListener="#{inpDocMigr.clearZaiavitel()}"
+											value="x" />   
+											<p:spacer width="1"  rendered="#{inpDocMigr.codeZaiavitel != null}" />			
+									<p:commandButton id="btnNewCorr" title="Избор" 	
+										     actionListener="#{inpDocMigr.newDoc()}"
+											oncomplete = "PF('corrS').show();"
+											partialSubmit="true"
+											process=" @this"
+											update=" @form"
+											icon="fas fa-list-ul "/>
+										
+									</div>		
+							</div>
+					    </div>	
+							
+			       </div>
+			       </div>
+			       			       
+			              <!-- БУТОНИ -->
+					  	<div class="filter-buttons p-col-5">   
+                                
+							<p:commandButton icon="fas fa-search"    rendered="#{!inpDocMigr.visGOTO}"  
+								value="Запис документ" id="btnZaredi"
+								update="formInpZaiavl" partialSubmit="true"
+								process="@form"
+								actionListener="#{inpDocMigr.actionSave()}" />
+								
+							<p:commandButton icon="fas fa-files-o" ajax="false"   style="width:260"  rendered="#{inpDocMigr.visGOTO}"
+								  value="Зареди страница"   title="Зареждане страница за въвеждане на вписване"
+							action="#{inpDocMigr.actionGoToVpisv(inpDocMigr.doc.id, inpDocMigr.doc.docVid)}" />
+							 	
+							<p:spacer width="10"  />		  
+							<p:commandButton icon="fas fa-eraser"
+								value="#{ui_labels['general.clear']}" id="btnClear"
+								update="formInpZaiavl" partialSubmit="true"
+								process="@form"
+								actionListener="#{inpDocMigr.clearAll}"
+								styleClass="ui-button-warning" />
+					
+						 </div>    
+			         			     
+		 </div>	
+    
+		    <h:panelGroup id="corrSearch">	
+			
+				<p:dialog appendTo="@form"  closeOnEscape="true"
+				    header="Търсене за заявител" 
+				    fitViewport="true"	
+				    responsive="true" 
+				    resizable="true"
+				    position="top"	
+					widgetVar="corrS" dynamic="true" id="modalCorrS" 
+					modal="true">
+					<div class="container #{guestPreferences.containerPosition}">		
+						
+						 	<ibg:refCorrespSearch id="mCorrS" myId="mCS"
+								 codeRef="#{inpDocMigr.codeZaiavitel}"
+								  dateClassif="#{inpDocMigr.decodeDate}"
+								 modal="true"
+								 update=" @form"
+								 onComplete = "PF('corrS').hide();"/>
+						
+					</div>
+						
+				</p:dialog>	
+			</h:panelGroup>
+    </h:form>
+	</ui:define>
+</ui:composition>

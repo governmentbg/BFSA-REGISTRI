@@ -1,0 +1,953 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+<!-- ТАБ ОСНОВНИ ДАННИ -->
+<h:panelGroup id="tdPanelOsnDanni" layout="block"  >
+
+	<p:sticky target="tlbr" margin="125">
+
+		<!-- ТООЛБАР ОСОВНИ ДАННИ-->
+		<p:toolbar id="tlbr" styleClass="p-mb-5">
+
+			<f:facet name="left">
+				<p:commandButton icon="fas fa-save" action="#{regOEZ.actionSave}"
+					value="#{ui_labels['general.save']}" id="btnSave" 
+					partialSubmit="true" 
+					process="tdPanelOsnDanni  @this"
+					update="registerTabs"
+					oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+					styleClass="p-mr-2" 
+					rendered ="#{isView ne 1}"
+					disabled="#{regOEZ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}"/>
+				
+				
+				<span class="fas fa-ellipsis-v p-mx-2" />
+						
+				<ibg:compAccess readonly="#{isView eq 1}" 
+					    header="Служители с изричен достъп до вписването"
+						rendered="#{regOEZ.vpisvane.id ne null}" 
+						idObj="#{regOEZ.vpisvane.id}"
+						infoJournal="#{regOEZ.vpisvane.licenziant}" 
+						taskInfo="#{regOEZ.zaiavlVp.taskInfo}"
+						codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" 
+						dateClassif="#{regOEZ.decodeDate}"/>
+				
+				<span class="fas fa-ellipsis-v p-mx-2" />
+				
+				
+				<p:button  value="#{labels['registerMainTab.viewZaiav']}"
+					title="#{ui_labels['general.view']}"
+				 	icon="fas fa-eye" target="_blank"
+				 	styleClass="ui-button-secondary p-mr-2"
+					outcome="#{regOEZ.actionGotoZaiav()}" />
+					
+				<p:commandButton rendered="#{regOEZ.filesList.size() ne 0}"
+					value="#{labels['babhZaiavEdit.upFiles']}"
+					styleClass="ui-button-secondary p-mr-2"
+					icon="fas fa-paperclip" partialSubmit="true"													
+					update="oezForm:registerTabs:panelAttFiles"
+					oncomplete="PF('attFilesVar').show();" />
+					
+				<p:button  rendered="#{regOEZ.vpisvane.id ne null and regOEZ.lastDoc[0] ne null}"
+					value="#{labels['registerMainTab.lastDoc']}"
+					title="#{ui_labels['general.view']}"
+				 	styleClass="ui-button-secondary p-mr-2"
+					icon="fas fa-arrow-left" target="_blank"
+					outcome="#{regOEZ.actionGotoLastZaiav()}" />	
+				
+				
+				
+			</f:facet>
+
+			<f:facet name="right">
+				<ibg:compVpisvaneZaiav rendered="#{regOEZ.referent2.code ne null}" 
+					codeRef="#{regOEZ.referent2.code}"
+					idVpisvane ="#{regOEZ.vpisvane.id}"
+					onComplete="PF('vpZaiavVar').hide();" /> 
+				<span class="fas fa-ellipsis-v p-mx-2" />
+				
+				<ibg:compSendEmail mailTo="#{regOEZ.referent2.contactEmail}" 
+					subject="#{labels['regTargovtsiFuraj.otnosno']} #{regOEZ.vpisvane.regNomZaqvlVpisvane}" 
+					rendered="#{regOEZ.referent2.contactEmail ne null}" />
+					
+				<span class="fas fa-ellipsis-v p-mr-2"/>
+				
+				<h:panelGroup id="pRegInfo">
+					<ibg:compObjAudit id="compJ" idObj="#{regOEZ.vpisvane.id}" codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+				</h:panelGroup>
+
+				<span class="fas fa-ellipsis-v p-mx-2" />
+				
+				<p:commandButton icon="fas fa-times" styleClass="ui-button-danger"
+					value="#{ui_labels['general.delete']}" partialSubmit="true"
+					action="#{regOEZ.actionDelete}"
+					rendered ="#{isView ne 1 and regOEZ.vpisvane.id ne null and !regOEZ.ud.limitedAccess}"
+					disabled="#{regOEZ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+					<p:confirm header="#{ui_labels['general.comfirmation']}"
+						message="#{beanMessages['general.confirmDeleteMsg']}"
+						icon="fas fa-exclamation-triangle" />
+				</p:commandButton>
+			</f:facet>
+
+		</p:toolbar>
+
+	</p:sticky>
+	
+		<p:divider align="right" type="dashed" style="margin: 0rem; margin-top: -15px" >
+			
+			<!-- ЗАЯВЛЕНИЕ ЗА ВПИСВАНЕ -->
+			<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: " styleClass="form-label" />
+			<h:outputText id="regNumZaiav" value="#{regOEZ.vpisvane.regNomZaqvlVpisvane} / " />
+			<h:outputText id="dateZaiav" styleClass="p-mr-2" value="#{regOEZ.vpisvane.dateZaqvlVpis}">
+				<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regOEZ.timeZone}" />
+			</h:outputText>
+			
+			<!-- Статус -->
+			<h:outputText value="#{labels['registerMainTab.statusV']}: " styleClass="form-label" />
+			<h:outputText id="statusV"
+				value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regOEZ.vpisvane.status, regOEZ.currentLang, null)}" />
+			<h:outputText value="   "	rendered="#{regOEZ.vpisvane.id ne null}" />
+			<h:outputText id="dateSv"
+				rendered="#{regOEZ.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}" value="#{regOEZ.vpisvane.dateStatus}">
+				<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regOEZ.timeZone}" />
+			</h:outputText>
+						
+			<!-- Дължима такса -->
+			<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+				styleClass="form-label" rendered="#{regOEZ.daljimaSuma ne null and regOEZ.daljimaSuma gt 0}" />
+			<h:outputText value="#{regOEZ.daljimaSuma}" style="color: red"
+				 rendered="#{regOEZ.daljimaSuma ne null and regOEZ.daljimaSuma gt 0}" />
+				 
+			<!-- УД -->
+			<h:panelGroup  rendered="#{regOEZ.vpisvane.regNomResult ne null}">
+				<h:outputText value="#{labels['ud.udNomer']}: " styleClass="form-label" />
+				<h:outputText value="#{regOEZ.vpisvane.regNomResult} / " />
+				<h:outputText value="#{regOEZ.vpisvane.dateResult}"   >
+					  <f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regOEZ.timeZone}" />
+				</h:outputText>
+			</h:panelGroup>
+		</p:divider>
+
+		<!-- ЗАЯВЛЕНИЕ ЗА ВПИСВАНЕ -->
+		<ui:remove><!-- premesteno e do status-->
+		<div class="title-group p-mt-3">
+			<p:commandLink class="extended-search-toggle expanded" onclick="toggleSection(this, '#oezForm:registerTabs:zaiavlenieData')">
+				<h:outputText value="#{labels['registerMainTab.zaiavVpis']}" />
+				<i class="fas fa-caret-right"></i>
+			</p:commandLink>
+	
+		</div>
+		
+		<div jsf:id="zaiavlenieData">
+			<div class="p-grid ui-fluid">
+			
+				<!-- РЕГ. НОМЕР -->
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-1  ui-fluid">
+					<h:outputText value="#{labels['registerMainTab.regNumZaiav']}" styleClass="form-label" />
+					<p:inputText id="regNumZaiav" readonly="true" value="#{regOEZ.zaiavlVp.rnDoc}"/>
+				</div>
+	
+				<!-- ДАТА НА ЗАЯВЛЕНИЕТО -->
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+					<h:outputText value="#{labels['registerMainTab.dateZaiav']}" styleClass="form-label" />
+					<p:inputText id="dateZaiav" value="#{regOEZ.zaiavlVp.docDate}" readonly="true">
+					   <f:convertDateTime  pattern="dd.MM.yyyy HH:mm:ss" timeZone="#{regOEZ.timeZone}"/>
+					</p:inputText>	 
+				</div>
+	
+			</div>
+		</div>
+		</ui:remove>
+		 
+		<ui:remove>
+		<!-- ЗАЯВИТЕЛ 
+		<ui:include src="/pages/podatelInc.xhtml">
+			<ui:param name="isView" value="0" />
+			<ui:param name="clId" value="oezForm:registerTabs" />
+		</ui:include>	
+		-->							  
+		</ui:remove>
+		
+		<!-- ЗАЯВИТЕЛ /Представляващо лице -->
+		<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}" 
+			  refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+              binding = "#{regOEZ.bindingReferent1}"
+              refObj="#{regOEZ.referent1}" 
+              codeRef="#{regOEZ.referent1.code}"
+              mainDataLabel="#{labels['docu.podatel']}"
+              saveInComponent="false"      
+              modal="false"
+              showContacts="false"
+              showRadio="flase"
+              showBtnClear="true"
+              showKachectvoLice="true"
+              />
+		
+		
+					 	
+		<ibg:refCorrespData id="liceZaqvitel"  readonly="#{isView eq 1}"
+			 codeRef="#{regOEZ.referent2.code}"
+			 refObj="#{regOEZ.referent2}"				 				 
+			 mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+			 saveInComponent="false"
+			 					 
+			 vidDoc="#{regOEZ.zaiavlVp.docVid}"
+			 searchTxt="#{regOEZ.txtRef2}" 
+			 dateClassif="#{regOEZ.decodeDate}"
+			 modal="false"
+			 showDopInfo="false"
+			 showKorespAdress = "true"
+			 showBtnClear="true"
+			 showRadio="true"
+			  regixPermAddress="true"
+			 btnPostAdress="true" />	
+		<ui:remove>	 
+								
+		<ibg:refCorrespData  readonly="#{isView eq 1}"
+			 codeRef="#{regOEZ.referent2.code}"
+			 refObj="#{regOEZ.referent2}"				 				 
+			 mainDataLabel="дд"
+			 saveInComponent="false"
+			 vidDoc="#{regOEZ.zaiavlVp.docVid}"
+			 searchTxt="#{regOEZ.txtRef2}" 
+			 dateClassif="#{regOEZ.decodeDate}"
+			 modal="true"
+			 
+			 showKorespAdress="false"
+			 
+			 showReturnButton="true"
+			 showChujdiLica="#{systemData.isElementVisible(regOEZ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+			 showIdentNom="#{systemData.isElementVisible(regOEZ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL_F)}"
+			 showLnch="#{systemData.isElementVisible(regOEZ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+			 showRadio="false"											 
+			 showDocs="true"
+			 showDatBegEnd="true"
+			 refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+			
+			 update="vlzForm"
+			  regixPermAddress="true"
+			 onComplete="PF('mLekarD').hide();document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"/>
+		</ui:remove>	 
+		<!-- ДЕЙНОСТ /ЗА ВСЕКИ РЕГИСТЪР СА РАЗЛИЧНИ.. ВСЕКИ ДОБАВЯ КАКВОТО МУ Е НУЖНО/ -->
+		
+		<div>
+				
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#oezForm:registerTabs:deinostData1')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: Регистрация на ОЕЗ " />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+	
+				<div jsf:id="deinostData1">
+					<div class="p-grid ui-fluid">
+						
+						<div class="p-col-4 ">
+							<h:outputText value="#{labels['regOez.vid']}" styleClass="form-label req" />
+							
+							<ui:remove>
+							<!-- 
+							<p:selectOneMenu id="vidOez_" value="#{regOEZ.oez.vidOez}">
+							     <f:selectItem value="#{null}" itemValue="#{null}"/>
+							     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_OEZ, now, regOEZ.currentLang)}" 
+							         var="rowVid" itemLabel="#{rowVid.tekst}" itemValue="#{rowVid.code}" />
+						    </p:selectOneMenu>
+						     -->
+						    </ui:remove>
+						    <p:remoteCommand  action="#{regOEZ.actionCheckChangeVidOez}" name="checkChangeVidOez" update="oezForm:registerTabs:panelAskChangeOez"/>
+						    <div jsf:id="divVidOez">
+						    <ibg:selectOneModalA id="vidOez"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_VID_OEZ}"
+									selectedCode="#{regOEZ.vidOez}"
+									emptyMessage="#{ui_labels['general.norows']}"
+									saveStateTree="false" withBtnClear="false" compType="2"
+									minQueryLength="3" dopInfoAutoComp="false" onComplete="checkChangeVidOez()"  readonly ="#{isView eq 1}"/>
+							</div>
+						</div>
+						
+						<div class="p-col-8 ">
+							<h:outputText value="#{labels['regOez.name']}" styleClass="form-label" />
+							<p:inputText  value="#{regOEZ.oez.naimenovanie}"/>
+						</div>
+						
+						<div class="p-col-2 ">
+							<h:outputText value="#{labels['regOez.regNomerReglament']}" styleClass="form-label" />
+							<p:inputText id="nomOEzReglament"  value="#{regOEZ.oez.regNom}"  readonly="true">
+							</p:inputText>
+						</div>
+						
+						<div class="p-col-2 ">
+							<h:outputText value="#{labels['regOez.regNomerStar']}" styleClass="form-label" />
+							<p:inputText id="nomOEzStar"  value="#{regOEZ.oez.regNomerStar}">
+							</p:inputText>
+						</div>
+												
+						<ui:remove> <!-- regNom = regNomerReglament 
+						<div class="p-col-4 ">
+							<h:outputText value="#{labels['regOez.regNomerReglament']}" styleClass="form-label req" />
+							<p:inputText id="nomOEzReglament"  value="#{regOEZ.oez.regNom}" readonly="true">
+							</p:inputText>
+						</div> -->
+						</ui:remove> 
+						
+						<div class="p-col-2 ">
+							<h:outputText value="#{labels['regOez.status']}" styleClass="form-label req" />
+							<p:selectOneMenu id="statusOez" value="#{regOEZ.oez.status}">
+							     <f:selectItem value="#{null}" itemValue="#{null}"/>
+							     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_STATUS_OEZ, now, regOEZ.currentLang)}" 
+							         var="rowVid" itemLabel="#{rowVid.tekst}" itemValue="#{rowVid.code}" />
+						    </p:selectOneMenu>	
+						</div>
+						
+						<div class="p-col-2 ">
+							<h:outputText value="#{labels['regOez.statusDate']}" styleClass="form-label req" />
+							<p:datePicker value="#{regOEZ.oez.statusDate}" disabled="#{isView==1}" id="statusDate"  showIcon="true" mask="true" pattern="dd.MM.yyyy" locale="bg"
+				    				 timeZone="#{regOEZ.timeZone}" >
+							</p:datePicker>
+						</div>
+						
+						<div class="p-col-12 ">
+							<h:outputLabel value="#{labels['regOez.biosigurnos']}" styleClass="form-label p-mr-2" for="bo" />
+							<p:selectBooleanCheckbox id="bo" value="#{regOEZ.biosigurnost}" disabled ="#{isView eq 1}"/>
+						</div>
+					</div>
+					
+					<p:divider align="left">
+						<h:outputText value="#{labels['regOez.mestonahojdenie']}: " styleClass="form-label" />
+					</p:divider>
+					<div class="p-grid">
+							
+							<ui:remove>
+							<!-- ДЪРЖАВА za oez e bg
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['registerMainTab.country']}" styleClass="form-label" />
+								<ibg:selectOneModalA id="countryOez"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+									selectedCode="#{regOEZ.oez.darj}"
+									emptyMessage="#{labels['docu.countryEmptyMsg']}"
+									saveStateTree="false" withBtnClear="true" compType="2"
+									styleAutoComp="width:99%" minQueryLength="2" update="@this"
+									onClear="cmdChCountry()" onComplete="cmdChCountry()" />
+								<p:remoteCommand name="cmdChCountry"
+									update="oezForm:registerTabs:deinostData1"
+									partialSubmit="true"
+									process="@this oezForm:registerTabs:deinostData1"
+									actionListener="#{regOEZ.actionChangeCountry()}" />
+
+							</div> -->
+							</ui:remove>
+							
+							<!-- НАСЕЛЕНО МЯСТО -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['registerMainTab.city']}" styleClass="form-label req" />
+								<ibg:selectOneModalA id="mestoOez" readonly ="#{isView eq 1}"
+									update="oezForm:registerTabs:oblObshOez"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+									selectedCode="#{regOEZ.oez.nasMesto}"
+								    emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+									saveStateTree="false" withBtnClear="true" compType="3"
+									minQueryLength="3" dopInfoAutoComp="true"
+									dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+									 
+							</div>
+
+							<!-- ОБЛАСТ -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['registerMainTab.area']}" styleClass="form-label" />
+								<h:panelGroup id="oblObshOez">
+									<p:inputText readonly="true"
+										value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, regOEZ.oez.nasMesto, regOEZ.currentLang, now)}" />
+								</h:panelGroup>
+							</div>
+
+							<!-- УЛИЦА/СГРАДА -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-4 ui-fluid">
+								<h:outputText value="#{labels['registerMainTab.street']}" styleClass="form-label" />
+								<p:inputText id="streetOez" value="#{regOEZ.oez.address}" />
+							</div>
+							<!-- ПОЩЕНСКИ КОД -->
+							
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['global.postCode']}" styleClass="form-label" />
+								<p:inputText id="postalCodeOez" value="#{regOEZ.oez.postCode}">
+									<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+								</p:inputText>
+							</div>
+					</div>
+					<div class="p-grid">		
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+								<h:outputText value="#{ui_labels['general.phone']}" styleClass="form-label" />
+								<p:inputText id="telefonOez" value="#{regOEZ.oez.tel}">												
+								</p:inputText>
+							</div>
+							
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+								<h:outputText value="#{ui_labels['general.email']}" styleClass="form-label" />
+								<p:inputText id="emailOez" value="#{regOEZ.oez.email}">												
+								</p:inputText>
+							</div>
+							
+					</div>
+					<div class="p-grid">
+						
+						<div  class="p-col-6 p-sm-6 p-md-3 p-lg-2 p-xl-1  ui-fluid">
+								<h:outputText value="#{labels['regOez.gpsN']}" styleClass="form-label req" />
+								<p:inputText id="gpsLat" value="#{regOEZ.oez.gpsLat}" label="#{labels['regOez.gpsN']}"/>												
+						</div>
+						<div  class="p-col-6 p-sm-6 p-md-3 p-lg-2 p-xl-1  ui-fluid">
+								<h:outputText value="#{labels['regOez.gpsE']}" styleClass="form-label req" />
+								<p:inputText id="gpsLon" value="#{regOEZ.oez.gpsLon}" label="#{labels['regOez.gpsE']}"/>												
+						</div>
+						
+						<div  class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['regOez.upi']}" styleClass="form-label" />
+								<p:inputText id="upi" value="#{regOEZ.oez.upi}"/>												
+						</div>
+						<div  class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['regOez.nomerPracel']}" styleClass="form-label" />
+								<p:inputText id="numParcel" value="#{regOEZ.oez.numParcel}"/>												
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['regOez.zemlishte']}" styleClass="form-label" />
+								<p:inputText id="zemliste" value="#{regOEZ.oez.zemliste}"/>												
+						</div>
+					
+						
+						
+						
+					</div>
+					<p:divider align="left">
+								<h:outputText value="#{labels['regOez.nomerKadastyr']}" styleClass="form-label" />
+					</p:divider>
+					<div>
+						<div jsf:rendered ="#{isView ne 1}">
+							<p:inputText id="nomKadast" value="#{regOEZ.nomKadast}" placeholder="Нов номер"/>	
+							<p:commandButton value="#{labels['register.btnAddCommon']}"  icon="fa fa-plus" title="#{labels['register.btnAddCommon']} #{labels['regOez.nomerKadastyr']}"
+							 action="#{regOEZ.actionNewNomKadastar}" styleClass="ui-button-success btn-new p-ml-2" update="nomKadastarTbl nomKadastMess"/>
+							 <p:message for="nomKadast" id="nomKadastMess" showDetail="true" showSummary="true"/>
+							 <br/><br/> 
+						 </div>
+						 <p:dataTable var="myRow" value="#{regOEZ.oez.oezNomKadastar}" id="nomKadastarTbl" rowIndexVar="rkv" showGridlines="true"
+							emptyMessage="#{ui_labels['general.norows']}">
+							
+							<p:column headerText="N:" width="40">
+		                        <h:outputText value="#{rkv+1}"/>
+		                    </p:column>
+		                    <p:column width="*" headerText="#{labels['regOez.nomerKadastyr']}"  >
+                                <h:outputText value="#{myRow.nomer}"/>
+                            </p:column>
+		                     <p:column width="35" rendered ="#{isView ne 1}">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this"
+									update="@this nomKadastarTbl"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{regOEZ.actionDeleteNomKadastarOez(rkv)}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}" icon="fas fa-exclamation-triangle" />
+									
+								</p:commandButton>
+							</p:column>
+		                 </p:dataTable>
+					</div>
+					
+					<p:divider align="left">
+						<h:outputText value="#{labels['regOez.lica']}" styleClass="form-label" />
+						<p:commandButton value="#{labels['regZJ.newLice']}" update="oezForm:registerTabs:modalLicaInner" icon="fa fa-plus" title="#{labels['regZJ.newLice']} "
+								oncomplete="PF('modalLica').show();" action="#{regOEZ.actionNewLice}" styleClass="ui-button-success btn-new p-ml-2"
+								rendered ="#{isView ne 1}"/>
+					</p:divider>
+					<div>
+						
+						<p:dataTable var="myRow" value="#{regOEZ.oez.obektDeinostLica}" id="licaTbl" rowIndexVar="rkv" showGridlines="true"
+							emptyMessage="#{ui_labels['general.norows']}">
+							
+							<p:column headerText="N:" width="40">
+		                        <h:outputText value="#{rkv+1}"/>
+		                    </p:column>
+		                    <p:column  width="40" rendered ="#{isView ne 1}">
+								<p:commandButton id="editLicaOez" title="#{ui_labels['general.edit']}"
+									icon="fas fa-edit"
+									styleClass="btn-new"
+									process="@this" update="oezForm:registerTabs:modalLicaInner"
+									action="#{regOEZ.actionEditLicaOez(rkv)}" 
+									partialSubmit="true" 
+									oncomplete="PF('modalLica').show();">
+								</p:commandButton>
+							</p:column>
+                            <p:column width="200" headerText="#{labels['regOez.tipNaVrazkata']}" >
+			                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VRAZ_LICE_OBEKT, myRow.role, regOEZ.currentLang, now)}"/>
+			                </p:column>
+			                
+			                <p:column width="*" headerText="#{labels['regOez.liceOrg']}"  >
+                                <h:outputText value="#{myRow.referent.refName}"/>
+                            </p:column>
+                            <!-- Датите - кога ще се виждат, aко има повече от едно завление, т.е. има промяна-->
+                            <p:column width="100" headerText="#{ui_labels['general.dataOt']}"  
+                            	rendered="#{regOEZ.vpisvane.id ne null and regOEZ.lastDoc[0] ne null}">
+                                <h:outputText value="#{myRow.dateBeg}">
+                                	<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regOEZ.timeZone}" />
+                                </h:outputText>
+                            </p:column>
+                            <p:column width="100" headerText="#{ui_labels['general.dataDo']}"  
+                            	rendered="#{regOEZ.vpisvane.id ne null and regOEZ.lastDoc[0] ne null}">
+                                <h:outputText value="#{myRow.dateEnd}">
+                                	<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regOEZ.timeZone}" />
+                                </h:outputText>
+                            </p:column>
+                            
+                             <p:column width="35" rendered ="#{isView ne 1}">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this"
+									update="@this licaTbl"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{regOEZ.actionDeleteLiceOez(rkv)}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}" icon="fas fa-exclamation-triangle" />
+									
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+					</div>
+					
+					
+					<p:divider align="left">
+						<h:outputText value="#{labels['regOez.harakt']}" styleClass="form-label" />
+						<p:commandButton value="#{ui_labels['classif.new']}" update="oezForm:registerTabs:modalHaractInner" icon="fa fa-plus" title="#{ui_labels['classif.new']} "
+								oncomplete="PF('modalHaract').show();" action="#{regOEZ.actionNewHarakt}" styleClass="ui-button-success btn-new p-ml-2"
+								rendered ="#{isView ne 1}"/>
+					</p:divider>
+					<div>
+						<p:dataTable var="myRow" value="#{regOEZ.oez.oezHarakt}" id="haraktTbl" rowIndexVar="rkv" showGridlines="true"
+							emptyMessage="#{ui_labels['general.norows']}">
+							
+							<p:column headerText="N:" width="40">
+		                        <h:outputText value="#{rkv+1}"/>
+		                    </p:column>
+							
+                            <p:column width="100" headerText="#{labels['regOez.vidJiv']}" >
+			                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIVOTNO, myRow.vidJivotno, regOEZ.currentLang, now)}"/>
+			                </p:column>
+			                
+							<p:column width="*" headerText="#{labels['regOez.prednaznachenie']}"  >
+			                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PREDNAZNACHENIE_JIV, myRow.prednaznachenie, regOEZ.currentLang, now)}"/>
+			                </p:column>
+			                        
+			                <p:column width="*" headerText="#{labels['regOez.tehnologia']}" >
+			                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_TEHNOLOGIA_OTGLEJDANE, myRow.tehnologia, regOEZ.currentLang, now)}"/>
+			                </p:column>
+                  
+                            <p:column width="100" headerText="#{labels['regOez.kapacitet']}"  >
+                                <h:outputText value="#{myRow.kapacitet}"/>
+                            </p:column>
+                            
+                            <p:column width="*" headerText="#{labels['regOez.kapacitetText']}" >
+                                <h:outputText value="#{myRow.kapacitetText}"/>
+                            </p:column>
+							
+							<p:column width="35" rendered ="#{isView ne 1}">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this"
+									update="@this haraktTbl"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{regOEZ.actionDeleteOezHarakt(rkv)}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}" icon="fas fa-exclamation-triangle" />
+								</p:commandButton>
+							</p:column>
+                        </p:dataTable>
+					</div>
+					
+					
+					<p:divider align="left">
+						<h:outputText value="#{labels['regOez.subOez']}" styleClass="form-label" />
+						<p:commandButton value="#{ui_labels['general.new']}" update="oezForm:registerTabs:modalSubOezInner" icon="fa fa-plus" title="#{ui_labels['general.new']} "
+								oncomplete="PF('modalSubOez').show();" action="#{regOEZ.actionNewSubOez}" styleClass="ui-button-success btn-new p-ml-2"
+								rendered ="#{isView ne 1}"/>
+					</p:divider>
+					<div>
+						
+						<div>
+		           			
+						</div>
+						<p:dataTable var="myRow" value="#{regOEZ.oez.oezSubOez}" id="subOeszTbl"  rowIndexVar="rkv" showGridlines="true"
+							emptyMessage="#{ui_labels['general.norows']}">
+							
+							
+							<p:column headerText="N:" width="40">
+		                        <h:outputText value="#{rkv+1}"/>
+		                    </p:column>
+							<p:column  width="40" rendered ="#{isView ne 1}">
+							<p:commandButton id="editSubOez" title="#{ui_labels['general.edit']}"
+								icon="fas fa-edit"
+								styleClass="btn-new"
+								process="@this" update="oezForm:registerTabs:modalSubOezInner"
+								action="#{regOEZ.actionEditSubOez(rkv)}" 
+								partialSubmit="true" 
+								oncomplete="PF('modalSubOez').show();">
+							</p:commandButton>
+							</p:column>
+							
+                            <p:column width="100"  headerText="#{labels['regOez.subOezNomer']}">
+                                <h:outputText value="#{myRow.nomer}"/>
+                            </p:column>
+                            <p:column width="*"  headerText="#{labels['regOez.subOezName']}">
+                                <h:outputText value="#{myRow.naimenovanie}"/>
+                            </p:column>
+                                                        
+                            <p:column width="100"  headerText="#{labels['regOez.subOezStatus']}">
+                                <h:outputText value="#{myRow.status}"/>
+                            </p:column> 
+                            
+                            <p:column width="100"  headerText="#{labels['regOez.subOezPlosht']}">
+                                <h:outputText value="#{myRow.plosht}"/>
+                            </p:column>
+                            
+							<p:column width="100"  headerText="#{labels['regOez.subOezCikli']}">
+                                <h:outputText value="#{myRow.broiCikli}"/>
+                            </p:column>
+                            
+                            <p:column width="35" rendered ="#{isView ne 1}">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this"
+									update="@this subOeszTbl"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{regOEZ.actionDeleteSubOez(rkv)}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}" icon="fas fa-exclamation-triangle" />
+									
+								</p:commandButton>
+							</p:column>
+                        </p:dataTable>
+					</div>
+					
+					
+					
+				</div>	
+		</div>
+		<ui:remove>
+		<!--
+		<div class="title-group p-mt-3">
+			<p:commandLink class="extended-search-toggle expanded"
+				onclick="toggleSection(this, '#oezForm:registerTabs:udostDoc')">
+				<h:outputText value="Удостоверителен документ" />
+				<i class="fas fa-caret-right"></i>
+			</p:commandLink>
+		</div>
+	
+		<div jsf:id="udostDoc">
+		
+			<div class="p-grid ui-fluid">
+				<div class="p-col-4 ">
+					<h:outputText value="Начин на получаване на удостоверителния документ" styleClass="form-label" />
+				
+					<p:selectOneMenu id="udoc1" value="#{regOEZ.zaiavlVp.receiveMethod}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_NACHIN_POLUCHAVANE, now, regOEZ.currentLang)}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>	
+				</div>
+				<div class="p-col-8 ">
+					<h:outputText value="Адрес за получаване" styleClass="form-label" />
+					<p:inputTextarea id="udocAdr" value="#{regOEZ.zaiavlVp.adressRezultat}"  rows="1" />
+				</div>
+				<div class="p-col-12 ">
+					<h:outputText value="Допълнителна информация за начина на получаване" styleClass="form-label" />
+					<p:inputTextarea id="udocDopinfo" value="#{regOEZ.zaiavlVp.receivedBy}"  rows="1" />
+				</div>
+			</div>
+		</div>
+		-->
+		</ui:remove>
+		<br/>
+		<div class="p-grid ui-fluid p-col-12 ">
+			<h:outputText value="Доп. информация за вписването" styleClass="form-label" />
+			<p:inputTextarea rows="2" value="#{regOEZ.vpisvane.info}"  />
+		</div>  
+	</h:panelGroup>
+	
+	<p:dialog header="#{labels['regOez.lica']}" id="modalLicaId" widgetVar="modalLica" modal="true" resizable="false" width="1200">
+        <p:outputPanel id="modalLicaInner">
+        	<p:messages id="messagesLicaOez" showDetail="true" closable="true">
+        	</p:messages>
+        	<div class="p-grid ">
+				<div class="p-col-3 ui-fluid">
+					<h:outputText value="#{labels['regOez.tipNaVrazkata']}" styleClass="form-label" />
+					<p:selectOneMenu id="liceRole" value="#{regOEZ.oezLica.role}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{regOEZ.tipVrazkaLiceOezClassif}"  var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>
+				</div>
+				<div class="p-col-12">
+					<ibg:refCorrespData id="liceRefOez"  readonly="#{isView eq 1}"
+						 codeRef="#{regOEZ.referentLica.code}"
+						 refObj="#{regOEZ.referentLica}"				 				 
+						 mainDataLabel="#{labels['regOez.liceRefOez']}"
+						 saveInComponent="false"
+						
+						 vidDoc="#{regOEZ.zaiavlVp.docVid}"
+						 searchTxt="#{regOEZ.txtRef2}" 
+						 dateClassif="#{regOEZ.decodeDate}"
+						 modal="false"
+						 showDopInfo="false"
+						 showKorespAdress = "true"
+						 showBtnClear="true"
+			 			 showRadio="true"
+			 			 regixPermAddress="true"
+			 			 showDatBegEnd="#{regOEZ.vpisvane.id ne null and regOEZ.lastDoc[0] ne null}"/>	
+				</div>
+			</div>
+			<br/>
+			<p:divider />
+			<p:commandButton action="#{regOEZ.actionAddLiceOez}" icon="fas fa-plus" styleClass=" ui-button-secondary"  ignoreAutoUpdate="true"
+				 update="licaTbl modalLicaInner"    value="#{ui_labels['general.add']}"/>
+		</p:outputPanel>
+	</p:dialog>
+	
+	<p:dialog header="#{labels['regOez.harakt']}" id="modalHaractId" widgetVar="modalHaract" modal="true" resizable="false" width="1200">
+        <p:outputPanel id="modalHaractInner">
+        	<p:messages id="messagesHarakt" showDetail="true" closable="true">
+        	</p:messages>
+        	<div class="p-grid " jsf:id="panelDataHaractOez">
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.vidJiv']}" styleClass="form-label req" />
+					
+					<p:selectOneMenu id="vidJiv" value="#{regOEZ.harakt.vidJivotno}">
+					    <f:selectItem value="#{null}" itemValue="#{null}"/>
+					    <f:selectItems  value="#{regOEZ.logListOezJiv}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+					    <p:ajax event="change" update="prednaznachenie tehnologia" listener="#{regOEZ.actionChangeJivVidHaract}"/>	
+				    </p:selectOneMenu>	
+				   
+				   <ui:remove><!-- polzwame log spisyk 
+				    <ibg:selectOneModalA id="vidJiv"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIVOTNO}"
+							selectedCode="#{regOEZ.harakt.vidJivotno}"
+						    emptyMessage="#{ui_labels['general.norows']}"
+							saveStateTree="false" withBtnClear="true" compType="2"
+							minQueryLength="3" dopInfoAutoComp="false" />
+					 --></ui:remove>
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.prednaznachenie']}" styleClass="form-label " />
+					<p:selectOneMenu id="prednaznachenie" value="#{regOEZ.harakt.prednaznachenie}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{regOEZ.logListJivPred}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.tehnologia']}" styleClass="form-label " />
+					<p:selectOneMenu id="tehnologia" value="#{regOEZ.harakt.tehnologia}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{regOEZ.logListJivTehno}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.kapacitet']}" styleClass="form-label req" />
+					<p:inputText id="kapacitet" value="#{regOEZ.harakt.kapacitet}"/>	
+				</div>
+				<div class="p-col-8 ui-fluid">
+					<h:outputText value="#{labels['regOez.kapacitetText']}" styleClass="form-label" />
+					<p:inputText id="kapacitetText" value="#{regOEZ.harakt.kapacitetText}"/>	
+				</div>
+			</div>
+			<br/>
+			<p:divider />
+			<p:commandButton action="#{regOEZ.actionAddHarakt}" icon="fas fa-plus" styleClass=" ui-button-secondary" 
+				update="haraktTbl panelDataHaractOez messagesHarakt"  
+				ignoreAutoUpdate="true"
+				value="#{ui_labels['general.add']}"/>
+			
+        </p:outputPanel>
+    </p:dialog>
+    
+    <p:dialog header="#{labels['regOez.subOez']}" id="modalSubOezId" widgetVar="modalSubOez" modal="true" resizable="false" width="1200">
+        <p:outputPanel id="modalSubOezInner">
+        	<p:messages id="messagesSubOez" showDetail="true" closable="true">
+        	</p:messages>
+        	<div class="p-grid"  jsf:id="panelSubOezData">
+        		
+        		<div class="p-col-4 ui-fluid">
+        			<h:outputText value="#{labels['regOez.subOezNomer']}" styleClass="form-label req" />
+					<p:inputText id="subOezNomer" value="#{regOEZ.subOez.nomer}" />
+        		</div>
+        		<div class="p-col-8 ui-fluid">
+        			<h:outputText value="#{labels['regOez.subOezName']}" styleClass="form-label req" />
+					<p:inputText id="subOezName" value="#{regOEZ.subOez.naimenovanie}"/>
+        		</div>
+        		<div class="p-col-3 ui-fluid">
+					<h:outputText value="#{labels['regOez.subOezStatus']}" styleClass="form-label req" />
+					<p:selectOneMenu id="subOezStatus" value="#{regOEZ.subOez.status}">
+					    <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_STATUS_OEZ, now, regOEZ.currentLang)}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>	
+				</div>
+				<div class="p-col-3 ui-fluid">
+					<h:outputText value="#{labels['regOez.subOezStatusDate']}" styleClass="form-label req" />
+					<p:datePicker value="#{regOEZ.subOez.statusDate}" id="subOezStatusDate"  showIcon="true" mask="true" pattern="dd.MM.yyyy" locale="bg"
+		    				 timeZone="#{regOEZ.timeZone}" >
+					</p:datePicker>
+				</div>
+				<div class="p-col-3 ui-fluid">
+					<h:outputText value="#{labels['regOez.subOezPlosht']}" styleClass="form-label" />
+					<p:inputText id="subOezPlosht" value="#{regOEZ.subOez.plosht}"/>
+				</div>
+        		<div class="p-col-3 ui-fluid">
+					<h:outputText value="#{labels['regOez.subOezCikli']}" styleClass="form-label" />
+					<p:inputText id="subOezCikli" value="#{regOEZ.subOez.broiCikli}"/>
+				</div>
+				<div class="p-col-12 ui-fluid">
+					<h:outputText value="#{labels['regOez.subOezDopInfo']}" styleClass="form-label" />
+					<p:inputTextarea id="subOezDopInfo" value="#{regOEZ.subOez.dopInfo}"  rows="2" />
+				</div>
+        	</div>
+        	
+        	<p:divider align="left">
+				<h:outputText value="#{labels['regOez.haraktSub']}" styleClass="form-label" />
+			</p:divider>  
+			    	
+        	<div class="p-grid" jsf:id="panelSubHaraktData">
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.vidJiv']}" styleClass="form-label req" />
+					
+					<p:selectOneMenu id="vidJivSub" value="#{regOEZ.subOezHarakt.vidJivotno}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{regOEZ.logListOezJiv}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+					     <p:ajax event="change" update="prednaznachenieSub tehnologiaSub" listener="#{regOEZ.actionChangeJivVidSubHaract}"/>
+				    </p:selectOneMenu>	
+				   <ui:remove><!--  
+				    <ibg:selectOneModalA id="vidJivSub"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIVOTNO}"
+							selectedCode="#{regOEZ.subOezHarakt.vidJivotno}"
+						    emptyMessage="#{ui_labels['general.norows']}"
+							saveStateTree="false" withBtnClear="true" compType="2"
+							minQueryLength="3" dopInfoAutoComp="false" />
+				     --></ui:remove>
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.prednaznachenie']}" styleClass="form-label " />
+					<p:selectOneMenu id="prednaznachenieSub" value="#{regOEZ.subOezHarakt.prednaznachenie}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{regOEZ.logListJivPredSubOez}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.tehnologia']}" styleClass="form-label" />
+					<p:selectOneMenu id="tehnologiaSub" value="#{regOEZ.subOezHarakt.tehnologia}">
+					     <f:selectItem value="#{null}" itemValue="#{null}"/>
+					     <f:selectItems  value="#{regOEZ.logListJivTehnoSubOez}" 
+					         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+				    </p:selectOneMenu>
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.kapacitet']}" styleClass="form-label req" />
+					<p:inputText id="kapacitetSub" value="#{regOEZ.subOezHarakt.kapacitet}"/>	
+				</div>
+				<div class="p-col-4 ui-fluid">
+					<h:outputText value="#{labels['regOez.kapacitetText']}" styleClass="form-label" />
+					<p:inputText id="kapacitetTextSub" value="#{regOEZ.subOezHarakt.kapacitetText}"/>	
+				</div>
+				<div class="p-col ">
+					<p:commandButton action="#{regOEZ.actionAddSubOezHarakt}" icon="fas fa-plus" styleClass="ui-button-success btn-new"  ignoreAutoUpdate="true"
+				 	update="haraktSubTbl panelSubHaraktData panelSubOezData messagesSubOez"    value="#{ui_labels['general.add']}"/>
+				</div>
+			</div>
+			
+			
+			<p:dataTable var="myRow" value="#{regOEZ.subOez.subOezHaraktList}" id="haraktSubTbl" rowIndexVar="rkv" showGridlines="true"
+				emptyMessage="#{ui_labels['general.norows']}">
+			
+				<p:column headerText="N:" width="40">
+                	<h:outputText value="#{rkv+1}"/>
+                </p:column>
+                
+				<p:column width="100" headerText="#{labels['regOez.vidJiv']}" >
+                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIVOTNO, myRow.vidJivotno, regOEZ.currentLang, now)}"/>
+                </p:column>
+                
+				<p:column width="*" headerText="#{labels['regOez.prednaznachenie']}"  >
+                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PREDNAZNACHENIE_JIV, myRow.prednaznachenie, regOEZ.currentLang, now)}"/>
+                </p:column>
+                        
+                <p:column width="*" headerText="#{labels['regOez.tehnologia']}" >
+                	<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_TEHNOLOGIA_OTGLEJDANE, myRow.tehnologia, regOEZ.currentLang, now)}"/>
+                </p:column>
+                        
+                <p:column width="100" headerText="#{labels['regOez.kapacitet']}"  >
+                	<h:outputText value="#{myRow.kapacitet}"/>
+                </p:column>
+                        
+                <p:column width="*" headerText="#{labels['regOez.kapacitetText']}" >
+                	<h:outputText value="#{myRow.kapacitetText}"/>
+                </p:column>
+				
+				<p:column width="35">
+					<p:commandButton icon="fas fa-trash" partialSubmit="true"
+						process="@this"
+						update="@this haraktSubTbl"
+						styleClass="ui-button-danger"
+						title="#{ui_labels['general.delete']}"
+						action="#{regOEZ.actionDeleteSubOezHarakt(rkv)}">
+						<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['general.confirmDeleteMsg']}" icon="fas fa-exclamation-triangle" />
+					</p:commandButton>
+				</p:column>
+            </p:dataTable>
+			
+			
+			<br/>
+			<p:divider />
+			<p:commandButton action="#{regOEZ.actionAddSubOez}" icon="fas fa-plus" styleClass=" ui-button-secondary" ignoreAutoUpdate="true"
+				 update="subOeszTbl  panelSubHaraktData panelSubOezData  messagesSubOez"    value="#{ui_labels['general.add']}"/>
+        </p:outputPanel>
+    </p:dialog>
+	
+	
+	<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+
+	<p:dialog appendTo="@form" closeOnEscape="true"
+		header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+		responsive="true" resizable="true" position="top"
+		widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+		modal="true">
+		<p:outputPanel id="panelAttFiles">
+		
+		<div class="container #{guestPreferences.containerPosition}">
+			<ibg:compFileUpload id="filesDocZaqv" listObj="#{regOEZ.filesList}"
+				codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+				header="true" idObj="#{regOEZ.zaiavlVp.id}"
+				hideDel="false" view="true" display="list" typeSign="0"
+				saveFirst="true" dragDropSupport="table" 
+				headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+		</div>
+		</p:outputPanel>
+	</p:dialog>
+	
+	<!-- Modalen panel za potvyrvdenie smana na vida oez (показва се когато има въведени характеристики) -->
+	<p:dialog appendTo="@form" closeOnEscape="false"
+		header="#{labels['regOez.changeVidOezTitle']}" fitViewport="true"
+		responsive="true" resizable="false"
+		widgetVar="modalAskChangeOez" dynamic="true"  modal="true">
+		<p:outputPanel id="panelAskChangeOez">
+			<h:outputText value="#{regOEZ.messageChangeVidOez}!" />
+			
+			<br/>
+			<p:divider />
+			<p:commandButton value="#{ui_labels['general.yes']}" update="oezForm:registerTabs:haraktTbl" icon="fa fa-check" 
+								oncomplete="PF('modalAskChangeOez').hide();" action="#{regOEZ.actionChangeYesVidOez}" styleClass="ui-button-success p-mr-2"/>
+							
+			<p:commandButton value="#{ui_labels['general.no']}" update="oezForm:registerTabs:divVidOez" icon="fa fa-times"
+								oncomplete="PF('modalAskChangeOez').hide();" action="#{regOEZ.actionChangeNoVidOez}" styleClass="ui-button-secondary"/>
+		
+		</p:outputPanel>
+	</p:dialog>			
+</ui:composition>

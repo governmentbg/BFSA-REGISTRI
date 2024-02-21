@@ -1,0 +1,2005 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+	<!-- ТАБ ОСНОВНИ ДАННИ -->
+	<h:panelGroup id="tdPanelOsnDanni" layout="block">
+		<p:sticky target="tlbr" margin="125">
+
+			<!-- ТООЛБАР ОСНОВНИ ДАННИ-->
+			<p:toolbar id="tlbr" styleClass="p-mb-5">
+
+				<f:facet name="left">
+			
+					<p:commandButton icon="fas fa-save"
+						action="#{regLicaDeinZJ.actionSave}"
+						value="#{ui_labels['general.save']}" id="btnSave"
+						partialSubmit="true" process="tdPanelOsnDanni  @this"
+						update="registerTabs"
+						oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+						styleClass="p-mr-2" 
+						rendered ="#{isView ne 1}"
+						disabled="#{regLicaDeinZJ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}"/>
+
+					<span class="fas fa-ellipsis-v p-mx-2" />
+
+					<ibg:compAccess readonly="#{isView eq 1}" 
+					    header="Служители с изричен достъп до вписването"
+						rendered="#{regLicaDeinZJ.vpisvane.id ne null}" 
+						idObj="#{regLicaDeinZJ.vpisvane.id}"
+						infoJournal="#{regLicaDeinZJ.vpisvane.licenziant}" 
+						taskInfo="#{regLicaDeinZJ.zaiavlVp.taskInfo}"
+						codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" 
+						dateClassif="#{regLicaDeinZJ.decodeDate}"/>
+
+					<span class="fas fa-ellipsis-v p-mx-2" />
+
+						<p:button 
+							value="#{labels['registerMainTab.viewZaiav']}"
+							title="#{ui_labels['general.view']}"
+						 	icon="fas fa-eye" target="_blank"
+						 	styleClass="ui-button-secondary p-mr-2"
+							outcome="#{regLicaDeinZJ.actionGotoZaiav()}" />
+							
+						<p:commandButton rendered="#{regLicaDeinZJ.filesList.size() ne 0}"
+							value="#{labels['babhZaiavEdit.upFiles']}"
+							styleClass="ui-button-secondary p-mr-2"
+							icon="fas fa-paperclip" partialSubmit="true"													
+							update="dZJForm:registerTabs:panelAttFiles"
+							oncomplete="PF('attFilesVar').show();"  />
+							
+						<p:button 
+							rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}"
+							value="#{labels['registerMainTab.lastDoc']}"
+							title="#{ui_labels['general.view']}"
+						 	styleClass="ui-button-secondary p-mr-2"
+							icon="fas fa-arrow-left" target="_blank"
+							outcome="#{regLicaDeinZJ.actionGotoLastZaiav()}"
+							ajax="false"  />
+	 
+								
+				</f:facet>
+
+				<f:facet name="right">
+					<ibg:compVpisvaneZaiav rendered="#{regLicaDeinZJ.referent2.code ne null}" 
+						codeRef="#{regLicaDeinZJ.referent2.code}"
+						idVpisvane ="#{regLicaDeinZJ.vpisvane.id}"
+						onComplete="PF('vpZaiavVar').hide();" />  		
+					<span class="fas fa-ellipsis-v p-mx-2" />
+					
+					<ibg:compSendEmail mailTo="#{regLicaDeinZJ.referent2.contactEmail}" subject="#{regLicaDeinZJ.subjectEmail()}"  />
+					
+					<span class="fas fa-ellipsis-v p-mx-2" />				
+					<h:panelGroup id="pRegInfo">
+						<ibg:compObjAudit id="compJ" idObj="#{regLicaDeinZJ.vpisvane.id}"
+							codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+					</h:panelGroup>
+
+					<span class="fas fa-ellipsis-v p-mx-2" />
+
+					<p:commandButton icon="fas fa-times" styleClass="ui-button-danger"
+						value="#{ui_labels['general.delete']}" partialSubmit="true"
+						action="#{regLicaDeinZJ.actionDelete}"
+						rendered ="#{isView ne 1 and regLicaDeinZJ.vpisvane.id ne null and !regLicaDeinZJ.ud.limitedAccess}"
+						disabled="#{regLicaDeinZJ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+						<p:confirm header="#{ui_labels['general.comfirmation']}"
+							message="#{beanMessages['general.confirmDeleteMsg']}"
+							icon="fas fa-exclamation-triangle" />
+					</p:commandButton>
+				</f:facet>
+
+			</p:toolbar>
+
+		</p:sticky>
+
+		<p:divider align="right" type="dashed" style="margin: 0rem;">
+			<!-- ЗАЯВЛЕНИЕ ЗА ВПИСВАНЕ -->
+			<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: " styleClass="form-label" />
+			<h:outputText id="regNumZaiav"
+				value="#{regLicaDeinZJ.vpisvane.regNomZaqvlVpisvane} / " />
+			<h:outputText id="dateZaiav" styleClass="p-mr-2"
+				value="#{regLicaDeinZJ.vpisvane.dateZaqvlVpis}">
+				<f:convertDateTime pattern="dd.MM.yyyy"
+					timeZone="#{regLicaDeinZJ.timeZone}" />
+			</h:outputText>
+			
+			<!-- Статус -->
+			<h:outputText value="#{labels['registerMainTab.statusV']}: "
+				styleClass="form-label" />
+			<h:outputText id="statusV"
+				value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regLicaDeinZJ.vpisvane.status, regLicaDeinZJ.currentLang, null)}" />
+			<h:outputText value="   "
+				rendered="#{regLicaDeinZJ.vpisvane.id ne null}" />
+			<h:outputText id="dateSv"
+				rendered="#{regLicaDeinZJ.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+				value="#{regLicaDeinZJ.vpisvane.dateStatus}">
+				<f:convertDateTime pattern="dd.MM.yyyy"
+					timeZone="#{regLicaDeinZJ.timeZone}" />
+			</h:outputText>
+			
+			<!-- Дължима такса -->
+			<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+				styleClass="form-label" rendered="#{regLicaDeinZJ.daljimaSuma ne null and regLicaDeinZJ.daljimaSuma gt 0}" />
+			<h:outputText value="#{regLicaDeinZJ.daljimaSuma}" style="color: red"
+				 rendered="#{regLicaDeinZJ.daljimaSuma ne null and regLicaDeinZJ.daljimaSuma gt 0}" />
+			<!-- УД -->
+			<h:panelGroup  rendered="#{regLicaDeinZJ.vpisvane.regNomResult ne null}">
+				<h:outputText value="#{labels['ud.udNomer']}: "
+					styleClass="form-label" />
+				<h:outputText value="#{regLicaDeinZJ.vpisvane.regNomResult} / " />
+				<h:outputText value="#{regLicaDeinZJ.vpisvane.dateResult}"   >
+					  <f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}" />
+				</h:outputText>
+			</h:panelGroup>
+		</p:divider>
+
+		<!-- Представляващо лице -->
+		<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}" 
+			refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+			binding = "#{regLicaDeinZJ.bindingReferent1}"
+		  	refObj="#{regLicaDeinZJ.referent1}" 
+			codeRef="#{regLicaDeinZJ.referent1.code}"
+			mainDataLabel="#{labels['docu.podatel']}"
+			saveInComponent="false" 	
+			modal="false"
+			showContacts="false"
+			showRadio="flase"
+			showBtnClear="true"
+			showKachectvoLice="true"/>
+
+<!--   ЗАЯВИТЕЛ тук трябва да се подават различни параметри в зависимост от настройките -->
+				
+		<c:if
+			test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PRAVOSPOSOBN_JIV)  }">
+		
+			<ibg:refCorrespData id="liceZaqvitel" readonly="#{isView eq 1}" 
+			 	binding = "#{regLicaDeinZJ.bindingReferent2}"
+				codeRef="#{regLicaDeinZJ.referent2.code}"
+				refObj="#{regLicaDeinZJ.referent2}"
+				mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+				saveInComponent="false" vidDoc="#{regLicaDeinZJ.zaiavlVp.docVid}"		
+				dateClassif="#{regLicaDeinZJ.decodeDate}" modal="false"
+				showDopInfo="false" showKorespAdress="true" 
+				showBtnClear="true"
+				showContacts="true"
+				showRadio="false"
+				showBirthPlace="true"
+				refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+				regixPermAddress="true"
+				englishBirthPlace="true"
+				btnPostAdress="true"/>
+
+		</c:if>
+		
+		
+		
+		<c:if
+			test="#{!systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PRAVOSPOSOBN_JIV) }">
+	
+			<ibg:refCorrespData id="liceZaqvitel" readonly="#{isView eq 1}" 
+			 	binding = "#{regLicaDeinZJ.bindingReferent2}"
+				codeRef="#{regLicaDeinZJ.referent2.code}"
+				refObj="#{regLicaDeinZJ.referent2}"
+				mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+				saveInComponent="false" vidDoc="#{regLicaDeinZJ.zaiavlVp.docVid}"		
+				dateClassif="#{regLicaDeinZJ.decodeDate}" modal="false"
+				showDopInfo="false" showKorespAdress="true" 
+				showBtnClear="true"
+				showContacts="true"
+				showRadio="#{systemData.isElementVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL) and systemData.isElementVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL)}"
+				showBirthPlace="false"
+				onChTypRef="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV) ? 'cmdShowMestorabOpiti()' : ''}"
+				english="#{systemData.isElementVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_LATINICA) ? 'true' : 'false'}"
+				regixPermAddress="true"				
+				btnPostAdress="true"/>
+			
+		</c:if>
+		<!-- ДЕЙНОСТ - ЗА ВСЕКИ РЕГИСТЪР СА РАЗЛИЧНИ -->
+		<c:if
+			test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_JIV)
+				   or systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_ZARPROD)
+				   or systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_SJP)}">
+
+			<!--  Услуга: 272  Панел за дейността "Търговия с животни, зародишни продукти и внос на пратки СЖП и производни продукти по чл. 71 от ЗВД " -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData1')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData1">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12 " jsf:id="dein1">
+							<!-- <h:outputText value="#{labels['reg.predmetDein']}" styleClass="form-label req" />  -->
+							<p:selectManyCheckbox id="vidDein" 
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.vidList}"
+								disabled="#{isView eq 1}">
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_DEIN_TARG_JIV, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+								<p:ajax event="change" update="dein1 dein11" process="@this dein1 dein11" partialSubmit="true" />
+							</p:selectManyCheckbox>
+
+							<p:selectManyCheckbox
+								rendered="#{regLicaDeinZJ.vpisvane.eventDeinJiv.vidList.contains(BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_ZARPROD)}"
+								id="prZar1" layout="responsive" columns="1"
+								value="#{regLicaDeinZJ.predmetDeinJiv}"
+								style="margin-left:200px;"
+								disabled="#{isView eq 1}">
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PREDMET_TARG_JIV, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+							</p:selectManyCheckbox>
+						</div>
+						
+						<div class="p-col-12" jsf:id="dein11">
+							<div class="p-grid ui-fluid" 
+								 jsf:rendered="#{regLicaDeinZJ.vpisvane.eventDeinJiv.vidList.contains(BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_JIV) or
+				   			  		 			 regLicaDeinZJ.vpisvane.eventDeinJiv.vidList.contains(BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_ZARPROD)}">
+				   			  		
+								<ui:include src="regLicaDeinZJinclOez.xhtml">
+									<ui:param name="idd" value="1" />
+									<ui:param name="dTitle" value="ОЕЗ зa дейността" />
+									<ui:param name="lblRegNom" value="#{labels['reg.regNomOez']}" />
+									<ui:param name="one" value="true" />
+								</ui:include>
+							
+							</div>
+							
+							<div class="p-grid ui-fluid" jsf:rendered="#{regLicaDeinZJ.vpisvane.eventDeinJiv.vidList.contains(BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_SJP)}">
+						
+								<div class="p-col-fixed" >
+									<div style="height: 17px"/>
+									<p:commandButton style="width:120px;"
+										styleClass="ui-button-success" icon="fas fa-plus"
+										title="#{labels['regZJ.titleSjp']}" partialSubmit="true"
+										process="@this" action="#{regLicaDeinZJ.actionInpNewVidSjp}"
+										update="@this dZJForm:registerTabs:panelSjpM"
+										value="#{labels['regTargovtsiFuraj.vidSJP']}"
+										rendered="#{isView ne 1}"
+										oncomplete="PF('dlgSJP').show();" />
+											
+								</div>
+								<div class="p-col-4 p-md-4 p-lg-3 p-xl-2" >
+									<h:outputText value="#{labels['regTarvotsiFuraj.kategoriaSJP']}" styleClass="form-label" />
+									<p:selectOneMenu id="catSjp"
+										value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.categoria}"
+										disabled="#{isView eq 1}">
+										<f:selectItem value="#{null}" itemValue="#{null}" />
+										<f:selectItems
+											value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_CATEGORY_SJP, now, regLicaDeinZJ.currentLang)}"
+											var="clPer" itemLabel="#{clPer.tekst}"
+											itemValue="#{clPer.code}" />
+									</p:selectOneMenu>
+								</div>
+								<div class="p-col-12 p-md-5 p-lg-5 p-xl-3" >
+									<h:outputText
+										value="#{labels['regTargovtsiFuraj.sahraneniePratki']}"
+										styleClass="form-label" />
+									<p:selectOneRadio id="sahrPratki"
+										value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.sklad}"
+										disabled="#{isView eq 1}">
+										<f:selectItem itemLabel="#{ui_labels['general.da']}"
+											itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+										<f:selectItem itemLabel="#{ui_labels['general.ne']}"
+											itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+									</p:selectOneRadio>
+								</div>
+								<div class="p-col-12">
+									<p:dataTable id="tblVidSjpList" var="row" showGridlines="true" scrollable="true"
+										value="#{regLicaDeinZJ.predmetDeinSjp}"
+										rowIndexVar="idx" emptyMessage=""
+										rows="10" sortMode="single" reflow="true"
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+										rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+										paginatorAlwaysVisible="false" paginator="true">
+		
+										<p:column width="20" exportable="false"
+											headerText="#{ui_labels['general.No-symbol'] }">
+											<h:outputText value="#{idx + 1}" />
+										</p:column>
+										<p:column width="30" exportable="false">
+											<p:commandButton
+												action="#{regLicaDeinZJ.actionEditVidSjp(row, idx)}"
+												partialSubmit="true"
+												icon="fas fa-edit" styleClass="ui-button-success"
+												title="Промяна данни"
+												rendered="#{isView ne 1}">
+											</p:commandButton>
+										</p:column>
+		
+										<p:column   sortBy="#{row.predmet}"	headerText="#{labels['regTargovtsiFuraj.vidSJP']}">
+											<h:outputText
+												value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP, row.predmet, regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}" />
+										</p:column>
+										<p:column   sortBy="#{row.predmet}"	headerText="#{labels['regTargovtsiFuraj.poiasnenie']}">
+											<h:outputText 	value="#{row.dopInfo}" />
+										</p:column>
+		
+										<p:column width="30" exportable="false">
+		
+											<p:commandButton
+												action="#{regLicaDeinZJ.actionRemoveSjpFromList(row, idx)}"
+												update="dZJForm:registerTabs:tblVidSjpList"
+												icon="fas fa-trash" styleClass="ui-button-danger"
+												title="Премахване на ред"
+												rendered="#{isView ne 1}">
+												<p:confirm header="#{ui_labels['general.delete']}"
+													message="#{beanMessages['general.confirmDeleteMsg']}"
+													icon="fas fa-exclamation-triangle" />
+											</p:commandButton>
+											
+										</p:column>
+		
+									</p:dataTable>
+		
+								</div>
+				   			</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_MEROPRIATIE_JIV)}">
+
+			<!-- Услуга:  480  Панел за дейността "Мероприятия с животни" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData2')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_MEROPRIATIE_JIV, regLicaDeinZJ.currentLang, now)}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData2">
+
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-3">
+							<h:outputText value="#{labels['general.eventType']} " styleClass="form-label req" />
+							<p:selectOneMenu id="eventType"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.meroptiatie}"
+								disabled="#{isView eq 1}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_MEROPRIATIE, now, regLicaDeinZJ.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+						
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['general.dateBeg']}"
+								styleClass="form-label req" />
+							<p:datePicker id="eventBegDate_" mask="true" showIcon="true"
+								locale="bg" pattern="dd.MM.yyyy"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateBegMeropriatie}"
+								rendered="#{isView ne 1}">
+							</p:datePicker>
+							<p:inputText id="eventBegDateV_" rendered="#{isView eq 1}"
+								 	value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateBegMeropriatie}"
+								    readonly="true">
+								   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+							</p:inputText>	
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['general.dateEnd']}"
+								styleClass="form-label req" />
+							<p:datePicker id="eventEndDate_" mask="true" showIcon="true"
+								locale="bg" pattern="dd.MM.yyyy"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateEndMeropriatie}"
+								rendered="#{isView ne 1}">
+							</p:datePicker>
+							<p:inputText id="eventEndDateV_" rendered="#{isView eq 1}"
+								 	value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateEndMeropriatie}"
+								    readonly="true">
+								   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+							</p:inputText>	
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-5">
+							<h:outputText value="#{labels['regIdent.vidJ']}"
+								styleClass="form-label req" />
+							<ibg:selectManyModalA id="typeAnimalM"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIV_MEROPRIATIE}"
+								selectedCodes="#{regLicaDeinZJ.predmetDeinJiv}"
+								readonly="#{isView eq 1}"
+								selectedClassifs="#{regLicaDeinZJ.jivMClassifList}"
+								showRadioBtn="true" minQueryLength="2" compType="4"
+								saveStateTree="true" styleAutoComp="width:100%; " />
+						
+						<ui:remove><!-- 
+						 	<p:selectCheckboxMenu id="typeAnimalM" multiple="true"  emptyLabel="Моля изберете..."
+								filter="false" value="#{regLicaDeinZJ.predmetDeinJiv}">
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_JIV_MEROPRIATIE, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+							</p:selectCheckboxMenu>			
+						 --></ui:remove>	
+										
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="#{labels['dvijenie.adres']}"
+								styleClass="form-label req" />
+							<p:inputTextarea id="address"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.adres}" rows="1" />
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="#{labels['docu.dopInfo']} за мероприятието"
+								styleClass="form-label" />
+							<p:inputTextarea id="dopInfoM"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dopInfo}" rows="1" />
+						</div>
+					</div>
+
+				</div>
+			 
+				<ibg:refCorrespData id="vetLekar" showRadio="false" binding = "#{regLicaDeinZJ.bindingLiceEkip}"
+					codeRef="#{regLicaDeinZJ.liceEkip.code}"
+					refObj="#{regLicaDeinZJ.liceEkip}" mainDataLabel="Ветеринарен лекар за осъществяване на контрол върху здравословното състояние на животните"
+					saveInComponent="false"
+					refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+					dateClassif="#{regLicaDeinZJ.decodeDate}" modal="false"
+					showDopInfo="false" showKorespAdress="false" showBtnClear="true" 
+					showDatBegEnd="false"/>
+	
+			</div>
+		</c:if>
+
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_IDENT) or 
+							 systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PROIZV_IDENT)}">
+
+			<!--  Услуга: 3239  Панел за дейността "Tърговия и производство на идентификатори" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData3')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData3">
+
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12">
+						<!-- 	<h:outputText value="#{labels['reg.predmetDein']}" styleClass="form-label req" /> -->
+							<p:selectManyCheckbox id="vidDein3"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.vidList}"
+								disabled="#{isView eq 1}">
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_DEIN_IDENT_JIV, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+							</p:selectManyCheckbox>							
+						</div>
+					
+						<div class="p-col-12">
+							<h:outputText value="#{labels['regIdent.mostriPismo']}"
+								styleClass="form-label req" />
+							<p:inputText id="celMostri"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.cel}" />
+						</div>
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-12">
+							<p:commandButton style="width:180px"
+								styleClass="ui-button-success" icon="fas fa-plus"
+								title="#{labels['regIdent.izbIdent']}" partialSubmit="true"
+								process="@this" action="#{regLicaDeinZJ.actionInpNewIdent}"
+								update="@this dZJForm:registerTabs:panelIdentif"
+								value="#{labels['regIdent.newIdent']}"
+								oncomplete="PF('dlgIdentif').show();" 
+								rendered="#{isView ne 1}"/>
+
+
+							<p:dataTable id="tblIdentifList" var="row" showGridlines="true" scrollable="true"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.eventDeinJivIdentif}" rowIndexVar="idx"
+								rows="10" emptyMessage=""
+								sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+
+								<p:column width="10" exportable="false"
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+						
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionEditIdent(row, idx)}"
+										partialSubmit="true"
+										update="dZJForm:registerTabs:panelIdentif" icon="fas fa-edit"
+										styleClass="ui-button-success" title="Промяна на данни"
+										rendered="#{isView ne 1}">
+									</p:commandButton>
+								</p:column>
+																
+								<p:column width="350" sortBy="#{row.vidIdentif}"
+									headerText="#{labels['regIdent.vidIdent']}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_IDENT_JIV, row.vidIdentif,regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}" />
+								</p:column>
+
+								<p:column width="180" headerText="#{labels['regIdent.zaVidJ']}" sortBy="#{row.vidJiv}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIVOTNO, row.vidJiv,regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}" />
+								</p:column>
+
+								<p:column headerText="#{labels['regIdent.modelIdent']}">
+									<h:outputText value="#{row.model}" />
+								</p:column>
+								
+								<p:column  width="250" headerText="#{labels['regIdent.kodIdent']}">
+									<h:outputText value="#{row.kod}"/>
+								</p:column>
+								
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionRemoveIdentFromList(row, idx)}"
+										partialSubmit="true"
+										update="dZJForm:registerTabs:tblIdentifList"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="#{labels['regIdent.delIdent']}"
+										rendered="#{isView ne 1}">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="#{labels['regIdent.opisanieD']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="opisCyr3"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.opisanieCyr}"
+								rows="2" />
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+		</c:if>
+
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBEZSHЕТЕНИЕ_JIV)}">
+
+			<!--  Услуга: 274  Панел за дейността "Изплащане на обезщетение за животни" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData4')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBEZSHЕТЕНИЕ_JIV, regLicaDeinZJ.currentLang, now)}"/>
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData4">
+					<div class="p-grid ui-fluid">
+						<ui:include src="regLicaDeinZJinclOez.xhtml">
+							<ui:param name="idd" value="4" />
+							<ui:param name="dTitle" value="ОЕЗ за обезщетение" />
+							<ui:param name="lblRegNom" value="#{labels['reg.regNomOez']}" />
+							<ui:param name="one" value="true" />
+						</ui:include>
+						<div class="p-col-12" jsf:id="sJiv">
+							<h:outputText
+								value="Унищожени животни, СЖП, инвентар"
+								styleClass="form-label p-mr-2 req" />
+							<p:commandButton style="width:220px"
+								styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+								title="#{labels['deinZj.brJivVid']}" partialSubmit="true"
+								process="@this" action="#{regLicaDeinZJ.actionInpNewVidJiv}"
+								update="@this dZJForm:registerTabs:panelBrojJZ dZJForm:registerTabs:sJiv"
+								value="#{labels['deinZj.categObez']}"
+								oncomplete="PF('dlgObezJZ').show();" 
+								rendered="#{isView ne 1}"/>
+							<h:outputText
+								value="Общ брой: #{regLicaDeinZJ.sumaJiv}"
+								rendered="#{regLicaDeinZJ.sumaJiv gt 0}"
+								styleClass="form-label p-mr-2" />
+							
+							
+						</div>
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-6">
+							<p:dataTable id="tblVidJivList" var="row" showGridlines="true" scrollable="true"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.eventDeinJivPredmet}"
+								rowIndexVar="idx" emptyMessage=""
+								rows="10" sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+
+								<p:column width="20" exportable="false"
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionEditVidJiv(row, idx)}"
+										partialSubmit="true" update="dZJForm:registerTabs:panelBrojJZ"
+										icon="fas fa-edit" styleClass="ui-button-success"
+										title="Промяна данни"
+										rendered="#{isView ne 1}">
+									</p:commandButton>
+								</p:column>
+
+								<p:column   sortBy="#{row.predmet}"
+									headerText="#{labels['deinZj.categObez']}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIVOTNO, row.predmet, regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}" />
+								</p:column>
+
+								<p:column width="140" headerText="#{labels['reg.broj']} (унищожени)">
+									<h:outputText value="#{row.broi}" />
+								</p:column>
+								<p:column width="30" exportable="false">
+
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionRemoveJivFromList(row, idx)}"
+										update="dZJForm:registerTabs:sJiv dZJForm:registerTabs:tblVidJivList"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="Премахване на ред"
+										rendered="#{isView ne 1}">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="Допълнителна информация за унищожени животни, СЖП, инвентар"
+								styleClass="form-label" />
+							<p:inputTextarea id="opisCyr41"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dopInfo}"
+								rows="2" />
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="#{labels['regZJ.opisanie']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="opisCyr4"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.opisanieCyr}"
+								rows="2" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV)}">
+
+			<!-- Услуга:  1110  Панел за дейността "Опити с животни" -->
+			<p:remoteCommand name="cmdShowMestorabOpiti"
+				actionListener="#{regLicaDeinZJ.showMestorabOpiti}"
+				update="dZJForm:registerTabs:opitiMestorab"
+				partialSubmit="true"
+				process="@this" />
+			
+			<div class="p-grid"  jsf:id="opitiMestorab"  >		
+				<div class="p-col-12 ui-fluid" jsf:rendered="#{regLicaDeinZJ.referent2.refType eq BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}">
+					<h:outputText value="Месторабота"
+						styleClass="form-label req" />
+					<p:inputTextarea id="mestorabota"
+						value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.adres}" rows="1" />
+				</div>
+			</div>
+			
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData5')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV, regLicaDeinZJ.currentLang, now)}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData5">
+					<div class="p-grid ui-fluid">
+						<ui:include src="regLicaDeinZJinclOez.xhtml">
+							<ui:param name="idd" value="5" />
+							<ui:param name="dTitle" value="ОЕЗ, в което ще се провеждат опитите" />
+							<ui:param name="lblRegNom" value="#{labels['reg.regNomOez']}" />
+							<ui:param name="one" value="true" />
+						</ui:include>
+					
+						<div class="p-col-12">
+							<h:outputText value="#{labels['regZJ.celOpitiJiv']}"
+								styleClass="form-label req" />
+							<p:inputTextarea id="cel"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.cel}" rows="2" />
+						</div>
+
+						<div class="p-col-12" jsf:id="sJiv">
+								<h:outputText
+								value="Общ брой животни за опити: #{regLicaDeinZJ.sumaJiv}"
+								styleClass="form-label p-mr-2" />
+							<p:commandButton style="width:160px"
+								styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+								title="#{labels['deinZj.brJivVid3']}" partialSubmit="true"
+								process="@this" action="#{regLicaDeinZJ.actionInpNewVidJiv}"
+								update="@this dZJForm:registerTabs:panelBrojJZ dZJForm:registerTabs:sJiv"
+								value="#{labels['targovtsiFuraj.vidJivotno']}"
+								oncomplete="PF('dlgObezJZ').show();" 
+								rendered="#{isView ne 1}"/>
+
+							
+						</div>
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-12">
+							<p:dataTable id="tblVidJivList" var="row" showGridlines="true" scrollable="true"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.eventDeinJivPredmet}"
+								rowIndexVar="idx" emptyMessage=""
+								rows="10" sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+
+								<p:column width="20" exportable="false"
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionEditVidJiv(row, idx)}"
+										partialSubmit="true" update="dZJForm:registerTabs:panelBrojJZ"
+										icon="fas fa-edit" styleClass="ui-button-success"
+										title="Промяна данни"
+										rendered="#{isView ne 1}">
+									</p:commandButton>
+								</p:column>
+
+								<p:column width="300"   sortBy="#{row.predmet}"
+									headerText="#{labels['regIdent.vidJ']}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIV_OPIT, row.predmet, regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}" />
+								</p:column>
+
+								<p:column width="50" headerText="#{labels['reg.broj']}">
+									<h:outputText value="#{row.broi}" />
+								</p:column>
+								
+								<p:column   headerText="#{labels['regZJ.dopinfoJiv']}">
+									<h:outputText value="#{row.dopInfo}" />
+								</p:column>
+								
+								<p:column width="30" exportable="false">
+
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionRemoveJivFromList(row, idx)}"
+										update="dZJForm:registerTabs:sJiv dZJForm:registerTabs:tblVidJivList"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="Премахване на ред"
+										rendered="#{isView ne 1}">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+
+						</div>
+
+						<div class="p-col-12" jsf:id="licaOJiv">
+							<h:outputText value="#{labels['deinZj.ekipOpiti']}" styleClass="form-label req p-mr-2" />
+							<p:commandButton style="width:130px"
+								styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+								partialSubmit="true"
+								process="@this" action="#{regLicaDeinZJ.actionInpNewLiceJiv}"
+								update="@this  dZJForm:registerTabs:panelLicaOJiv"
+								value="#{labels['regZJ.newLice']}"
+								oncomplete="PF('dlgOpitJZ').show();"
+								rendered="#{isView ne 1}" />
+						
+						</div>
+
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-12">
+							<p:dataTable id="tblLicaList1" var="row" showGridlines="true" scrollable="true"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.eventDeinJivLice}"
+								rowIndexVar="idx" emptyMessage=""
+								rows="15" sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								rowsPerPageTemplate="15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+							
+								<p:column width="20" exportable="false"
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column> 
+								<p:column width="30"  exportable="false">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionEditLice(row, idx)}"
+										partialSubmit="true"
+										update="dZJForm:registerTabs:panelLicaOJiv" icon="fas fa-edit"
+										styleClass="ui-button-success" title="Промяна на данни"
+										rendered="#{isView ne 1}">
+									</p:commandButton>
+								</p:column>
+								
+								<p:column width="80" headerText="ЕГН/ЛНЧ">
+									<h:outputText value="#{row.referent.fzlEgn}" />
+									<h:outputText value="#{row.referent.fzlLnc}" />
+								</p:column>
+								<p:column width="250" headerText="#{labels['refCorr.nameFL']}">
+									<h:outputText value="#{row.referent.refName}" />
+								</p:column>
+								<p:column headerText="#{labels['reg.roliaLice']}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VRAZ_LICE_JIV_OPIT, row.tipVraz, regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}" />
+								</p:column>
+								<!-- Датите - кога ще се виждат, aко има повече от едно завление, т.е. има промяна-->
+								<p:column width="100"  headerText="#{labels['general.dateBeg']}" 
+									rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}">
+									<h:outputText value="#{row.dateBeg}">	
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+									</h:outputText>										    
+								</p:column>
+								<p:column width="100"  headerText="#{labels['general.dateEnd']}" 
+									rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}">
+									<h:outputText value="#{row.dateEnd}">	
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+									</h:outputText>									    
+								</p:column>	
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionRemoveLiceFromList(row, idx)}"
+										update=" dZJForm:registerTabs:tblLicaList1"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="Премахване на лице от списъка"
+										rendered="#{isView ne 1}">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+
+						</div>
+
+
+						<div class="p-col-12">
+							<h:outputText value="#{labels['regZJ.miastoOpitiJiv']}"
+								styleClass="form-label req" />
+							<p:inputTextarea id="nachin"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.nachinMqstoPridobiv}"
+								rows="2" />
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="#{labels['regZJ.dopinfoOpit']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="opisCyr5"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.opisanieCyr}"
+								rows="4" />
+						</div>
+						<div class="p-col-12">
+							<h:outputText value="Становище"
+								styleClass="form-label" />
+							<p:inputTextarea id="stanovishe"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dopInfo}" rows="4" />
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+		
+		
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PREVOZ_JIV)}">
+
+			<!-- Услуга: 1352  Панел за дейността "превоз на живи животни" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData6')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PREVOZ_JIV, regLicaDeinZJ.currentLang, now)}"/>
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData6">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12 p-md-12 p-lg-6 p-xl-4">
+							<h:outputText value="#{labels['deinZj.typeTravel']}" styleClass="form-label req" />						
+							<p:selectOneRadio id="typeTravel" value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.patuvane}"
+								disabled="#{isView eq 1 or regLicaDeinZJ.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}" >
+								<f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_PATUVANE, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}"
+										var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}" />	
+								<p:ajax  event="click" update="@this"></p:ajax>									
+							</p:selectOneRadio> <ui:remove><!-- може да се променя само, ако не е издаден УД, защото номера на УД зависи от вид на пътуването (започва с 15 - кратко, 0-продължително) --></ui:remove>
+						</div>
+						<div class="p-col-12 p-md-12 p-lg-6 p-xl-5">
+							<h:outputText value="Начин на транспортиране" styleClass="form-label req" />
+							<p:selectOneRadio id="nachinTransport" value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.nachinTransp}" disabled="#{isView eq 1}" >
+								<f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_NACHIN_TRANSP, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}"
+										var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}" />	
+								<p:ajax  event="click" update="@this"></p:ajax>									
+							</p:selectOneRadio>					
+							
+						</div>
+					 	<div class="p-col-12 p-md-12 p-lg-6 p-xl-4" jsf:id="lizPr">
+							<div class="p-grid">
+								<div class="p-col-12">
+									<h:outputText value="#{labels['regZJ.lizMPrevoz']}" styleClass="form-label" />
+								</div>
+								<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+									<h:outputText value="#{labels['reg.nomLiz']}" styleClass="form-label" />
+									<p:inputText id="liznom"
+										value="#{regLicaDeinZJ.refDocNom1}" />
+								</div>
+								<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+									<h:outputText value="#{labels['reg.dateLiz']}" styleClass="form-label" />
+									<p:datePicker id="lizDat" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" 
+												value="#{regLicaDeinZJ.refDocDate1}"  
+												rendered="#{isView ne 1}"/>
+									<p:inputText id="lizDatV" rendered="#{isView eq 1}"
+										 	value="#{regLicaDeinZJ.refDocDate1}"
+										    readonly="true">
+										   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+									</p:inputText>	
+								</div>
+							</div>
+						</div>
+						<div class="p-col-12 p-md-12 p-lg-6 p-xl-4">
+							<div class="p-grid">
+								<div class="p-col-12">
+									<h:outputText value="#{labels['regZJ.lizVPrevoz']}" styleClass="form-label" />
+									<i class="fas fa-info-circle" 
+										title="Посочва се, в случай, че трансп. средство е с максимално допустима маса в натоварено състояние над 3,5 тона"></i> 
+								</div>
+								<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+									<h:outputText value="#{labels['reg.nomLiz']}" styleClass="form-label" />
+									<p:inputText id="liznom2"
+										value="#{regLicaDeinZJ.refDocNom2}" />
+								</div>
+								<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+									<h:outputText value="#{labels['reg.dateLiz']}" styleClass="form-label" />
+									<p:datePicker id="lizDat2" pattern="dd.MM.yyyy" mask="true" showIcon="true" locale="bg" 
+											value="#{regLicaDeinZJ.refDocDate2}"  
+											rendered="#{isView ne 1}"/>
+									<p:inputText id="lizDat2V" rendered="#{isView eq 1}"
+										 	value="#{regLicaDeinZJ.refDocDate2}"
+										    readonly="true">
+										   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+									</p:inputText>	
+								</div>
+							</div>
+						</div>
+						
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-5">
+							<h:outputText value="#{labels['targovtsiFuraj.jivotni']}"
+								styleClass="form-label req" />
+							<ibg:selectManyModalA id="typeAnimalMp"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIVOTNO}"
+								selectedCodes="#{regLicaDeinZJ.predmetDeinJiv}"
+								readonly="#{isView eq 1}"
+								selectedClassifs="#{regLicaDeinZJ.jivMClassifList}"
+								showRadioBtn="true" minQueryLength="2" compType="2"
+								saveStateTree="true" styleAutoComp="width:100%; " />
+						</div>
+						<div class="p-col-12"  jsf:id="mpsData" >
+							<h:outputText value="Рег. номер" styleClass="form-label" rendered="#{isView ne 1}"/>
+							<div class=" ui-inputgroup">
+								<p:inputText id="regNTS" style="width:130px" rendered="#{isView ne 1}"
+									value="#{regLicaDeinZJ.mps.nomer}"
+									oninput="transformText();">
+									<p:ajax event="change" process="@this mpsData" partialSubmit="true"
+										update="@this dZJForm:registerTabs:mpsList"
+										listener="#{regLicaDeinZJ.actionChangeRegN()}" />
+								</p:inputText>
+								<ibg:compMPSsearch rendered="#{isView ne 1}"
+									titleLoadBtn="#{labels['regTargovtsiFuraj.searchMpsCrit']}"
+									selectedMPS="#{regLicaDeinZJ.mps}" 	registered="true"
+									update="dZJForm:registerTabs:mpsList" 
+									codePage="#{BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_LICENZ_REG_MPS_ZJ}"
+									onComplete="PF('mpsSearchVar').hide(); #{regLicaDeinZJ.actionChangeRegN()};" />  
+								<h:outputText value="#{labels['deinZj.mpsprevoz']}" styleClass="form-label p-mx-2 req" />		
+							</div>
+						</div>
+
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-10" jsf:id="mpsList">
+						<p:dataTable id="tblMpsList" var="row" showGridlines="true" scrollable="true"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.mpsDeinost}"
+								rowIndexVar="idx" emptyMessage=""
+								rows="5" sortMode="single" reflow="true" 
+								editable="true"   lazy="true" 
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+	
+								<p:ajax event="rowEdit" partialSubmit="true" process="@this" />
+					 			<p:column width="20" exportable="false">
+									<p:button  rendered="#{row.mpsInfo[11] ne null}"
+										title="#{ui_labels['general.view']}"
+									 	icon="fas fa-eye" target="_blank"
+									 	styleClass="ui-button-primary p-mr-2"
+										outcome="#{regLicaDeinZJ.actionGotoViewMPS(row.mpsInfo[11])}" />
+					
+								</p:column>
+								<p:column width="20" exportable="false" 
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+								
+								<p:column width="140"  sortBy="#{row.mpsInfo[4]}" headerText="#{labels['compMPSsearch.regN']}">
+									<h:outputText value="#{row.mpsInfo[4]}"  />							    
+								</p:column>
+								
+								<p:column width="300" sortBy="#{row.mpsInfo[1]}" headerText="#{labels['compMPSsearch.vidMps']}" >
+								        <h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_MPS, row.mpsInfo[1],regLicaDeinZJ.currentLang,regLicaDeinZJ.decodeDate)}"/>	
+								</p:column>
+								
+								<p:column  width="300" sortBy="#{row.mpsInfo[3]}" headerText="#{labels['compMPSsearch.model']}">
+								        <h:outputText value="#{row.mpsInfo[3]}"/>	
+								</p:column>
+								
+								<p:column  width="100" sortBy="#{row.mpsInfo[10]}" headerText="#{labels['regTargovtsiFuraj.plosht']}">
+								        <h:outputText value="#{row.mpsInfo[10]}"/>	
+								</p:column>
+								<!-- Датите - кога ще се виждат, aко има повече от едно завление, т.е. има промяна-->
+								<p:column style="text-align: center" width="65" exportable="false" 
+										rendered="#{isView ne 1 and regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}">
+										<p:rowEditor cancelTitle="#{ui_labels['general.cancel']}"  
+											saveTitle="#{ui_labels['general.comfirmation']}"
+											editTitle="Корекция на начална и крайна дата" />
+								</p:column>
+								
+								<p:column width="140"  headerText="#{labels['general.dateBeg']}" 
+										rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}">
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{row.dateBeg}">	
+												<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+											</h:outputText>	
+										</f:facet>
+										<f:facet name="input">
+											<p:datePicker mask="true" showIcon="true"
+												locale="bg" pattern="dd.MM.yyyy"
+												value="#{row.dateBeg}">
+											</p:datePicker>
+										</f:facet>
+									</p:cellEditor>														    
+								</p:column>
+								
+								<p:column width="140"  headerText="#{labels['general.dateEnd']}" 
+									rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}">
+									<p:cellEditor>
+										<f:facet name="output">
+											<h:outputText value="#{row.dateEnd}">	
+												<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+											</h:outputText>	
+										</f:facet>
+										<f:facet name="input">
+											<p:datePicker mask="true" showIcon="true"
+												locale="bg" pattern="dd.MM.yyyy"
+												value="#{row.dateEnd}">
+											</p:datePicker>
+										</f:facet>
+									</p:cellEditor>					    
+								</p:column>	
+								
+								<p:column width="30" exportable="false">
+									<p:commandButton rendered="#{isView ne 1}"
+										action="#{regLicaDeinZJ.actionRemoveMPSFromList(row, idx)}"
+										update=" dZJForm:registerTabs:tblMpsList"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="Премахване на ред">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+
+							</p:dataTable>
+						</div>
+							
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+			
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_SAHRANENIE_EMBRIONI)}">
+
+			<!--  Услуга: 2705  Панел за дейността "одобрение на екипи за добив и съхранение на ембриони и яйцеклетки" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData7')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_SAHRANENIE_EMBRIONI, regLicaDeinZJ.currentLang, now)} "/>
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData7">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12">		
+							<h:outputText value="#{labels['deinZj.ekipDobiv']}" styleClass="form-label req p-mr-2" />											
+							<p:commandButton style="width:130px"
+								styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+								partialSubmit="true"
+								process="@this" action="#{regLicaDeinZJ.actionInpNewLiceJiv}"
+								update="@this  dZJForm:registerTabs:panelLicaDJiv"
+								value="#{labels['regZJ.newLice']}"
+								oncomplete="PF('dlgDobivJZ').show();" 
+								rendered="#{isView ne 1}"/>
+
+						</div>					 	
+						
+						<div class="p-col-12"  >  
+							<p:dataTable id="tblLicaList2" var="row" showGridlines="true" scrollable="true"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.eventDeinJivLice}"
+								rowIndexVar="idx"  emptyMessage=""
+								rows="15" sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+								rowsPerPageTemplate="15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true"   >
+ 								<ui:remove><!-- 
+								<p:column width="20" exportable="false"  rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}"
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column> --></ui:remove>
+								<p:column width="30"  exportable="false" rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}"> 
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionEditLice(row, idx)}"
+										partialSubmit="true"
+										update="dZJForm:registerTabs:panelLicaDJiv" icon="fas fa-edit"
+										styleClass="ui-button-success" title="Промяна на данни"
+										rendered="#{isView ne 1}">
+									</p:commandButton>
+								</p:column>								
+								<p:column width="80" headerText="ЕГН/ЛНЧ" rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{row.referent.fzlEgn}" />
+									<h:outputText value="#{row.referent.fzlLnc}" />
+								</p:column>
+								<p:column width="250" headerText="#{labels['refCorr.nameFL']}" rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{row.referent.refName}" />
+								</p:column>
+								<p:column width="180" headerText="#{labels['reg.roliaLice']}"  rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VRAZ_LICE_JIV_EMBR, row.tipVraz, regLicaDeinZJ.currentLang, regLicaDeinZJ.decodeDate)}"/>
+								</p:column>
+								<p:column width="400" headerText="№ / дата на дипломата" rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{regLicaDeinZJ.actionLiceDoc(row, BabhConstants.CODE_ZNACHENIE_VIDDOC_DIPLOMA)}" />
+								</p:column>
+								<p:column width="400" headerText="№ / дата на удостоверение от БВС" rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{regLicaDeinZJ.actionLiceDoc(row, BabhConstants.CODE_ZNACHENIE_VIDDOC_UDOST_BVS)}" />
+								</p:column>
+									<!-- Датите - кога ще се виждат, aко има повече от едно завление, т.е. има промяна-->
+								<p:column width="100"  headerText="#{labels['general.dateBeg']}" 
+									rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null and row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{row.dateBeg}">	
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+									</h:outputText>										    
+								</p:column>
+								<p:column width="100"  headerText="#{labels['general.dateEnd']}" 
+									rendered="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null and row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<h:outputText value="#{row.dateEnd}">	
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+									</h:outputText>									    
+								</p:column>	
+								<p:column width="30" exportable="false" rendered="#{row.tipVraz ne BabhConstants.CODE_ZNACHENIE_VRAZ_SYBITIE_OBEKT_CTRL_LICE}">
+									<p:commandButton
+										action="#{regLicaDeinZJ.actionRemoveLiceFromList(row, idx)}"
+										update=" dZJForm:registerTabs:tblLicaList2"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="Премахване на лице от списъка"
+										rendered="#{isView ne 1}">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+ 
+							</p:dataTable>
+						</div>
+ 						<div class="p-col-12">
+							<h:outputText value="#{labels['regZJ.dopinfoDobiv']}" 
+								styleClass="form-label req" />
+							<p:inputTextarea id="opisCyr6" title="#{labels['regZJ.dopinfoDobivTitle']}" 
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.opisanieCyr}"
+								rows="5" />
+						</div>
+							
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+		
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PRAVOSPOSOBN_JIV)}">
+
+			<!--  Услуга: 768 Панел за дейността "удостоверение за правоспособност на водачи на превозни средства и/или придружители на животни" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData8')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PRAVOSPOSOBN_JIV, regLicaDeinZJ.currentLang, now)}"/>
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData8">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12">
+							<h:outputText value="Отношението на лицето към превоза" styleClass="form-label req" />
+							<p:selectOneRadio id="rolia" value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.liceKachestvo}"  layout="pageDirection"
+								disabled="#{isView eq 1}">
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_OTN_LICE_PREVOZ, now, regLicaDeinZJ.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+							</p:selectOneRadio>
+						</div>
+							
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+  
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBUCHENIE) or
+					  systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_UCHEBNA_PROGR)}">
+			<!-- 3364 -->
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle expanded"
+					onclick="toggleSection(this, '#dZJForm:registerTabs:slcData')">
+					<h:outputText value="#{labels['regTargovtsiFuraj.podvidZaiav']}" class="req" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="slcData" class="p-grid p-ai-stretch vertical-container">				
+				<div class="p-col-12  ui-fluid">
+					<p:selectOneMenu id="vidPodzaiav"  
+						disabled="#{regLicaDeinZJ.vpisvane.id ne null}"
+						value="#{regLicaDeinZJ.zaiavlVp.docPodVid}">
+						<f:selectItem value="#{null}" itemValue="#{null}" />
+						<f:selectItems value="#{regLicaDeinZJ.podZaiavList}"
+							var="classif" itemLabel="#{classif.tekst}"
+							itemValue="#{classif.code}" />
+						<p:ajax event="change" partialSubmit="true" listener="#{regLicaDeinZJ.actionSelectPodVidZaiav}"
+							update="@this u3364 " process="@this"/>
+					</p:selectOneMenu>
+				</div>			
+			</div>
+  		
+  		</c:if>
+  		
+  		<h:panelGroup id="u3364">
+			<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_UCHEBNA_PROGR) or
+						  systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBUCHENIE) or
+						  systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBUCHENIE)}">
+	
+				<!--  Услуга: 3364.1  Панел за дейността "одобрение на учебна програма и учебен план " -->
+				<div jsf:rendered="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_UCHEBNA_PROGR)}">
+					<div class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded "
+							onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData9')">
+							<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_UCHEBNA_PROGR, regLicaDeinZJ.currentLang, now)}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+	
+					<div jsf:id="deinostData9">
+						<div class="p-grid ui-fluid">
+							<div class="p-col-12">
+								<h:outputText value="#{labels['regZJ.spheraObuch']}" styleClass="form-label req" />
+								<p:selectOneRadio id="sfOb" value="#{regLicaDeinZJ.sferaObucenie}"
+									disabled="#{isView eq 1}" >
+									<f:selectItems  value="#{systemData.getSysClassification( BabhConstants.CODE_CLASSIF_SFERI_OBUCHENIE, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}"
+											var="itemSc" itemLabel="#{itemSc.tekst}"
+											itemValue="#{itemSc.code}" />	
+									<p:ajax  event="click" update="@this"></p:ajax>									
+								</p:selectOneRadio>
+								
+							<ui:remove><!-- 	
+								<p:selectManyCheckbox id="sfObM" layout="responsive" columns = "1"
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.obuchenieList}"
+									disabled="#{isView eq 1}">
+									<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}"
+										value="#{systemData.getSysClassification( BabhConstants.CODE_CLASSIF_SFERI_OBUCHENIE, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+								</p:selectManyCheckbox>
+							 --></ui:remove>	
+							</div>
+							<div class="p-col-12">
+								<h:outputText value="#{labels['regOb.opisanieDeinIObTema']}" styleClass="form-label req" />
+								<p:inputTextarea id="opisCyr90"
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.opisanieCyr}"
+									rows="4" />
+							</div>
+							<div class="p-col-12">
+								<h:outputText value="#{labels['regOb.opisanieDeinUchPr']}" styleClass="form-label" />
+								<p:inputTextarea id="opisCyr9"  
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.cel}"
+									rows="5" title="Професионалните направления, професиите, специалностите, степените на професионална квалификация"/>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+	
+		
+				<!--  Услуга: 3364.2 Панел за дейността " Издаване на документи за преминато обучение  " -->
+				<div jsf:rendered="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBUCHENIE)}">
+					<div class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded "
+							onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData11')">
+							<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBUCHENIE, regLicaDeinZJ.currentLang, now)}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+	
+					<div jsf:id="deinostData11">
+						<div class="p-grid ui-fluid">		
+							<div class="p-col-12">
+								<h:outputText value="#{labels['regZJ.spheraObuch']}" styleClass="form-label req" />
+								<p:selectOneRadio id="sfOb1" value="#{regLicaDeinZJ.sferaObucenie}"
+									disabled="#{isView eq 1}">
+									<f:selectItems  value="#{systemData.getSysClassification( BabhConstants.CODE_CLASSIF_SFERI_OBUCHENIE, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}"
+											var="itemSc" itemLabel="#{itemSc.tekst}"
+											itemValue="#{itemSc.code}" />	
+									<p:ajax  event="click" update="@this"></p:ajax>									
+								</p:selectOneRadio>
+							</div>
+							<div class="p-col-12">
+								<h:outputText value="#{labels['regOb.opisanieDeinIObTema']}" styleClass="form-label req" />
+								<p:inputTextarea id="opisCyr91"
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.opisanieCyr}"
+									rows="4" />
+							</div>
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['general.dateBeg']} на обучението"
+									styleClass="form-label req" />
+								<p:datePicker id="eventBegDate2" mask="true" showIcon="true"
+									locale="bg" pattern="dd.MM.yyyy"
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateBegMeropriatie}"
+									rendered="#{isView ne 1}">
+								</p:datePicker>
+								<p:inputText id="eventBegDateV2" rendered="#{isView eq 1}"
+									 	value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateBegMeropriatie}"
+									    readonly="true">
+									   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+								</p:inputText>	
+							</div>
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+								<h:outputText value="#{labels['general.dateEnd']} на обучението"
+									styleClass="form-label req" />
+								<p:datePicker id="eventEndDate2" mask="true" showIcon="true"
+									locale="bg" pattern="dd.MM.yyyy"
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateEndMeropriatie}"
+									rendered="#{isView ne 1}">
+								</p:datePicker>
+								<p:inputText id="eventEndDateV2" rendered="#{isView eq 1}"
+									 	value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.dateEndMeropriatie}"
+									    readonly="true">
+									   <f:convertDateTime  pattern="dd.MM.yyyy" timeZone="#{regLicaDeinZJ.timeZone}"/>
+								</p:inputText>	
+							</div>
+						 
+						 
+						 	<div class="p-col-12" jsf:id="licaOJiv">
+						 		<h:outputText value="#{labels['regZJ.licaObuch']}" styleClass="form-label req p-mr-2" />
+								<p:commandButton style="width:130px"
+									styleClass="ui-button-success  p-mr-2" icon="fas fa-plus"
+									partialSubmit="true"
+									process="@this" action="#{regLicaDeinZJ.actionInpNewLiceJiv}"
+									update="@this  dZJForm:registerTabs:panelLicaObuchZJ"
+									value="#{labels['regZJ.newLice']}"
+									oncomplete="PF('dlgLicaObuchZJ').show();" 
+									rendered="#{isView ne 1}"/>
+	
+								
+							</div>
+	
+							<div class="p-col-12 p-md-12 p-lg-10 p-xl-8">
+							
+								<p:dataTable id="tblLicaList11" var="row" showGridlines="true" scrollable="true"
+									value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.eventDeinJivLice}"
+									rowIndexVar="idx"  emptyMessage=""
+									rows="15" sortMode="single" reflow="true"
+									paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+									rowsPerPageTemplate="15,20,25" paginatorPosition="bottom"
+									paginatorAlwaysVisible="false" paginator="true">
+								 
+									<p:column width="20" exportable="false"
+										headerText="#{ui_labels['general.No-symbol'] }">
+										<h:outputText value="#{idx + 1}" />
+									</p:column> 
+									<p:column width="30"  exportable="false">
+										<p:commandButton
+											action="#{regLicaDeinZJ.actionEditLice(row, idx)}"
+											partialSubmit="true"
+											update="dZJForm:registerTabs:panelLicaObuchZJ" icon="fas fa-edit"
+											styleClass="ui-button-success" title="Промяна на данни"
+											rendered="#{isView ne 1}">
+										</p:commandButton>
+									</p:column>
+									
+									<p:column width="80" headerText="ЕГН/ЛНЧ">
+										<h:outputText value="#{row.referent.fzlEgn}" />
+										<h:outputText value="#{row.referent.fzlLnc}" />
+									</p:column>
+									<p:column width="300" headerText="#{labels['refCorr.nameFL']}">
+										<h:outputText value="#{row.referent.refName}" />
+									</p:column>
+									<p:column width="200"  headerText="#{labels['refCorr.obrazovStepen']}">
+										<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_OBRAZOBANIE, row.referent.obrazovanie, regLicaDeinZJ.currentLang, now)}" />
+									</p:column>
+									<p:column width="30" exportable="false">
+										<p:commandButton
+											action="#{regLicaDeinZJ.actionRemoveLiceFromList(row, idx)}"
+											update=" dZJForm:registerTabs:tblLicaList11"
+											icon="fas fa-trash" styleClass="ui-button-danger"
+											title="Премахване на лице от списъка"
+											rendered="#{isView ne 1}">
+											<p:confirm header="#{ui_labels['general.delete']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+									</p:column>
+	
+								</p:dataTable>
+	
+							</div>
+						</div>
+					</div>
+				
+		
+					<!-- Модален  за лица, преминалите обучение в сферата на животновъдството -->
+					<p:dialog header="#{labels['regZJ.licaObuch']}" widgetVar="dlgLicaObuchZJ"
+						modal="true" closeOnEscape="true" resizable="true" appendTo="@form"
+						fitViewport="true" responsive="true"
+						positionType="fixed" dynamic="true">
+						<div class="container #{guestPreferences.containerPosition}">
+						
+							<p:messages id="modalMsg11" showDetail="true" closable="false">
+								<p:autoUpdate />
+							</p:messages>
+				
+				
+							<div class="p-grid ui-fluid" jsf:id="panelLicaObuchZJ">
+								<ui:remove><!-- 
+									<div class="p-col-12">
+										<h:outputText value="Сфера на обучение" styleClass="form-label " />
+										<p:selectOneRadio id="sfOb2" value="#{regLicaDeinZJ.roliaLice}">
+											<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+													itemValue="#{itemSc.code}"
+													value="#{systemData.getSysClassification( BabhConstants.CODE_CLASSIF_SFERI_OBUCHENIE, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+										</p:selectOneRadio>
+									</div> -->
+								</ui:remove>
+								<div class=" p-col-12">
+									<ibg:refCorrespData id="liceEkipOb" showRadio="false"  binding = "#{regLicaDeinZJ.bindingLiceEkip}"
+										codeRef="#{regLicaDeinZJ.liceEkip.code}"
+										refObj="#{regLicaDeinZJ.liceEkip}" mainDataLabel="Данни за лице"
+										saveInComponent="false" 
+										refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+										dateClassif="#{regLicaDeinZJ.decodeDate}" modal="false"
+										showDopInfo="false" showKorespAdress="false" showBtnClear="true" 
+										showDatBegEnd="false"
+										showObraz="true"/>	
+								</div>
+							</div>
+				
+							<f:facet name="footer">
+				 
+								<p:commandButton id="btnClose11ob"
+									action="#{regLicaDeinZJ.actionAddLiceEkip}" partialSubmit="true"
+									update="dZJForm:registerTabs:tblLicaList11 dZJForm:registerTabs:panelLicaObuchZJ"
+									process="@this  dZJForm:registerTabs:panelLicaObuchZJ"
+									value="#{ui_labels['general.comfirmation']}" />
+				
+							</f:facet>
+							
+						</div>	
+					</p:dialog>
+					
+				</div>
+				
+			</c:if>
+			
+		</h:panelGroup>
+		
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_IZNOS_JIV)}">
+
+			<!--  Услуга: 354  Панел за дейността "износ на живи животни и зародишни продукти" -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:deinostData10')">
+						<h:outputText value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_IZNOS_JIV, regLicaDeinZJ.currentLang, now)}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="deinostData10">
+					<div class="p-grid ui-fluid">
+						<div class="p-col-12">
+							<h:outputText value="#{labels['deinZj.iznosNa']}" styleClass="form-label req" />
+							<p:inputTextarea id="iznos" 
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.iznos}"
+								rows="5" />
+						</div>				
+					
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-12">
+							<h:outputText value="#{labels['deinZj.iznosDarjavi']}" styleClass="form-label req" />					
+					
+							<ibg:selectManyModalA id="drIznos"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_DARJAVI_TRETI_STRANI}"
+								selectedCodes="#{regLicaDeinZJ.vpisvane.eventDeinJiv.darjList}"
+								readonly="#{isView eq 1}"
+								selectedClassifs="#{regLicaDeinZJ.darjClassifList}"
+								showRadioBtn="true" minQueryLength="2" compType="4"
+								saveStateTree="true" styleAutoComp="width:100%; " />
+								
+	            		<ui:remove><!--
+							<p:selectCheckboxMenu id="drIznos"
+	                              filter="true" filterMatchMode="startsWith"
+	                              multiple="true" emptyLabel="Моля изберете..." updateLabel="true"
+	                              style="min-width: 15rem" panelStyle="width: 30rem" scrollHeight="200"
+	                              value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.darjList}">
+	                			
+	               				<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}"
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DARJAVI_TRETI_STRANI, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+							</p:selectCheckboxMenu>
+							--></ui:remove>
+						</div>
+				
+					
+						<ui:include src="regLicaDeinZJinclOez.xhtml">
+								<ui:param name="idd" value="10" />
+								<ui:param name="dTitle" value="#{labels['deinZj.zagotvitelOez']}" />
+								<ui:param name="lblRegNom" value="#{labels['reg.regNomOez']}" />
+								<ui:param name="one" value="false" />
+						</ui:include>
+					 	
+					 
+					 
+						<div class="p-col-12">
+							<h:outputText value="#{labels['deinZj.zagotovkaUsl']}" styleClass="form-label req" />
+							<p:inputTextarea id="zagotovka"  title="По български стандартизационни документи или изисквания на вносителя"
+								value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.nachinMqstoPridobiv}"
+								rows="5" />
+						</div>
+						<div class="p-col-12 p-md-12 p-lg-12 p-xl-12">
+							<h:outputText value="#{labels['deinZj.gkpp']}" styleClass="form-label req" />
+							<ibg:selectManyModalA id="gkpIznos"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_GKPP}"
+								selectedCodes="#{regLicaDeinZJ.vpisvane.eventDeinJiv.gkppList}"
+								readonly="#{isView eq 1}"
+								selectedClassifs="#{regLicaDeinZJ.gkppClassifList}"
+								showRadioBtn="true" minQueryLength="2" compType="4"
+								saveStateTree="true" styleAutoComp="width:100%; " />
+								
+						<ui:remove> <!-- 		
+							<p:selectCheckboxMenu id="gkpp"  
+	                              filter="true" filterMatchMode="startsWith"
+	                              multiple="true" emptyLabel="Please select..." updateLabel="true"
+	                              style="min-width: 15rem" panelStyle="width: 30rem" scrollHeight="310"
+	                              value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.gkppList}">
+	                			
+	               				<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}"
+										value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_GKPP, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+								
+	            			</p:selectCheckboxMenu>
+	            	--> </ui:remove>	
+	            	
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</c:if>
+
+
+		<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_MEROPRIATIE_JIV)
+					|| systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_SAHRANENIE_EMBRIONI)}">
+
+			<!--  Контролиращ за дейността "Мероприятия с животни"  и "одобрение на екипи за добив и съхранение на ембриони и яйцеклетки"  -->
+			<div>
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded "
+						onclick="toggleSection(this, '#dZJForm:registerTabs:ctrl2')">
+						<h:outputText value="Контролиращ изпълнението на заповедта" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+	
+				<div jsf:id="ctrl2" class="p-grid">
+					<div class="-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4">
+						<ibg:selectOneModalA id="liceCtrl" readonly="#{isView eq 1}"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_ADMIN_STR}"
+							selectedCode="#{regLicaDeinZJ.liceCtrl}"											
+							saveStateTree="false" withBtnClear="true" compType="2"
+							styleAutoComp="width:99%" minQueryLength="2" update="@this" />	
+					</div>
+				</div>
+			</div>
+		</c:if>
+		
+	
+		<ui:remove>
+		<!-- от настройките да ли да се вижда или не 		
+		<c:if test="#{systemData.isElementVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UDOST_DOC)}">
+		
+			<div class="title-group p-mt-3">
+				<p:commandLink class="extended-search-toggle expanded"
+					onclick="toggleSection(this, '#dZJForm:registerTabs:udostDoc')">
+					<h:outputText value="#{labels['reg.udostDoc']}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+	
+			<div jsf:id="udostDoc">
+				
+				<div class="p-grid ui-fluid">
+					<div class="p-col-4 ">
+						<h:outputText
+							value="Начин на получаване на удостоверителния документ"
+							styleClass="form-label" />
+	
+						<p:selectOneMenu id="udoc1"
+							value="#{regLicaDeinZJ.zaiavlVp.receiveMethod}"
+							disabled="#{isView eq 1}">
+							<f:selectItem value="#{null}" itemValue="#{null}" />
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_NACHIN_POLUCHAVANE, now, regLicaDeinZJ.currentLang)}"
+								var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+						</p:selectOneMenu>
+					</div>
+					<div class="p-col-8 ">
+						<h:outputText value="Адрес за получаване" styleClass="form-label" />
+						<p:inputTextarea id="udocAdr"
+							value="#{regLicaDeinZJ.zaiavlVp.adressRezultat}" rows="1" />
+					</div>
+					<div class="p-col-12 ">
+						<h:outputText
+							value="Допълнителна информация за начина на получаване"
+							styleClass="form-label" />
+						<p:inputTextarea id="udocDopinfo"
+							value="#{regLicaDeinZJ.zaiavlVp.receivedBy}" rows="1" />
+					</div>
+				</div>
+			</div>
+		</c:if>
+ --></ui:remove>
+
+		<div class="p-grid ui-fluid p-col-12 ">
+			<h:outputText value="#{labels['reg.dopInfoVpisvane']}"
+				styleClass="form-label" />
+			<p:inputTextarea rows="2" value="#{regLicaDeinZJ.vpisvane.info}" />
+		</div>
+	</h:panelGroup>
+
+
+	<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_IDENT) or 
+							 systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_PROIZV_IDENT)}">
+
+		<!-- Модален  за търговия и производство на идентификатори -->
+		<p:dialog header="#{labels['regIdent.zaglD']}" widgetVar="dlgIdentif"
+			modal="true" closeOnEscape="true" resizable="true" appendTo="@form"
+			 fitViewport="true" responsive="true" positionType="fixed"
+			dynamic="true">
+		
+			<p:messages id="modalMsg" showDetail="true" closable="false">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div class="p-grid ui-fluid" jsf:id="panelIdentif">
+			
+			
+				<!-- Вид на идентификатор -->
+				<div class=" p-col-6">
+					<h:outputText value="#{labels['regIdent.vidIdent']} "
+						styleClass="form-label req" />
+					<p:selectOneMenu id="vidIdentif" value="#{regLicaDeinZJ.identifikator.vidIdentif}"  height="250">
+						<f:selectItem />
+						<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+							itemValue="#{itemSc.code}" itemDisabled="#{itemSc.code eq 1}"
+							value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_IDENT_JIV, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+					</p:selectOneMenu>
+
+				</div>
+				<!--  Списък с видове животни -->
+				<div class=" p-col-6">
+					<h:outputText value="#{labels['regIdent.vidJ']}: "
+						styleClass="form-label req" />
+					<p:selectOneMenu id="typeAnimal3" value="#{regLicaDeinZJ.identifikator.vidJiv}" height="250">
+						<f:selectItem />
+						<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+							itemValue="#{itemSc.code}"
+							value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_JIV_IDENT, regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+					</p:selectOneMenu>
+				</div>
+				<!-- Модел на идентификатор-->
+				<div class=" p-col-8">
+					<h:outputText value="#{labels['regIdent.model']}" styleClass="form-label" />
+					<p:inputText id="modelIdent" value="#{regLicaDeinZJ.identifikator.model}"  />
+				</div>
+				<!-- Код на производител, търговец  -->
+				<div class="p-col-4">
+					<h:outputText value="#{labels['regIdent.kodIdent']}" styleClass="form-label" />
+					<p:inputText id="kodIdent" value="#{regLicaDeinZJ.identifikator.kod}"  />
+				</div>
+			</div>
+
+			<f:facet name="footer">
+
+				<p:commandButton id="btnClose"
+					action="#{regLicaDeinZJ.actionAddIdentifikator}"
+					partialSubmit="true"
+					update="dZJForm:registerTabs:panelIdentif dZJForm:registerTabs:tblIdentifList"
+					process="@this dZJForm:registerTabs:panelIdentif"
+					value="#{ui_labels['general.comfirmation']}" />
+
+			</f:facet>
+		
+		</p:dialog>
+
+	</c:if>
+
+	<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBEZSHЕТЕНИЕ_JIV) or
+					systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV)}">
+
+		<!-- Модален  за вид животно за обезщетение или животни за опити-->
+		<p:dialog header="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBEZSHЕТЕНИЕ_JIV)  ? labels['deinZj.brJivVid'] : labels['deinZj.brJivVid3']}" widgetVar="dlgObezJZ"
+			modal="true" closeOnEscape="true" resizable="true" appendTo="@form" width="650px"
+			fitViewport="true" responsive="true" positionType="fixed"
+			dynamic="true">
+		
+			<p:messages id="modalMsg" showDetail="true" closable="false">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div class="p-grid ui-fluid" jsf:id="panelBrojJZ">
+				<!-- Вид на животно-->
+
+				<div class=" p-col-8">
+					<h:outputText value="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBEZSHЕТЕНИЕ_JIV)  ? labels['deinZj.categObez'] : labels['regOez.vidJiv']}" 
+						styleClass="form-label req" />
+					<p:selectOneMenu id="typeAnimal4" value="#{regLicaDeinZJ.vidJiv}"
+					 	rendered="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV)}">
+						<f:selectItem />
+						<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+							itemValue="#{itemSc.code}" itemDisabled="#{itemSc.code eq 149}"
+							value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_JIV_OPIT , regLicaDeinZJ.decodeDate, regLicaDeinZJ.currentLang)}" />
+					</p:selectOneMenu>
+					<ibg:selectOneModalA id="typeAnimal4o" readonly="#{isView eq 1}"
+							rendered="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OBEZSHЕТЕНИЕ_JIV)}"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_VID_JIVOTNO}"
+							selectedCode="#{regLicaDeinZJ.vidJiv}"											
+							saveStateTree="false" withBtnClear="true" compType="2"
+							styleAutoComp="width:99%" minQueryLength="2" update="@this" />	
+				</div>
+				<div class=" p-col-4">
+					<h:outputText value="#{labels['reg.broj']}" styleClass="form-label req" />
+					<p:inputNumber id="brJ" decimalPlaces="0"
+						modifyValueOnWheel="false" minValue="1"
+						value="#{regLicaDeinZJ.broiJiv}">
+					</p:inputNumber>
+				</div>
+				<div class=" p-col-12" jsf:rendered="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV)}">
+					<h:outputText value="#{labels['regZJ.dopinfoJiv']}" styleClass="form-label req" />
+					<p:inputTextarea id="dopInfoJ" rows="2"
+						value="#{regLicaDeinZJ.dopInfoJiv}">
+					</p:inputTextarea>
+				</div>
+			</div>
+
+			<f:facet name="footer">
+
+				<p:commandButton id="btnClose4"
+					action="#{regLicaDeinZJ.actionAddJiv}" partialSubmit="true"
+					update="dZJForm:registerTabs:panelBrojJZ dZJForm:registerTabs:tblVidJivList dZJForm:registerTabs:sJiv"
+					process="@this dZJForm:registerTabs:panelBrojJZ"
+					value="#{ui_labels['general.comfirmation']}" />
+
+			</f:facet>
+		 
+		</p:dialog>
+
+	</c:if>
+
+	<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_OPITI_JIV)}">
+
+		<!-- Модален  за лица за контрол и провеждане на опити с животни-->
+		<p:dialog header="#{labels['deinZj.ekipOpiti']}" widgetVar="dlgOpitJZ"
+			modal="true" closeOnEscape="true" resizable="true" appendTo="@form"
+			fitViewport="true" responsive="true"
+			positionType="fixed" dynamic="true">
+			<div class="container #{guestPreferences.containerPosition}">
+			
+				<p:messages id="modalMsg5" showDetail="true" closable="false">
+					<p:autoUpdate />
+				</p:messages>
+	
+				<div class="p-grid ui-fluid" jsf:id="panelLicaOJiv">
+					<div class=" p-col-12">
+						<h:outputText value="#{labels['reg.roliaLice']}: "
+							styleClass="form-label req" />
+						<p:selectOneRadio id="rolia" value="#{regLicaDeinZJ.roliaLice}" disabled="#{isView eq 1}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VRAZ_LICE_JIV_OPIT, now, regLicaDeinZJ.currentLang)}"
+								var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+						</p:selectOneRadio>
+					</div>
+					<div class=" p-col-12">
+						<ibg:refCorrespData id="liceEkip" showRadio="false"  binding = "#{regLicaDeinZJ.bindingLiceEkip}"
+							codeRef="#{regLicaDeinZJ.liceEkip.code}"
+							refObj="#{regLicaDeinZJ.liceEkip}" mainDataLabel="Данни за лице"
+							saveInComponent="false" 
+							refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+							dateClassif="#{regLicaDeinZJ.decodeDate}" modal="false"
+							showDopInfo="false" showKorespAdress="false" showBtnClear="true" 
+							showDatBegEnd="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}"/>
+	
+	
+					</div>
+				</div>
+	
+				<f:facet name="footer">
+	
+					<p:commandButton id="btnClose5"
+						action="#{regLicaDeinZJ.actionAddLiceEkip}" partialSubmit="true"
+						update="dZJForm:registerTabs:tblLicaList1"
+						process="@this dZJForm:registerTabs:panelLicaOJiv"
+						value="#{ui_labels['general.comfirmation']}" />
+	
+				</f:facet>
+				
+			</div>	
+		</p:dialog>
+
+	</c:if>
+ 
+	<c:if test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_SAHRANENIE_EMBRIONI)}">
+
+		<!-- Модален  за лица за добив и съхранение на яйцеклетки и ембриони-->
+		<p:dialog header="#{labels['deinZj.ekipDobiv']}" widgetVar="dlgDobivJZ"
+			modal="true" closeOnEscape="true" resizable="true" appendTo="@form"
+		    fitViewport="true" responsive="true"
+			positionType="fixed" dynamic="true">
+			<div class="container #{guestPreferences.containerPosition}">	
+				<p:messages id="modalMsg6" showDetail="true" closable="false">
+					<p:autoUpdate />
+				</p:messages>
+	
+				<div class="p-grid ui-fluid" jsf:id="panelLicaDJiv">
+					<div class=" p-col-12">
+						<h:outputText value="#{labels['reg.roliaLice']}: "
+							styleClass="form-label req" />
+						<p:selectOneRadio id="rolia" value="#{regLicaDeinZJ.roliaLice}">
+							<f:selectItems
+								value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VRAZ_LICE_JIV_EMBR, now, regLicaDeinZJ.currentLang)}"
+								var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+						</p:selectOneRadio>
+					</div>
+					<div class=" p-col-12">
+						<ibg:refCorrespData id="liceEkip" showRadio="false"  binding = "#{regLicaDeinZJ.bindingLiceEkip}"
+							codeRef="#{regLicaDeinZJ.liceEkip.code}"
+							refObj="#{regLicaDeinZJ.liceEkip}" mainDataLabel="Данни за лице"
+							saveInComponent="false"
+							refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+							dateClassif="#{regLicaDeinZJ.decodeDate}" modal="false"
+							showDopInfo="false" showKorespAdress="false" showBtnClear="true" 
+							showDocs="true" 
+							showDatBegEnd="#{regLicaDeinZJ.vpisvane.id ne null and regLicaDeinZJ.lastDoc[0] ne null}"/>
+	
+	
+					</div>
+				</div>
+	
+				<f:facet name="footer">
+	
+					<p:commandButton id="btnClose6"
+						action="#{regLicaDeinZJ.actionAddLiceEkip}" partialSubmit="true"
+						update="dZJForm:registerTabs:tblLicaList2"
+						process="@this dZJForm:registerTabs:panelLicaDJiv"
+						value="#{ui_labels['general.comfirmation']}" />
+	
+				</f:facet>
+			</div>
+		</p:dialog>
+
+	</c:if>
+		
+
+	<c:if	test="#{systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_JIV)
+				   or systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_ZARPROD)
+				   or systemData.isActionVisible(regLicaDeinZJ.zaiavlVp.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_ZJ_TARG_SJP)}">
+
+		<!-- Модален  за вид СЖП - Добавяне на вид продукти, с които ще се търгува-->
+		<p:dialog header="#{labels['regZJ.titleSjp']}" 
+			widgetVar="dlgSJP"
+			modal="true" closeOnEscape="true" resizable="true" appendTo="@form" width="650px"
+			fitViewport="true" responsive="true" positionType="fixed"
+			dynamic="true">
+		
+			<p:messages id="modalMsg" showDetail="true" closable="false">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div class="p-grid ui-fluid" jsf:id="panelSjpM">
+				<!-- Вид на СЖП-->
+
+				<div class=" p-col-12">
+					<h:outputText value="#{labels['regTargovtsiFuraj.vidSJP']}" styleClass="form-label req" />			
+					<ibg:selectOneModalA id="vidSjp" readonly="#{isView eq 1}"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP}"
+							selectedCode="#{regLicaDeinZJ.vidSjp}"											
+							saveStateTree="false" withBtnClear="true" compType="2"
+							styleAutoComp="width:99%" minQueryLength="2" update="@this" />	
+				</div>			
+				<div class=" p-col-12" >
+					<h:outputText value="#{labels['regTargovtsiFuraj.poiasnenie']}" styleClass="form-label" />
+					<p:inputTextarea id="dopInfoSjp" rows="2"
+						value="#{regLicaDeinZJ.dopInfoSjp}">
+					</p:inputTextarea>
+				</div>
+			</div>
+
+			<f:facet name="footer">
+
+				<p:commandButton id="btnClose4sjp"
+					action="#{regLicaDeinZJ.actionAddSjp}" partialSubmit="true"
+					update=" dZJForm:registerTabs:tblVidSjpList"
+					process="@this dZJForm:registerTabs:panelSjpM"
+					value="#{ui_labels['general.comfirmation']}" />
+
+			</f:facet>
+		 
+		</p:dialog>
+
+	</c:if>
+		
+		
+		
+
+	<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+	<h:panelGroup id="panelAttFiles">
+
+		<p:dialog appendTo="@form" closeOnEscape="true"
+			header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+			responsive="true" resizable="true" position="top"
+			widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+			modal="true">
+
+			<p:messages id="attFilesModalMsg" showDetail="true"
+				closable="false" style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div class="container #{guestPreferences.containerPosition}">
+				<ibg:compFileUpload id="filesDocZ"
+					listObj="#{regLicaDeinZJ.filesList}"
+					codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+					header="true" idObj="#{regLicaDeinZJ.zaiavlVp.id}"
+					hideDel="false" view="true" display="list" typeSign="0"
+					saveFirst="true" dragDropSupport="table" 
+					headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+			</div>
+
+		</p:dialog>
+	</h:panelGroup>
+
+
+</ui:composition>

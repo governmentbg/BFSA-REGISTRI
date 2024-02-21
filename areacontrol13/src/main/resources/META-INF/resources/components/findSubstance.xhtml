@@ -1,0 +1,124 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" 
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<cc:interface componentType="findSubstance">
+		<cc:attribute name="selectedSubstanceName" 	type="java.lang.String"	shortDescription="Връща кода на Substance - Веществото избрано от списъка с резултати" deafult="null" />
+		<cc:attribute name="selectedSubstance" 		type="java.lang.Object"		shortDescription="Връща Substance - Вещество" deafult="null" />
+		<cc:attribute name="readonly"       		 type="java.lang.Boolean" shortDescription="Само за разглеждане" default="false" />
+	</cc:interface>
+	
+	<cc:implementation>
+
+		<f:event type="preRenderComponent" listener="#{cc.initComp()}" />
+		
+		<div class="ui-inputgroup" >
+			<p:inputText id="selectedSubstanceNameComp" value="#{cc.nameSubstanceText}" readonly="true" />
+			<p:commandButton icon="fa fa-fw fa-list-ul" id="dialogButton"
+				action="#{cc.actionSearchSubstance}" rendered="#{!cc.attrs.readonly}"
+				process="#{cc.clientId}:mpsSearchPnl"
+				update="#{cc.clientId}:mpsSearchPnl @this"
+				oncomplete="PF('mpsSearchVar').show();"
+				title="#{cc.attrs.titleLoadBtn}" />
+		</div>
+		
+		<h:panelGroup id="mpsSearchPnl">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['findSubstances.title']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="mpsSearchVar" dynamic="true" id="modalMPS" modal="true"
+				width="70%">
+
+				<h:panelGroup id="panelFilterMPS" onkeypress="if(event.keyCode == 13) {event.preventDefault();  document.getElementById('#{cc.clientId}:btnSearchC1').click();}">
+
+					<div class="card">
+						<div class="p-grid ui-fluid">
+							<!-- kod-->
+							<div class="p-col-4 ui-fluid">
+								<h:outputText value="#{labels['nastrObjInc.code']}" styleClass="form-label" />
+								<p:inputText id="codeSubstance" value="#{cc.substance.identifier}" readonly="#{cc.attrs.readonly}"/>
+							</div>
+							<!-- (текст) -->
+							<div class="p-col-8 ui-fluid">
+								<h:outputText value="#{labels['nastrObjInc.name']}" styleClass="form-label" />
+								<p:inputText id="nameSubstance" value="#{cc.substance.name}" readonly="#{cc.attrs.readonly}"/>
+							</div>
+
+						</div>
+
+						<div class="filter-buttons">
+							<p:commandButton id="btnSearchC1" partialSubmit="true"
+								actionListener="#{cc.actionSearchSubstance}"	rendered="#{!cc.attrs.readonly}"
+								process="@this  #{cc.clientId}:panelFilterMPS"
+								update="#{cc.clientId}:panelTblMPS #{cc.clientId}:panelFilterMPS"
+								icon="fas fa-search" styleClass="p-mr-3"
+								value="#{ui_labels['general.search']}" />
+							<p:defaultCommand target="btnSearchC1" />
+
+							<p:commandButton id="btnClearC1" partialSubmit="true"
+								actionListener="#{cc.actionClear}" rendered="#{!cc.attrs.readonly}"
+								process="@this  #{cc.clientId}:panelFilterMPS"
+								update="#{cc.clientId}:panelTblMPS #{cc.clientId}:panelFilterMPS"
+								icon="fas fa-eraser" styleClass="ui-button-warning"
+								value="#{ui_labels['general.clear']}" />
+						</div>
+					</div>
+
+					<h:panelGroup id="panelTblMPS" layout="block" styleClass="margin-top">
+						<h:panelGroup layout="block" styleClass="card" rendered="#{cc.substanceList.rowCount ne null}">
+
+							<div class="table-toolbar">
+								<h:outputText
+									value="#{ui_labels['general.reportResult']}: #{cc.substanceList.rowCount}"
+									rendered="#{cc.substanceList.rowCount ne null}"
+									styleClass="form-label" />
+							</div>
+
+							<p:dataTable id="tblMPSList" var="row" lazy="true" showGridlines="true"
+								value="#{cc.substanceList}" rowIndexVar="idx"
+								emptyMessage="#{ui_labels['general.norows']}" rows="10"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="true" paginator="true"
+								sortMode="single" reflow="true" >
+								
+								<p:column width="20"
+									headerText="#{ui_labels['general.No-symbol']}">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+
+								<p:column width="50" exportable="false">
+									<p:commandButton id="btnChCorr"	rendered="#{!cc.attrs.readonly}"
+										action="#{cc.actionSelectMPS(row)}"
+										process="#{cc.clientId}:panelTblMPS @this"
+										update="#{cc.clientId}:selectedSubstanceNameComp @this "
+										title="#{ui_labels['general.choise']}" partialSubmit="true"
+										icon="fas fa-hand-point-down" styleClass="btn-normal" 
+										oncomplete="PF('mpsSearchVar').hide();"/>
+								</p:column>
+
+								<p:column headerText="#{labels['nastrObjInc.code']}" sortBy="#{row.a1}" width="100">
+									<h:outputText value="#{row[0]}" />
+								</p:column>
+								<p:column headerText="#{labels['nastrObjInc.name']}" sortBy="#{row.a2}" width="*">
+									<h:outputText value="#{row[1]}" />
+								</p:column>
+								
+							</p:dataTable>
+						</h:panelGroup>
+					</h:panelGroup>
+				</h:panelGroup>
+
+			</p:dialog>
+		</h:panelGroup>
+		
+	</cc:implementation>
+
+</ui:composition>

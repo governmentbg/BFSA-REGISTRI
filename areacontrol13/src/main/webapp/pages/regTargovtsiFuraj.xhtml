@@ -1,0 +1,43 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<!-- <f:viewAction action="#{userData.checkPageAccess(65)}"
+				onPostback="false" />  -->
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+		</f:metadata>
+	</ui:define>
+
+
+	<ui:define name="title">
+		<h:outputText
+			value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, regTargovtsiFuraj.babhDoc.docVid, regTargovtsiFuraj.currentLang, null)}" />
+	</ui:define>
+
+	<ui:define name="viewname">
+		<li><p:commandLink title="#{ui_labels['general.back']}"
+				action="#{navigation.goBack()}"
+				rendered="#{navigation.navPath.size()>1}">
+				<i class="fas fa-caret-left" />
+			</p:commandLink></li>
+		<li><h:outputText
+				value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, regTargovtsiFuraj.babhDoc.docVid, regTargovtsiFuraj.currentLang, null)}" /></li>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<ui:include src="/pages/regTargovtsiFurajIncl.xhtml"  >
+			<ui:param name="isView" value="0" />
+		</ui:include>
+
+	</ui:define>
+	
+</ui:composition>

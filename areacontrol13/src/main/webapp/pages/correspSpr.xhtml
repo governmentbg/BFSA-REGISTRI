@@ -1,0 +1,129 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">
+	    
+	<ui:define name="title">#{navTexts['/pages/correspSpr.xhtml']}</ui:define>
+
+	<ui:define name="viewname">
+		<li> 
+			<p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}" rendered="#{navigation.navPath.size()>1}">
+				<i class="fas fa-caret-left" />
+			</p:commandLink>
+		</li>
+		
+		
+		<li><h:outputText  value="#{labels['correspSpr.viewCorr']}" /></li>
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			<f:importConstants type="com.ib.system.SysConstants" />
+		</f:metadata>
+		
+		<h:form id="formCorrespView">
+		
+			<div class="#{guestPreferences.containerPosition}">
+				<div class="card">
+						
+					<ibg:refCorrespData id="corrView" saveInComponent="true" 
+						showDopInfo="true"
+						mainDataLabel="#{labels['correspSpr.lice']}"
+						showPostAdress="true" showKorespAdress="true" showBtnDelete="true" 
+						codeRef="#{correspSpr.codeCorresp}" dateClassif="#{correspSpr.decodeDate}" 
+						modal="false" admin="true" showDocs="true"
+						showBirthPlace="true"
+						regixCurrentAddress="true" regixPermAddress="true"
+						english="true"
+						englishBirthPlace="true"   readonly="true"
+						btnPostAdress="true"/>
+			
+				</div>
+			</div>
+           <p:spacer></p:spacer>
+           
+          
+           	<div class="title-group p-mt-3">		
+				<p:commandLink class="extended-search-toggle expanded"
+					onclick="toggleSection(this, '#formCorrespView:vpisvLice')"
+						update="formCorrespView:panelTblDoc" partialSubmit="true"
+							process="formCorrespView:panelTblDoc @this">
+					<h:outputText value="#{labels['corresp.vpUch']}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+				
+				<div jsf:id="vpisvLice"   class="p-grid ui-fluid" >
+				   <h:panelGroup id="panelTblDoc" layout="block"	class="p-grid p-col-12" rendered="#{correspSpr.brZap ne 0}">
+						        <p:spacer></p:spacer>   
+				           	<div class="p-col-12">
+				                 <!-- РЕЗУЛТАТНА ТАБЛИЦА -->
+									<p:dataTable id="tblVpisvList" var="row" lazy="true"
+										rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+										rows="5" sortMode="single" reflow="true"
+										value="#{correspSpr.lstVpisv}"
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+										rowsPerPageTemplate="5,10,15" paginatorPosition="bottom"
+										paginatorAlwaysVisible="true" paginator="true" showGridlines="true"
+										rowExpandMode="single" >
+										
+											<p:column width="20" headerText="#{ui_labels['general.No-symbol']}">
+												<h:outputText value="#{idx + 1}" />
+											</p:column>
+												
+											<p:column exportable="false" width="20" style="text-align:center; ">
+												
+												<p:button icon="fas fa-eye"
+													href="#{correspSpr.actionGoto(row[0],  row[10])}"
+													target="_blank" 
+													title="Разглеждане на вписване" >
+												</p:button>	
+												
+											</p:column>
+											<p:column headerText="#{labels['docu.register']}"   width="250" >
+												<h:outputText
+													value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, row[2], correspSpr.currentLang, correspSpr.decodeDate)}" />
+											</p:column>
+											<p:column headerText="#{labels['ud.udNomer']}"	width="100" >
+												<h:outputText value="#{row[5]}" />
+											</p:column>
+											<p:column headerText="#{labels['ud.udDate']}" width="90"   >
+												<h:outputText value="#{row[6]}">
+													<f:convertDateTime pattern="dd.MM.yyyy"
+														timeZone="#{correspSpr.timeZone}" />
+												</h:outputText>  
+											</p:column>
+											<p:column headerText="#{labels['corresp.vidDein']}" width="300" >
+											     <h:outputText
+													value="#{systemData.decodeItems(BabhConstants.CODE_CLASSIF_VID_DEINOST, row[7], correspSpr.currentLang, null)}" />
+											</p:column>
+											<p:column headerText="#{labels['corresp.predmet']}" width="300" >
+											     <h:outputText
+													value="#{systemData.decodePredmet ( row[8], correspSpr.currentLang, null)}" />
+											</p:column>
+											<p:column headerText="#{labels['corresp.obekti']}" width="300" >
+											     <h:outputText
+													value="#{systemData.decodeObekt( row[9], correspSpr.currentLang, null)}" />
+											</p:column>
+										
+				                 </p:dataTable>
+				               </div>
+				          
+				   </h:panelGroup> 
+				     <h:panelGroup  layout="block"	class="p-grid p-col-12" rendered="#{correspSpr.brZap eq 0}">
+				          <p:spacer width="20" />  <h:outputText value="#{labels['corresp.noVpisv']}" />
+				     </h:panelGroup> 
+				 </div>  
+			
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

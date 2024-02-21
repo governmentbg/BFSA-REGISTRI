@@ -1,0 +1,238 @@
+<SubmissionTO xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SubmissionID>1842435</SubmissionID>
+  <ReferenceMemberState>
+    <Agency>
+      <ID>FR(Anses)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+  </ReferenceMemberState>
+  <ConcernedMemberStates>
+    <Agency>
+      <ID>AT</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>BE</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>BG(BFSA)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>HR(MA)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>CY(VS)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>CZ(USKVBL)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>DK</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>EE</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>FI</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>DE(BVL)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>GR(EOF)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>HU(NEBIH)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>IE</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>IT(DGSAF)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>LV(PVD)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>LT(SFVS)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>LU</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>NL</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>NO</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>PL(URPL)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>PT(DGAV)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>RO(ICBMV)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>SK(USKVBL)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>SI(JAZMP)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>ES</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+      <NationalInformationField />
+    </Agency>
+    <Agency>
+      <ID>SE</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+    <Agency>
+      <ID>UK(VMD)</ID>
+      <RegulatoryActivityID>G0001</RegulatoryActivityID>
+      <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+      <SubActivityID>H002</SubActivityID>
+      <SubActivityText>Initial</SubActivityText>
+    </Agency>
+  </ConcernedMemberStates>
+  <Company>Huvepharma NV</Company>
+  <Procedurenumber>R/V/0471/001/DC </Procedurenumber>
+  <CespuserprofileID>23477</CespuserprofileID>
+  <Eftusername>c3320-roelsk</Eftusername>
+  <Email>karen.roels@huvepharma.com</Email>
+  <Comments />
+  <AreaID>Veterinary Medicines</AreaID>
+  <RegulatoryactivityID>G0001</RegulatoryactivityID>
+  <SubactivityID>H002</SubactivityID>
+  <ProceduretypeID>DCP</ProceduretypeID>
+  <SubmissiontypeID>vNeeS</SubmissiontypeID>
+  <NationalagencyID>NA</NationalagencyID>
+  <Nationalcaseno>NA</Nationalcaseno>
+  <TechnicallyvalIDated>true</TechnicallyvalIDated>
+  <ValIDationtoolID>Belgian NeeS Checker</ValIDationtoolID>
+  <ValIDationtoolother>NA</ValIDationtoolother>
+  <Zipfile>true</Zipfile>
+  <ZipfiletypeID>WinZip</ZipfiletypeID>
+  <Productdetailsfilename />
+  <UnitofinformationID>NA</UnitofinformationID>
+  <Submitteddate>NA</Submitteddate>
+  <Products>
+    <Product>
+      <Agency>FR(Anses)</Agency>
+      <MAANo>not yet available  </MAANo>
+      <ProductName>Pyrocam 20 mg/ml solution for injection for cattle, pigs and horses</ProductName>
+    </Product>
+  </Products>
+  <Emails />
+  <AgencyActivityReferenceID>Initial Marketing Authorisation Application</AgencyActivityReferenceID>
+  <Firstname>Karen</Firstname>
+  <Lastname>Roels</Lastname>
+  <Contactnumber />
+  <Orgname>Huvepharma NV</Orgname>
+<UploadedDate>31/01/23</UploadedDate></SubmissionTO>

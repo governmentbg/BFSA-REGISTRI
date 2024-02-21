@@ -1,0 +1,692 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+	xmlns:cc="http://java.sun.com/jsf/composite"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+<cc:interface componentType="refCorrespData">
+   		 
+   <cc:attribute name="codeRef"	         	 type="java.lang.Integer" shortDescription="code на лице" deafult="null" />
+   <cc:attribute name="refObj"	         	 type="java.lang.Object"  shortDescription="Целия обект Референт" deafult="null" />
+   <cc:attribute name="saveInComponent"		 type="java.lang.Boolean" shortDescription="Дали записа в базата да се извършва от компонентата: да(true) или не(false). Ако е false ще имате нужда от refObj." default="false" />
+   <cc:attribute name="showReturnButton"	 type="java.lang.Boolean" shortDescription="Дали да се вижда бутона 'Добави'да(true) или не(false). (default=true)" default="false" />
+   <cc:attribute name="showDopInfo"		     type="java.lang.Boolean" shortDescription="Дали да се показва доп. инфо.(default=true)" default="false" />
+   <cc:attribute name="showPostAdress"		 type="java.lang.Boolean" shortDescription="Дали да се показва постоянен адрес (default=true)" default="false" />
+   <cc:attribute name="btnPostAdress"		 type="java.lang.Boolean" shortDescription="Дали да се вижда бутон - Покажи Постоянен адрес/Адр. на управление (default=false)" default="false" />
+   <cc:attribute name="showKorespAdress"	 type="java.lang.Boolean" shortDescription="Дали да се показва адрес за кореспонденция (default=true)" default="false" />
+   <cc:attribute name="showDatBegEnd"		 type="java.lang.Boolean" shortDescription="Дали да се показва начална и крайна дата" default="false" />
+   <cc:attribute name="showRadio"		 	 type="java.lang.Boolean" shortDescription="Дали да се показват радио бутоните за избор на физ. или юр. лице. Нужно в случаите когато настройките на компонентата не отговарят на специфични нужди. default-true" default="true" />
+   <cc:attribute name="showLnch"		 	 type="java.lang.Boolean" shortDescription="Дали да се показват полето за ЛНЧ. Ако е физ. лице ест. default-true" default="true" />
+   <cc:attribute name="showIdentNom"		 type="java.lang.Boolean" shortDescription="Дали да се показват полето за Идентифициращ номер. default-true" default="true" />
+   <cc:attribute name="showChujdiLica"		 type="java.lang.Boolean" shortDescription="Дали да се попълват чужди лица. default-true" default="true" />
+   <cc:attribute name="showBtnClear"		 type="java.lang.Boolean" shortDescription="Дали да се показва бутон изчисти/нов. default-false" default="false" />
+   <cc:attribute name="showBtnDelete"		 type="java.lang.Boolean" shortDescription="Дали да се показва бутон изтриване. default-false" default="false" />
+   <cc:attribute name="showUrn"		 		 type="java.lang.Boolean" shortDescription="Дали да се показва полето УРН. default-false" default="false" />
+   
+   
+   <cc:attribute name="btnClearLabel"		 type="java.lang.String" shortDescription="Етикет на бутон изчисти/нов. default - Изчиства данните за лицето и позовлява въвеждане на ново лице" default="Изчиства данните за лицето и позовлява въвеждане на ново лице" />
+   
+   
+   <cc:attribute name="vidDoc"       		 type="java.lang.Integer" shortDescription="Вида на документа за да могат да работят настройките" deafult="null" />
+   
+   <cc:attribute name="mainDataLabel"        type="java.lang.String"  shortDescription="Етикет за частта с основни данни." deafult="Основни данни"/>
+   <cc:attribute name="searchTxt"	         type="java.lang.String"  shortDescription="Предварително подаден текст за търсене по име на лице или по ЕГН в Regix" deafult="null"/>
+   <cc:attribute name="dateClassif"   		 type="java.util.Date"    shortDescription="Дата, към която да се заредят класификации и за разкодиране. По подразбиране - днешна дата." />
+   <cc:attribute name="update" 		  		 type="java.lang.String"  shortDescription="Полета, които трябва да се обновят" />
+   <cc:attribute name="readonly"       		 type="java.lang.Boolean" shortDescription="Само за разглеждане" default="false" />
+   <cc:attribute name="onComplete"     		 type="java.lang.String"  shortDescription="Изпълнява функция при връщане на резултата - подава се името на функцията" />
+   <cc:attribute name="onChTypRef"   		 type="java.lang.String"  shortDescription="Изпълнява функция при промяна на типа на референта - подава се името на функцията" />
+     
+   <cc:attribute name="modal"       		 type="java.lang.Boolean" shortDescription="Обработката е в модален диалог(true) или не(false)." default="true" />
+   <cc:attribute name="admin"       		 type="java.lang.Boolean" shortDescription="Администриране на всички данни - да(true); не(false)."  default="false" />
+   <cc:attribute name="refType"       		 type="java.lang.Integer" shortDescription="Физ. или Юрид. лице. Default: Юридическо. Ако не е подадено ще може и едното и другото да се избират. (Подава се код от константите.)"   />
+   <cc:attribute name="regixPermAddress"	 type="java.lang.Boolean" shortDescription="Regix - да зарежда ли постоянния адрес на физ. лице" deafult="false"/>
+   <cc:attribute name="regixCurrentAddress"	 type="java.lang.Boolean" shortDescription="Regix - да зарежда ли настоящия адрес на физ. лице" deafult="false"/>
+   
+   <cc:attribute name="showObraz"       	 type="java.lang.Boolean" shortDescription="Да се покаже ли полето за образователна степен - да(true); не(false)."  default="false" />
+   <cc:attribute name="showOpit"       	 	 type="java.lang.Boolean" shortDescription="Да се покаже ли полето за професионален опит - да(true); не(false)."  default="false" />
+   <cc:attribute name="showDocs"       	 	 type="java.lang.Boolean" shortDescription="Да се покаже ли панела с документи(дипломи, лични док. и т.н.) на лице - да(true); не(false)."  default="false" />
+   <cc:attribute name="showContacts"		 type="java.lang.Boolean" shortDescription="Дали да се показва мейл, телефон. default-false" default="false" />
+   <cc:attribute name="showBirthPlace"		 type="java.lang.Boolean" shortDescription="Дали да се показва дата и място на раждане default-false" default="false" />
+   
+   <cc:attribute name="showKachectvoLice"    type="java.lang.Boolean"  shortDescription="Ако е подател на заявление - true" default="false" />
+   <cc:attribute name="english"    			 type="java.lang.Boolean"  shortDescription="Ако се изисква имената, адреса да са на английкси" default="false" />
+   <cc:attribute name="englishBirthPlace" 	 type="java.lang.Boolean"  shortDescription="Ако се изисква местораждането и националността да са на английски" default="false" />
+   <cc:attribute name="labelAdr1Fzl"     	 type="java.lang.String"  shortDescription="Лейбъл за адрес 1-я адрес на физическо лице"   default="Постоянен адрес"/>
+   <cc:attribute name="labelAdr1Nfzl"    	 type="java.lang.String"  shortDescription="Лейбъл за адрес 1-я адрес на юридическо лице"  default="Адрес на управление"/>
+   <cc:attribute name="labelAdr2"     		 type="java.lang.String"  shortDescription="Лейбъл за адрес 2-я адрес"  default="Адрес за кореспонденция" />
+   
+</cc:interface>
+
+
+	<cc:implementation>
+
+		<f:event type="preRenderComponent" listener="#{cc.initRefCorresp()}" />
+		<!--  За да се инициализира компонентата-->
+
+		<h:outputText value="#{cc.errMsg}" rendered="#{!cc.showMe}" />
+		<div jsf:id="dpDataC" jsf:rendered="#{cc.showMe}">
+
+			<p:messages id="messagesGl2" showDetail="true" closable="false"
+				style="width:100%" rendered="#{cc.attrs.modal}">
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:toolbar
+				rendered="#{!cc.attrs.readonly and (cc.attrs.saveInComponent or cc.attrs.showReturnButton)}">
+
+				<f:facet name="left">
+					<p:commandButton icon="fas fa-save"
+						value="#{ui_labels['general.save']}"
+						rendered="#{!cc.attrs.readonly and cc.attrs.saveInComponent}"
+						id="btnSaveCorr"
+						update="#{cc.attrs.update} #{cc.clientId}:dpDataC"
+						partialSubmit="true"
+						process="#{cc.attrs.update} #{cc.clientId}:dpDataC @this"
+						actionListener="#{cc.actionSave}"
+						title="#{labels['refCorr.saveReturnTitle']}">
+					</p:commandButton>
+
+					<p:commandButton icon="fas fa-save" value="Добави"
+						rendered="#{!cc.attrs.readonly and cc.attrs.showReturnButton}"
+						id="btnReturnCorr"
+						update="#{cc.attrs.update} #{cc.clientId}:dpDataC"
+						partialSubmit="true"
+						process="#{cc.attrs.update} #{cc.clientId}:dpDataC @this"
+						actionListener="#{cc.actionReturn}"
+						title="Връщане на данни и затваряне на прозорец">
+						<p:confirm header="#{ui_labels['general.comfirmation']}"
+							message="Лицето няма нито един идентификатор, сигурни ли сте, че искате да го изберете?"
+							icon="fas fa-exclamation-triangle" disabled="#{!((cc.ref.nflEik == null or cc.ref.nflEik=='')  and (cc.ref.fzlEgn==null or cc.ref.fzlEgn=='') and  (cc.ref.fzlLnc==null or cc.ref.fzlLnc==''))}"/>
+					</p:commandButton>
+
+					<span class="fas fa-ellipsis-v SoftGray p-mx-2" />
+
+					<p:commandButton id="btnNewCorr" value="Ново лице" 	rendered="#{!cc.attrs.showReturnButton}"
+						title="#{cc.attrs.btnClearLabel}" styleClass="ui-button-warning"
+						action="#{cc.clearRefCorresp(null,cc.ref.refType)}"
+						partialSubmit="true"
+						process="#{cc.attrs.update} #{cc.clientId}:dpDataC @this"
+						update="#{cc.attrs.update} #{cc.clientId}:dpDataC"
+						icon="fas fa fa-times" />
+		
+				</f:facet>
+
+				<f:facet name="right">
+					<h:panelGroup id="pRegInfoCor"
+						rendered="#{!cc.attrs.modal and cc.ref.code ne null}">
+						<ibg:compObjAudit id="refHistory" idObj="#{cc.ref.code}"
+							codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_REFERENT}"
+							identInfo="#{cc.ref.refName}" />
+					</h:panelGroup>
+
+					<span class="fas fa-ellipsis-v SoftGray p-mx-2" />
+
+					<p:commandButton icon="fas fa-times"
+						value="#{ui_labels['general.delete']}"
+						rendered="#{!cc.attrs.readonly and cc.ref.id ne null and cc.attrs.showBtnDelete}"
+						id="btnDelCorr" update="#{cc.attrs.update} #{cc.clientId}:dpDataC"
+						partialSubmit="true"
+						process="#{cc.attrs.update} #{cc.clientId}:dpDataC @this"
+						styleClass="ui-button-danger" actionListener="#{cc.actionDelete}"
+						title="#{labels['reffCorr.deleteCorr']}">
+						<p:confirm header="#{ui_labels['general.comfirmation']}"
+							message="#{beanMessages['refCorr.msgDelete']}"
+							icon="fas fa-exclamation-triangle" />
+					</p:commandButton>
+				</f:facet>
+
+			</p:toolbar>
+
+			<div class="title-group p-mt-3">		
+				<p:commandLink class="extended-search-toggle expanded"
+					onclick="toggleSection(this, '##{cc.clientId}:cd1-mainData')">
+					<h:outputText value="#{cc.attrs.mainDataLabel}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+	  
+				
+				<p:selectOneButton rendered="#{cc.attrs.showRadio}" unselectable="false"  
+					value="#{cc.ref.refType}" immediate="true"
+					disabled="#{cc.attrs.readonly}" >
+					<f:selectItem itemLabel="#{labels['coresp.uLice']}" itemValue="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}" />
+					<f:selectItem itemLabel="#{labels['coresp.fizLice']}" itemValue="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" />
+					<p:ajax event="change"
+						update="#{cc.clientId}:pglice #{cc.clientId}:adrNM #{cc.clientId}:birth #{cc.clientId}:postAdr #{cc.clientId}:shAdr1"
+						process="@this" listener="#{cc.actionChTypRef}" />
+				</p:selectOneButton>
+							 
+ 
+				<p:commandButton id="btnNewCorr2" value="#{ui_labels['general.clear']}"
+					title="#{cc.attrs.btnClearLabel}"
+					action="#{cc.clearRefCorresp2(cc.ref.refType)}"
+					partialSubmit="true" styleClass="ui-button-outlined ui-button-secondary"
+					process="@this" update="#{cc.attrs.update} #{cc.clientId}:dpDataC"
+					icon="fas fa-eraser" style="max-width:110px; float: right;"
+					rendered="#{cc.attrs.showBtnClear and !cc.attrs.readonly and !(cc.attrs.saveInComponent or cc.attrs.showReturnButton)}" />
+				 
+				 
+				 <p:selectBooleanButton id="shAdr1" value="#{cc.showAddress1}" tabindex="-1"
+					rendered="#{cc.attrs.btnPostAdress}"  style="max-width:220px; float: right;"
+					onLabel="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL ? cc.attrs.labelAdr1Nfzl : cc.attrs.labelAdr1Fzl}" 
+					offLabel="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL ? cc.attrs.labelAdr1Nfzl : cc.attrs.labelAdr1Fzl}"
+					onIcon="fas fa-check-square" offIcon="fas fa-square"   styleClass="p-mr-2 p-mb-2"
+					title="Показва или скрива адреса">
+					<p:ajax event="change" partialSubmit="true" update="@this #{cc.clientId}:adr1" />
+				</p:selectBooleanButton>
+				
+			</div>
+			<p:spacer></p:spacer>
+			<div id="#{cc.clientId}:cd1-mainData" style="margin-top: -22px">
+				
+				<div class="p-grid ui-fluid" jsf:id="pglice">
+	
+					<ui:remove><!-- ПАНЕЛ ОСНОВНИ ДАННИ --></ui:remove>
+				 	
+						<div class="p-col-fixed" style="width:180px"
+							jsf:rendered="#{cc.ref.refType eq BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" jsf:id="pgEgn">
+							<h:outputText value="#{ui_labels['general.egn']}"
+								styleClass="form-label " />
+							<p:inputText id="egn" value="#{cc.ref.fzlEgn}" style="width:99%"
+								readonly="#{cc.attrs.readonly or (cc.ref.id != null and cc.validIdent and cc.ref.fzlEgn != null and cc.ref.fzlEgn.trim().length() ne 0) }"
+								maxlength="10">
+								<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+								<p:ajax event="change" update="#{cc.clientId}:dpDataC"
+									partialSubmit="true" process="@this #{cc.clientId}:dpDataC #{cc.clientId}:birth"
+									listener="#{cc.actionLoadByEGN}" />
+							</p:inputText>
+						</div>
+	
+						<div class="p-col-fixed" style="width:180px"
+							jsf:rendered="#{cc.ref.refType eq BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL and cc.attrs.showLnch}" jsf:id="pgLnch">
+							<h:outputText value="#{ui_labels['general.lnch']}"
+								styleClass="form-label " />
+							<p:inputText id="lnch" value="#{cc.ref.fzlLnc}" style="width:99%"
+								readonly="#{cc.attrs.readonly or (cc.ref.id != null  and cc.validIdent and cc.ref.fzlLnc != null and cc.ref.fzlLnc.trim().length() ne 0) }"
+								maxlength="10">
+								<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+								<p:ajax event="change" update="#{cc.clientId}:dpDataC"
+									partialSubmit="true" process="@this #{cc.clientId}:dpDataC"
+									listener="#{cc.actionLoadByLNCH}" />
+							</p:inputText>
+						</div>
+	
+						<div class="p-col-fixed" style="width:180px"
+							jsf:rendered="#{cc.ref.refType eq BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL }" jsf:id="pgEik">
+							<h:outputText value="#{ui_labels['general.eik']}"
+								styleClass="form-label " id="lablULEik"
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}" />
+							<p:inputText id="eik" value="#{cc.ref.nflEik}" style="width:99%"
+									readonly="#{cc.attrs.readonly or (cc.ref.id != null  and cc.validIdent and cc.ref.nflEik != null and cc.ref.nflEik.trim().length() ne 0) }"
+								maxlength="13">
+								<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+								<p:ajax event="change" update="#{cc.clientId}:dpDataC"
+									partialSubmit="true" process="@this #{cc.clientId}:dpDataC"
+									listener="#{cc.actionLoadByEIK}" />
+							</p:inputText>
+							
+						</div>
+	
+						<div class="p-col-fixed" style="width:180px"
+							jsf:rendered="#{cc.ref.refType eq BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL and cc.attrs.showIdentNom}" jsf:id="pgNomIdentUl">
+							<h:outputText value="#{labels['refCorr.identCode']}"
+								styleClass="form-label " />
+							<p:inputText id="nomIdentUl" value="#{cc.ref.fzlLnEs}"
+								style="width:99%" readonly="#{cc.attrs.readonly}" >
+								<p:ajax event="change" update="#{cc.clientId}:dpDataC"
+									partialSubmit="true" process="@this #{cc.clientId}:dpDataC"
+									listener="#{cc.actionLoadByIdentNomNfl}" />
+							</p:inputText>
+						</div>
+					
+						<div class="#{(cc.attrs.english or cc.attrs.englishBirthPlace) ? 'p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4' :'p-col-12 p-sm-12 p-md-4 p-lg-4 p-xl-6'}" jsf:id="pgName">
+							<h:outputText value="#{labels['refCorr.nameUL']}"
+								styleClass="form-label req" id="lablUL"
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}" />
+							<h:outputText value="#{labels['refCorr.nameFL']}"
+								styleClass="form-label req" id="lablFL"
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" />
+							<p:inputText id="nameCorr" value="#{cc.ref.refName}"
+								readonly="#{cc.attrs.readonly}" />								
+						</div>
+			
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4" jsf:id="pgName2" jsf:rendered="#{cc.attrs.english or cc.attrs.englishBirthPlace}">
+							<h:outputText value="#{labels['refCorr.nameUL']} на английски"
+								styleClass="form-label " 
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}" />
+							<h:outputText value="#{labels['refCorr.nameFL']} на английски"
+								styleClass="form-label " 
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" />
+							<p:inputText id="nameCorrEN" value="#{cc.ref.refLatin}" 
+								readonly="#{cc.attrs.readonly}" />
+						</div> 
+						
+						<div  class="p-col-fixed" style="width:210px" jsf:rendered="#{cc.attrs.showKachectvoLice}">
+							<h:outputText value="В качествотo" styleClass="form-label req" />
+							<p:selectOneMenu id="kachestvoZaqvitel" autoWidth="false"
+								value="#{cc.ref.kachestvoLice}"
+								disabled="#{cc.attrs.readonly}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_KACHESTVO_LICE, now, cc.lang)}"
+									var="kach" itemLabel="#{kach.tekst}" itemValue="#{kach.code}" />
+							</p:selectOneMenu>
+						</div>
+						
+				</div>
+
+				
+				<div class="p-grid ui-fluid" jsf:id="adr1">
+					<ui:remove><!-- ПАНЕЛ ПОСТОЯНЕН АДРЕС --></ui:remove>
+					<p:divider align="left" rendered="#{cc.showAddress1}" styleClass="p-mt-2 p-mb-0"  id="postAdr">
+						<div class="inline-flex align-items-center">
+							<i class="fas fa-address-card p-mr-2" /> 
+							<h:outputText value="#{cc.attrs.labelAdr1Nfzl}"
+								styleClass="form-label"
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}" />
+							<h:outputText value="#{cc.attrs.labelAdr1Fzl}"
+								styleClass="form-label"
+								rendered="#{cc.ref.refType==BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" />
+						</div>
+					</p:divider>
+	
+					<h:panelGroup layout="block" class="p-grid p-col-12" id="adrNM" 
+						rendered="#{cc.showAddress1}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2">
+							<h:outputText value="#{ui_labels['general.country']}"
+								styleClass="form-label" />
+							<ibg:selectOneModalA id="cntryC"
+								readonly="#{cc.attrs.readonly }"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+								selectedCode="#{cc.ref.address.addrCountry}"
+								emptyMessage="#{labels['docu.countryEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3"
+								minQueryLength="2" styleAutoComp="" update="#{cc.clientId}:adrNM"
+								onComplete="cmdChCountry()" />
+							<p:remoteCommand name="cmdChCountry" update="#{cc.clientId}:adrNM"
+								partialSubmit="true" process="#{cc.clientId}:adrNM  @this"
+								actionListener="#{cc.actionChangeCountry}" />
+						</div>
+	
+	
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid" jsf:id="pmestoC"
+							jsf:rendered="#{cc.ref.address.addrCountry eq cc.countryBG}">
+							<h:outputText value="#{ui_labels['general.ekatte']}"
+								styleClass="#{cc.ref.address.addrCountry ne null ? 'form-label' :'form-label'}" />
+							<ibg:selectOneModalA id="mestoC"
+								readonly="#{cc.attrs.readonly }"
+								update="#{cc.clientId}:cOblObsh"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+								specifics="#{cc.specificsEKATTE}"
+								selectedCode="#{cc.ref.address.ekatte}"
+								emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3"
+								minQueryLength="3" styleAutoComp="" dopInfoAutoComp="true"
+								dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4" jsf:id="cOblObsh"
+							jsf:rendered="#{cc.ref.address.addrCountry eq cc.countryBG}">
+							<h:outputText value="#{ui_labels['general.ekatteObshObl']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true"
+								value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, cc.ref.address.ekatte, cc.lang, now)}" />
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-1" jsf:id="cpC">
+							<h:outputText value="#{labels['registerMainTab.postalCode']}"	styleClass="form-label" />
+							<p:inputText readonly="#{cc.attrs.readonly }" value="#{cc.ref.address.postCode}" 
+								maxlength="#{(cc.ref.address.addrCountry  eq cc.countryBG) ? 4: 20 }">
+								<p:keyFilter regEx="/[0-9]/" preventPaste="false" rendered="#{cc.ref.address.addrCountry eq cc.countryBG}"/>
+							</p:inputText>
+						</div>
+						
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4" jsf:id="cAdrTxt" 
+							jsf:rendered="#{cc.ref.address.addrCountry eq cc.countryBG}">
+							<h:outputText value="#{labels['registerMainTab.street']}" styleClass="form-label"/>
+							<p:inputText readonly="#{cc.attrs.readonly}" value="#{cc.ref.address.addrText}" id="adrTxt" >
+								<p:ajax event="change" process="@this" update="@this" partialSubmit="true" />
+							</p:inputText>				
+						</div>	
+						
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-1" jsf:id="cpB" >
+							<h:outputText value="#{labels['general.adrPostBox']}" styleClass="form-label" />
+							<p:inputText readonly="#{cc.attrs.readonly }" value="#{cc.ref.address.postBox}" />
+						</div>
+						<div class="p-grid p-col-12">
+							<div class="#{cc.attrs.english ? 'p-col-6' : 'p-col-12'}" jsf:rendered="#{cc.ref.address.addrCountry ne cc.countryBG}">
+								<h:outputText value="#{ui_labels['general.adres']}" styleClass="form-label"/>
+								<p:inputTextarea readonly="#{cc.attrs.readonly}" value="#{cc.ref.address.addrText}" id="adrTxt211"	rows="2">
+									<p:ajax event="change" process="@this" update="@this" partialSubmit="true" />
+								</p:inputTextarea>
+							</div>
+							<div class="#{cc.attrs.english ? 'p-col-6' : 'p-col-12'}"  jsf:rendered="#{cc.attrs.english}">
+								<h:outputText value="#{ui_labels['general.adres']} на английски" styleClass="form-label"/>
+								<p:inputTextarea readonly="#{cc.attrs.readonly}" value="#{cc.ref.address.addrTextLatin}" id="adrTxt211e"	rows="2">
+									<p:ajax event="change" process="@this" update="@this" partialSubmit="true" />
+								</p:inputTextarea>
+							</div>
+						</div>
+					</h:panelGroup>
+					
+					
+					<ui:remove><!-- ПАНЕЛ АДРЕС ЗА КОРЕСПОНДЕНЦИЯ --></ui:remove>
+					<p:divider align="left" rendered="#{cc.attrs.showKorespAdress}" styleClass="p-mt-2 p-mb-0" >
+						<div class="inline-flex align-items-center">
+							<i class="fas fa-phone p-mr-2" /> 
+								<h:outputText value="Адрес за кореспонденция" styleClass="form-label" rendered="#{cc.attrs.labelAdr2 == null}"/>
+								<h:outputText value="#{cc.attrs.labelAdr2}" styleClass="form-label" rendered="#{cc.attrs.labelAdr2 != null}"/>
+						</div>
+					</p:divider> 
+					
+	
+					<h:panelGroup layout="block" class="p-grid p-col-12" id="adrNMKoresp" rendered="#{cc.attrs.showKorespAdress}" >
+						
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2">
+							<h:outputText value="#{ui_labels['general.country']}" styleClass="form-label" />
+							<ibg:selectOneModalA  id="cntryC2" readonly="#{cc.attrs.readonly}"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"								
+								selectedCode="#{cc.ref.addressKoresp.addrCountry}" 
+								emptyMessage="#{labels['docu.countryEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3" minQueryLength="2"
+								styleAutoComp=""  update="#{cc.clientId}:adrNMKoresp"
+								onComplete="cmdChCountry2()"/>	
+								<p:remoteCommand name="cmdChCountry2" update="#{cc.clientId}:adrNMKoresp"
+								  	partialSubmit="true" process="#{cc.clientId}:adrNMKoresp  @this" 
+								 	actionListener="#{cc.actionChangeCountryKoresp}"/>							   
+						</div>	
+						
+				
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2" jsf:id="pmestoC2" jsf:rendered="#{cc.ref.addressKoresp.addrCountry eq cc.countryBG}">					
+							<h:outputText value="#{ui_labels['general.ekatte']}" styleClass="#{cc.ref.addressKoresp.addrCountry ne null ? 'form-label' :'form-label'}" />
+							<ibg:selectOneModalA  id="mestoC2"
+							    readonly="#{cc.attrs.readonly}"
+								update="#{cc.clientId}:cOblObsh2"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"			
+								specifics="#{cc.specificsEKATTE}"					
+								selectedCode="#{cc.ref.addressKoresp.ekatte}"
+								emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3" minQueryLength="3"
+								styleAutoComp=""
+								dopInfoAutoComp="true" dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}"/>	
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-3" jsf:id="cOblObsh2" jsf:rendered="#{cc.ref.addressKoresp.addrCountry eq cc.countryBG}">
+							<h:outputText value="#{ui_labels['general.ekatteObshObl']}" styleClass="form-label" />
+							<p:inputText readonly="true" value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, cc.ref.addressKoresp.ekatte, cc.lang, now)}" />
+						</div>
+							
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-1" jsf:id="cpC2" >
+							<h:outputText value="#{labels['registerMainTab.postalCode']}" styleClass="form-label" />
+							<p:inputText readonly="#{cc.attrs.readonly}" value="#{cc.ref.addressKoresp.postCode}" 
+								maxlength="#{(cc.ref.addressKoresp.addrCountry eq cc.countryBG) ? 4: 20 }">
+								<p:keyFilter regEx="/[0-9]/" preventPaste="false" rendered="#{cc.ref.addressKoresp.addrCountry eq cc.countryBG}"/>
+							</p:inputText>
+						</div>		
+										
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4" jsf:id="cAdrTxt2" 
+							jsf:rendered="#{cc.ref.addressKoresp.addrCountry eq cc.countryBG}">
+							<h:outputText value="#{labels['registerMainTab.street']}" styleClass="form-label"/>
+							<p:inputText readonly="#{cc.attrs.readonly}" value="#{cc.ref.addressKoresp.addrText}" id="adrTxt2" >
+								<p:ajax event="change" process="@this" update="@this" partialSubmit="true" />
+							</p:inputText>				
+						</div>		
+														
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-3 p-xl-2" > 
+							<h:outputText value="#{ui_labels['general.email']}" styleClass="form-label" />
+							<p:inputText readonly="#{cc.attrs.readonly}" value="#{cc.ref.contactEmail}"  id="contactEmail" >
+								<p:ajax event="change" 
+									partialSubmit="true" process="@this"
+									listener="#{cc.actionCheckEmail}" />
+							</p:inputText>
+						</div>						
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-3 p-xl-2" > 
+							<h:outputText value="#{ui_labels['general.phone']}" styleClass="form-label " />
+							<p:inputText readonly="#{cc.attrs.readonly}" value="#{cc.ref.contactPhone}"  id="contactPhone" >
+								<p:keyFilter regEx="/[0-9 +]/" preventPaste="false" />
+							</p:inputText>
+						</div>
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-2 p-xl-1" jsf:id="cpB2" >
+							<h:outputText value="#{labels['general.adrPostBox']}" styleClass="form-label" />
+							<p:inputText readonly="#{cc.attrs.readonly}" value="#{cc.ref.addressKoresp.postBox}"  />
+						</div>
+						<div class="p-grid p-col-12">
+							<div class="#{cc.attrs.english ? 'p-col-6' : 'p-col-12'}" jsf:rendered="#{cc.ref.addressKoresp.addrCountry ne cc.countryBG}">
+									<h:outputText value="#{ui_labels['general.adres']}" styleClass="form-label"/>
+								<p:inputTextarea readonly="#{cc.attrs.readonly}" value="#{cc.ref.addressKoresp.addrText}" id="adrTxt21"	rows="2">
+									<p:ajax event="change" process="@this" update="@this" partialSubmit="true" />
+								</p:inputTextarea>
+							</div>
+							<div class="#{cc.attrs.english ? 'p-col-6' : 'p-col-12'}"  jsf:rendered="#{cc.attrs.english}">
+								<h:outputText value="#{ui_labels['general.adres']} на английски" styleClass="form-label"/>
+								<p:inputTextarea readonly="#{cc.attrs.readonly}" value="#{cc.ref.addressKoresp.addrTextLatin}" id="adrTxt21e"	rows="2">
+									<p:ajax event="change" process="@this" update="@this" partialSubmit="true" />
+								</p:inputTextarea>
+							</div>
+						</div>					
+					</h:panelGroup>
+				
+					<h:panelGroup id="birth" layout="block" class="p-grid p-col-12">			
+						<ui:remove><!-- ПАНЕЛ за дата и място на раждане --></ui:remove>
+					
+						<h:panelGroup layout="block" class="p-grid p-col-12" id="birthDate" rendered="#{cc.attrs.showBirthPlace and cc.ref.refType eq BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" >
+							 <div class="p-col-fixed" style="width:180px">
+								<h:outputText value="#{labels['reffCorr.birthDate']}" styleClass="form-label req" />
+								<p:datePicker id="bDate" mask="true" showIcon="true" 
+								pattern="dd.MM.yyyy" locale="bg" value="#{cc.ref.fzlBirthDate}" />
+							</div>
+							<div class=" p-col-12 p-sm-6 p-md-6 p-lg-4 p-xl-2">
+								<h:outputText value="#{labels['reffCorr.birthPlace']}" styleClass="form-label req" />
+								<p:inputText id="bPlace"  value="#{cc.ref.fzlBirthPlace}" />
+							</div>
+						 
+							<div class=" p-col-12 p-sm-6 p-md-6 p-lg-4 p-xl-3"  jsf:rendered="#{cc.attrs.englishBirthPlace}">
+								<h:outputText value="#{labels['reffCorr.birthPlace']} на английски"  styleClass="form-label" />
+								<p:inputText id="bPlaceEN"  value="#{cc.ref.fzlBirthPlaceLatin}" />
+							</div> 
+							<div class="p-col-12 p-sm-6 p-md-6 p-lg-4 p-xl-2" >
+								<h:outputText value="#{labels['reffCorr.nationality']}" styleClass="form-label" />
+								<p:inputText id="bNation"  value="#{cc.ref.nationality}" />
+							</div>
+					 
+							<div class="p-col-12 p-sm-6 p-md-6 p-lg-4 p-xl-3" jsf:rendered="#{cc.attrs.englishBirthPlace}">
+								<h:outputText value="#{labels['reffCorr.nationality']} на английски" styleClass="form-label" />
+								<p:inputText id="bNationEN"  value="#{cc.ref.nationalityLatin}" />
+							</div> 
+						</h:panelGroup>
+									
+					</h:panelGroup>
+				
+				</div>
+
+			</div>
+			
+			<ui:remove><!-- ПАНЕЛ ДОП.ИНФО --></ui:remove>
+			<div class="title-group p-mt-3" jsf:rendered="#{cc.attrs.showDopInfo}">
+				<p:commandLink class="extended-search-toggle"
+					onclick="toggleSection(this, '#cd3-dopInfo')">
+					<h:outputText value="#{labels['docu.dopInfo']}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div class="p-grid ui-fluid" id="cd3-dopInfo" jsf:rendered="#{cc.attrs.showDopInfo}">
+				<div class="p-col-12">
+					<p:inputTextarea rows="4" id="dopInfoInput"
+						value="#{cc.ref.refInfo}" style="width:99%"
+						readonly="#{cc.attrs.readonly}" />
+				</div>
+			</div>
+
+			<div class="p-grid ui-fluid" id="cd3-datBegEnd"  >
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2" jsf:rendered="#{cc.attrs.showDatBegEnd}">
+					<h:outputText value="Начална дата" styleClass="form-label " />
+					<p:datePicker id="datBeg" mask="true" showIcon="true" readonly="#{cc.attrs.readonly}" disabled="#{cc.attrs.readonly}"
+						pattern="dd.MM.yyyy" locale="bg" value="#{cc.ref.dateBeg}" />
+				</div>
+
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2" jsf:rendered="#{cc.attrs.showDatBegEnd}">
+					<h:outputText value="Крайна дата" styleClass="form-label " />
+					<p:datePicker id="datEnd" mask="true" showIcon="true" readonly="#{cc.attrs.readonly}" disabled="#{cc.attrs.readonly}"
+						pattern="dd.MM.yyyy" locale="bg" value="#{cc.ref.dateEnd}" />
+				</div>
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2" jsf:rendered="#{cc.attrs.showUrn}">
+					<h:outputText value="УРН" styleClass="form-label " />
+					<p:inputText id="urn"  value="#{cc.ref.urn}" />
+				</div>
+			</div>
+			
+			<div class="p-grid ui-fluid">
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4" jsf:rendered="#{cc.attrs.showObraz}">
+					<h:outputText value="#{labels['refCorr.obrazovStepen']}" styleClass="form-label " />
+					<ui:remove><!-- 
+					<p:inputText id="obrazStepen"  value="#{cc.ref.obrazovStepen}"  readonly="#{cc.attrs.readonly}"/>
+					 --></ui:remove> 
+					<p:selectOneMenu  
+						value="#{cc.ref.obrazovanie}"
+						disabled="#{cc.attrs.readonly}">
+						<f:selectItem value="#{null}" itemValue="#{null}" />
+						<f:selectItems
+							value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_OBRAZOBANIE, now, cc.lang)}"
+							var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" >
+						</f:selectItems>
+					</p:selectOneMenu>
+				</div>
+				<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6" jsf:rendered="#{cc.attrs.showOpit}">
+					<h:outputText value="Професионален опит" styleClass="form-label " />
+					<p:inputText id="opit"  value="#{cc.ref.opit}" readonly="#{cc.attrs.readonly}" />
+				</div>
+			</div>
+
+
+
+			<ui:remove><!-- ПАНЕЛ ДОКУМЕНТИ --></ui:remove>
+			<div class="title-group p-mt-3" jsf:rendered="#{cc.attrs.showDocs}">
+				<p:commandLink class="extended-search-toggle"
+					onclick="toggleSection(this, '#cd4-docsList')"
+					update="#{cc.clientId}:panelTblDoc" partialSubmit="true"
+					process="#{cc.clientId}:panelTblDoc @this">
+					<h:outputText value="Документи на лицето" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+
+			<div class="p-grid ui-fluid" id="cd4-docsList" jsf:rendered="#{cc.attrs.showDocs}">
+
+				<h:panelGroup id="panelTblDoc" layout="block"
+					class="p-grid p-col-12">
+
+					<div class="p-col-12" jsf:id="docListDiv">
+						<p:dataTable id="tblDocs" var="row" value="#{cc.ref.referentDocs}"
+							lazy="true" rowKey="#{row.id}" rowIndexVar="idx"
+							sortMode="single" reflow="true"
+							emptyMessage="#{labels['refCorr.docsEmptyMsg']}"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rows="5" rowsPerPageTemplate="5,10,15,20,25"
+							paginatorPosition="bottom" paginatorAlwaysVisible="true"
+							paginator="true" showGridlines="true">
+
+							<f:facet name="header">
+
+								<h:panelGroup id="panelTblDoc" layout="block"   rendered="#{!cc.attrs.readonly}"
+									class="p-grid p-col-12">
+									<div class="p-col-12 p-sm-12 p-md-4 p-lg-2 p-xl-2"
+										jsf:id="vidDoc">
+										<h:outputText value="Вид документ" styleClass="form-label req" />
+										<p:selectOneMenu id="vidDocInput" value="#{cc.refDoc.vidDoc}"
+											style="max-width: 100%;">
+											<f:selectItem value="#{null}" itemValue="#{null}" />
+											<f:selectItems
+												value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_DOC_LICE, now, cc.lang)}"
+												var="clPer" itemLabel="#{clPer.tekst}"
+												itemValue="#{clPer.code}" />
+										</p:selectOneMenu>
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2"
+										jsf:id="nomDiplomDoc">
+										<h:outputText value="Номер на документ"
+											styleClass="form-label req" />
+										<p:inputText id="nomDiplomDocInput"
+											value="#{cc.refDoc.nomDoc}" />
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-4 p-lg-3 p-xl-2"
+										jsf:id="dateIssued">
+										<h:outputText value="Дата на издаване"
+											styleClass="form-label " />
+										<p:datePicker id="dateIssuedInput" mask="true" showIcon="true"
+											pattern="dd.MM.yyyy" locale="bg"
+											value="#{cc.refDoc.dateIssued}" />
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2"
+										jsf:id="issuedByDoc">
+										<h:outputText value="Издаден от" styleClass="form-label " />
+										<p:inputText id="issuedByInput" value="#{cc.refDoc.issuedBy}" />
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2"
+										jsf:id="addDocButton">
+										<p:commandButton icon="fas fa-plus"
+											style="margin-top:18px;width: auto;"
+											update="#{cc.clientId}:panelTblDoc "
+											styleClass="ui-button-success" action="#{cc.actionAddDoc}"
+											value="Добави документа">
+										</p:commandButton>
+									</div>
+
+								</h:panelGroup>
+
+							</f:facet>
+
+							<p:column width="10" styleClass="p-text-center"
+								exportable="false"
+								headerText="#{ui_labels['general.No-symbol']}">
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="10" styleClass="p-text-center"
+								exportable="false"  rendered="#{!cc.attrs.readonly}">
+								<p:commandButton icon="fas fa-edit"
+									action="#{cc.actionEditDoc(idx)}" styleClass="btn-new"
+									update="#{cc.clientId}:panelTblDoc" />
+							</p:column>
+
+							<p:column width="110" sortBy="#{row.vidDoc}"
+								headerText="Вид документ">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DOC_LICE, row.vidDoc, cc.lang, now)}" />
+							</p:column>
+
+							<p:column width="110" sortBy="#{row.nomDoc}"
+								headerText="Номер на док.">
+								<h:outputText value="#{row.nomDoc}" />
+							</p:column>
+
+							<p:column width="110" sortBy="#{row.dateIssued}"
+								headerText="Дата на издаване">
+								<h:outputText value="#{row.dateIssued}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{cc.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column width="110" sortBy="#{row.issuedBy}"
+								headerText="Издаден от">
+								<h:outputText value="#{row.issuedBy}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+				</h:panelGroup>
+			</div>
+
+		</div>
+
+
+	</cc:implementation>
+
+</ui:composition>

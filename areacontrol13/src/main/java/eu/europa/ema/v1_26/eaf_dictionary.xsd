@@ -1,0 +1,1548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2011 (http://www.altova.com) by ema user (European Medicines Agency) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:rdm="http://www.ema.eaf/dictionary/" targetNamespace="http://www.ema.eaf/dictionary/" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.26.0.0">
+	<xs:annotation>
+		<xs:documentation>Dictionary defining data types used by RDM core, eaF core and form specifics</xs:documentation>
+		<xs:documentation>This dictionary contains simple and complex types used to build schema structures</xs:documentation>
+	</xs:annotation>
+	<!-- Simple types defined in RDM core. Elements are presented in alphabetic order -->
+	<xs:simpleType name="control-term">
+		<xs:restriction base="xs:string">
+			<!-- xs:pattern value="[A-Za-z_]{6,12}"/ -->
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="emailString">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+			<xs:pattern value="^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]{2,}[.][a-zA-Z]{2,3}$"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="radiobutton">
+		<xs:restriction base="xs:integer">
+			<xs:totalDigits value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string1">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string10">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="10"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string30">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="30"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string50">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string100">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="100"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="string250">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="250"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="yes-no">
+		<xs:annotation>
+			<xs:documentation>Applied to all checkboxes and yes-no radiobutton groups // yes, true = 1 // no, false = 0</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0"/>
+			<xs:maxInclusive value="1"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<!-- +++++++++++++++++++++++  -->
+	<!--End of Simple type definitions -->
+	<!-- +++++++++++++++++++++++-->
+	<!-- +++++++++++++++++++++++  -->
+	<!--  Complex type Rdm core definitions -->
+	<!-- +++++++++++++++++++++++-->
+	<xs:complexType name="attachment">
+		<xs:sequence>
+			<xs:element name="Attachment-type" type="rdm:CTL"/>
+			<xs:element name="attachment-URL" type="xs:string" minOccurs="0"/>
+			<xs:element name="attachment-body" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="bio-reference-medicinal-product">
+		<xs:complexContent>
+			<xs:extension base="rdm:reference-medicinal-product-type">
+				<xs:sequence>
+					<!-- xs:element name="company-name"/ -->
+					<xs:element name="bio-sty-ref-eudract" minOccurs="1" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="number" type="rdm:string30"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="centralised-procedure">
+		<xs:complexContent>
+			<xs:extension base="rdm:generic-procedure">
+				<xs:sequence>
+					<!-- xs:element name="company-name"/ -->
+					<xs:element name="mandatory">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="selected" type="rdm:yes-no"/>
+								<xs:element name="annex" type="rdm:radiobutton"/>
+								<xs:element name="advanced-therapy-medicinal-product">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="selected" type="rdm:yes-no"/>
+											<xs:element name="atmp-type" type="rdm:radiobutton"/>
+											<xs:element name="product-is-also" type="rdm:radiobutton"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="optional-scope">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="selected" type="rdm:yes-no"/>
+								<xs:element name="annex" type="rdm:radiobutton"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="article3-3" type="rdm:yes-no"/>
+					<xs:element name="article28" type="rdm:yes-no"/>
+					<xs:element name="article29" type="rdm:yes-no"/>
+					<xs:element name="article31">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="selected" type="rdm:yes-no"/>
+								<xs:element name="date-of-acceptance" type="xs:date"/>
+								<xs:element name="ema-product-number" type="xs:string"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="non-atmp">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="chmp-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="chmp-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="chmp-co-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="chmp-co-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="prac-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="prac-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="prac-co-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="prac-co-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="atmp">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="cat-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="cat-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="cat-co-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="cat-co-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="chmp-coordinator_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="chmp-coordinator" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="chmp-co-coordinator_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="chmp-co-coordinator" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="prac-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="prac-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+								<xs:element name="prac-co-rapporteur_selected" type="rdm:yes-no" minOccurs="0"/>
+								<xs:element name="prac-co-rapporteur" type="rdm:contact-details-type" minOccurs="0"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="contact-batch-testing-site">
+		<xs:complexContent>
+			<xs:extension base="rdm:contact-details-type">
+				<xs:sequence>
+					<xs:element name="control-tests" minOccurs="1" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="control-test" type="rdm:control-term"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="function-description" type="xs:string"/>
+					<xs:element name="attach-GMP-complaince" type="rdm:yes-no"/>
+					<xs:element name="eudraGMP-auth-reference" type="xs:string"/>
+					<xs:element name="attach-gmp-certificate" type="rdm:yes-no"/>
+					<xs:element name="gmpc" type="rdm:gmpc"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="contact-blood-vaccine">
+		<xs:complexContent>
+			<xs:extension base="rdm:contact-details-type">
+				<xs:sequence>
+					<xs:element name="laboratory-name" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="contact-details-type">
+		<xs:sequence>
+			<xs:element name="personal-title" type="rdm:string10" minOccurs="0"/>
+			<xs:element name="given-name" type="rdm:string100"/>
+			<xs:element name="family-name" type="rdm:string100"/>
+			<xs:element name="company-name" type="rdm:string100"/>
+			<xs:element name="address1" type="rdm:string100"/>
+			<xs:element name="address2" type="rdm:string100"/>
+			<xs:element name="address3" type="rdm:string100"/>
+			<xs:element name="address4" type="rdm:string100"/>
+			<xs:element name="city" type="rdm:string100"/>
+			<xs:element name="state" type="rdm:string100" minOccurs="0"/>
+			<xs:element name="county" type="rdm:string100"/>
+			<xs:element name="post-code" type="rdm:string10"/>
+			<xs:element name="country" type="rdm:control-term"/>
+			<xs:element name="orgID" type="rdm:string50"/>
+			<xs:element name="locID" type="rdm:string50"/>
+			<xs:element name="loc-modifiedDate" type="xs:date"/>
+			<xs:element name="org-modifiedDate" type="xs:date"/>
+			<xs:element name="language" type="rdm:string10"/>
+			<xs:element name="phone" type="rdm:string50"/>
+			<!-- <xs:element name="fax" type="rdm:string30" minOccurs="0"/> -->
+			<xs:element name="email" type="rdm:string100" minOccurs="0"/>
+			<xs:element name="qualification" type="xs:string" minOccurs="0"/>
+			<xs:element name="residesInEEA" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="attach" type="rdm:yes-no"/>
+			<xs:element name="qualifiedPerson" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="member-states" type="rdm:member-states"/>
+			<xs:element name="admin-manu-address" type="rdm:yes-no"/>
+			<xs:element name="admin-office" type="rdm:admin-office"/>
+			<xs:element name="manu-facility" type="rdm:manu-facility" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="contact-scientific-advice">
+		<xs:complexContent>
+			<xs:extension base="rdm:contact-details-type"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="contract-study">
+		<xs:sequence>
+			<xs:element name="studies" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="title-of-study" type="xs:string"/>
+						<xs:element name="protocol-code" type="rdm:string30"/>
+						<xs:element name="eudraCT-number" type="rdm:string30"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="contract-company" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="rdm:contact-details-type">
+							<xs:sequence>
+								<xs:element name="contract-duty-performed" type="rdm:string30"/>
+								<xs:element name="product_name" type="rdm:string250"/>
+								<xs:element name="product_country" type="rdm:control-term"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="CTL">
+		<xs:sequence>
+			<xs:element name="term-id" type="xs:string"/>
+			<xs:element name="type" type="xs:string"/>
+			<xs:element name="ctl-version" type="xs:string"/>
+			<xs:element name="short-name" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="element-type" type="xs:string" fixed="CTL"/>
+	</xs:complexType>
+	<xs:complexType name="decentralised-procedure">
+		<xs:complexContent>
+			<xs:extension base="rdm:generic-procedure">
+				<xs:sequence>
+					<!-- xs:element name="company-name"/ -->
+					<xs:element name="reference-member-state" type="xs:string"/>
+					<xs:element name="member-states" type="rdm:member-states"/>
+					<xs:element name="proposed-agreed-renewal-date" type="xs:string"/>
+					<xs:element name="after-initial-procedure" type="rdm:radiobutton" minOccurs="0"/>
+					<xs:element name="member-renewals">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="member-renewal" minOccurs="1" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="member-states" type="rdm:member-states"/>
+											<xs:element name="proposed-agreed-renewal-date" type="xs:date"/>
+											<!-- <xs:element name="waiver-amendment-psur" type="xs:string"/ -->
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="decision">
+		<xs:sequence>
+			<xs:element name="yes-no" type="rdm:yes-no"/>
+			<xs:element name="class-waiver" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="class-waiver-number" type="rdm:string50"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="product-specific-decisions" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="product-specific-decision" type="rdm:string50"/>
+						<xs:element name="selected" type="rdm:yes-no"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="pip-decision-nums">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="decision-number" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="number" type="rdm:string50"/>
+									<xs:element name="selected" type="rdm:yes-no"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="envelope">
+		<xs:sequence>
+			<xs:element name="wsurl" type="xs:string"/>
+			<xs:element name="formVersion" type="xs:string"/>
+			<xs:element name="xsdVersion" type="xs:string"/>
+			<xs:element name="formtype" type="xs:string"/>
+			<xs:element name="isEditable" type="xs:boolean"/>
+			<xs:element name="listModTimes">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="modTime" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="list-name" type="xs:string"/>
+									<xs:element name="mod-date" type="xs:string"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="lists" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="countries" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="nonEEACountries" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="eeaCountries" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="euAndFreeTradeCountries" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="eeaCountriesExcludingUkNi" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="euAndEftaCountriesExcludingUkNi" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="eeaCountriesAndUkGb" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="pharmaForms" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="routesOfAdmin" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="strengthOperators" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="strengthUnits" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="containers" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="adminDevices" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="closures" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="specPrecaution4Storage" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="mrlSpecies" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="mrlProvision" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="tissueMRL" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="targetSpecies" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="manufacturerControlTests" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="manufacturerFunctions" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="manufacturerSteps" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="substanceType" type="rdm:eutctListType" minOccurs="1" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="generic-procedure">
+		<xs:sequence>
+			<xs:element name="selected" type="rdm:yes-no"/>
+			<xs:element name="selected_scope" type="rdm:radiobutton"/>
+			<!--  xs:element name="waiver-amendment-psur" type="xs:string"/ -->
+			<xs:element name="procedure-number" type="rdm:string30"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="gmpc">
+		<xs:sequence>
+			<xs:element name="gmpc-number" type="rdm:string100"/>
+			<xs:element name="gmpc-category" type="rdm:control-term"/>
+			<xs:element name="authorisation-number" type="xs:string"/>
+			<xs:element name="inspection-date" type="xs:date"/>
+			<xs:element name="gmpc-detail">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="gmpc-activity" type="xs:string" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="eutctListType">
+		<xs:sequence>
+			<xs:element name="item" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="label" type="xs:string"/>
+						<xs:element name="value" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ingredient-type">
+		<xs:sequence>
+			<xs:element name="low-strength-numerator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="low-strength-denominator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="high-strength-numerator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="high-strength-denominator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="strength-denominator-unit" minOccurs="0"/>
+			<xs:element name="strength-numerator-unit" minOccurs="0"/>
+			<xs:element name="ingredient-role" type="xs:string" minOccurs="0"/>
+			<xs:element name="quantity-operator" type="rdm:control-term" minOccurs="0"/>
+			<xs:element name="substance" type="rdm:substance"/>
+			<xs:element name="active-substance-form" type="rdm:control-term" minOccurs="0"/>
+			<xs:element name="overage" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="overage-quantity" type="xs:string"/>
+						<xs:element name="substance" type="xs:string" maxOccurs="unbounded"/>
+						<xs:element name="overage-reason" type="xs:string" minOccurs="0"/>
+						<xs:element name="overage-justification" type="xs:string" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reference-monograph-standard" type="xs:string" minOccurs="0"/>
+			<xs:element name="ingredient-origin" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="substance-certificate">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="reference-number-certificate" type="xs:string"/>
+					</xs:sequence>
+					<xs:attribute name="type">
+						<xs:annotation>
+							<xs:documentation>text choice(“CEP” | “ASMF” | “VAMF” | “PMF”)</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="attachment" type="rdm:attachment" minOccurs="0" maxOccurs="unbounded"/>
+			<!--xs:element name="Is_sucseptible-to-TSE" type="rdm:yes-no" / -->
+			<!-- xs:element name="uses_EMEA_PMF "/ -->
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="legislation">
+		<xs:sequence>
+			<xs:element name="leg-eu-code" type="xs:string" minOccurs="0"/>
+			<xs:element name="leg-national-code" type="xs:string" minOccurs="0"/>
+			<xs:element name="leg-usage" type="rdm:leg-usage" minOccurs="0"/>
+			<xs:element name="leg-comment" type="xs:string" minOccurs="0"/>
+			<xs:element name="attachment" type="rdm:attachment" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="leg-article" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="leg-article-number" type="xs:string" minOccurs="0"/>
+						<xs:element name="leg-usage" type="rdm:leg-usage" minOccurs="0"/>
+					</xs:sequence>
+					<xs:attribute name="leg_applies" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Text choice (“yes” | “no”)</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="leg_type" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Text  choice (“directive” | “regulation” | “national”)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="leg_applies" type="xs:string">
+			<xs:annotation>
+				<xs:documentation>Text choice (“yes” | “no”)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="leg-usage">
+		<xs:sequence>
+			<xs:element name="country" type="rdm:CTL" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="legislation-usage" type="rdm:CTL" minOccurs="0"/>
+			<xs:element name="legal-status-for-supply" type="rdm:CTL" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="manufacturer-active-substance">
+		<xs:sequence>
+			<xs:element name="active-substances" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="company-description" type="xs:string"/>
+			<xs:element name="contact-details" type="rdm:contact-details-type"/>
+			<xs:element name="manu-facility" type="rdm:manu-facility" maxOccurs="unbounded"/>
+			<xs:element name="function-description" type="xs:string"/>
+			<xs:element name="manu-steps" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="manu-step" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="flow_chart" type="rdm:yes-no"/>
+			<xs:element name="qualified-person-declaration" type="rdm:yes-no"/>
+			<xs:element name="inspected_gmp_compliance" type="rdm:yes-no"/>
+			<xs:element name="competent-authority" type="rdm:yes-no"/>
+			<xs:element name="gmp_cert" type="rdm:yes-no"/>
+			<xs:element name="gmpc" type="rdm:gmpc"/>
+			<xs:element name="gmp-compliance-other" type="rdm:yes-no"/>
+			<xs:element name="summary-information" type="rdm:yes-no"/>
+			<xs:element name="ph-eur-cert-suitability" type="rdm:yes-no"/>
+			<xs:element name="provide-copy" type="rdm:yes-no"/>
+			<xs:element name="qualification" type="xs:string" minOccurs="0"/>
+			<xs:element name="attach" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="residesInEEA" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="personal-title" type="rdm:string30" minOccurs="0"/>
+			<xs:element name="mia" type="rdm:mia"/>
+			<xs:element name="active-substance-master-file" type="rdm:yes-no"/>
+			<xs:element name="access-community-member-state" type="rdm:yes-no"/>
+			<xs:element name="written-confirmation" type="rdm:yes-no"/>
+			<xs:element name="asmf" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate"/>
+						<xs:element name="contact-details" type="rdm:contact-details-type"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="vamf" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="is-vamf-issued"/>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ph-eur-cert">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="manufacturer-active-substance-vet">
+		<xs:sequence>
+			<xs:element name="active-substances" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="contact-details" type="rdm:contact-details-type"/>
+			<xs:element name="function-description" type="xs:string"/>
+			<xs:element name="manu-steps" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="manu-step" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="flow_chart" type="rdm:yes-no"/>
+			<xs:element name="qualified-person-declaration" type="rdm:yes-no"/>
+			<xs:element name="inspected_gmp_compliance" type="rdm:yes-no"/>
+			<xs:element name="competent-authority" type="rdm:yes-no"/>
+			<xs:element name="gmp_cert" type="rdm:yes-no"/>
+			<xs:element name="gmpc" type="rdm:gmpc"/>
+			<xs:element name="gmp-compliance-other" type="rdm:yes-no"/>
+			<xs:element name="summary-information" type="rdm:yes-no"/>
+			<xs:element name="ph-eur-cert-suitability" type="rdm:yes-no"/>
+			<xs:element name="provide-copy" type="rdm:yes-no"/>
+			<xs:element name="qualification" type="xs:string" minOccurs="0"/>
+			<xs:element name="attach" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="active-substance-master-file" type="rdm:yes-no"/>
+			<xs:element name="access-community-member-state" type="rdm:yes-no"/>
+			<xs:element name="ph-eur-cert">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate-vet" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="asmf">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate-vet"/>
+						<xs:element name="contact-details" type="rdm:contact-details-type"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="vamf" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="is-vamf-issued"/>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate-vet"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ptmf" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="is-ptmf-issued"/>
+						<xs:element name="substance-certificate" type="rdm:substance-certificate-vet"/>
+						<xs:element name="provide-copy" type="rdm:yes-no" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="manufacturer-batch-release">
+		<xs:sequence>
+			<xs:element name="contact-details" type="rdm:contact-details-type"/>
+			<xs:element name="manufacturing-auth-number" type="rdm:string100"/>
+			<xs:element name="attach-annex5-6" type="rdm:yes-no"/>
+			<xs:element name="eudraGMP-auth-reference" type="rdm:string100"/>
+			<xs:element name="selecteudraGMP-auth-reference" minOccurs="0"/>
+			<xs:element name="attach-gmp-certificate" type="rdm:yes-no"/>
+			<xs:element name="eudraGMP-certificate-reference" type="rdm:string100"/>
+			<xs:element name="selectedeudraGMP-certificate-reference" minOccurs="0"/>
+			<xs:element name="package-responsible-manufacturer" type="rdm:string250"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="manufacturer-batch-testing-site">
+		<xs:sequence>
+			<xs:element name="desc"/>
+			<xs:element name="control-tests" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="control-test" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="attach-auth-gmp" type="rdm:yes-no"/>
+			<xs:element name="eudraGMP-auth-reference"/>
+			<xs:element name="selecteudraGMP-auth-reference" type="rdm:yes-no"/>
+			<xs:element name="contact-details" type="rdm:contact-details-type"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="manufacturer-pharmaceutical-product">
+		<xs:sequence>
+			<xs:element name="partial-product-desc" type="xs:string"/>
+			<xs:element name="contact-details" type="rdm:contact-details-type"/>
+			<xs:element name="desc" type="xs:string"/>
+			<xs:element name="manu-functions" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="manu-function" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="attach-annex-5-8" type="rdm:yes-no"/>
+			<xs:element name="site-in-EEA" type="rdm:yes-no"/>
+			<xs:element name="site-out-EEA" type="rdm:yes-no"/>
+			<xs:element name="inside" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="manufacturing-auth-number" type="rdm:string100"/>
+						<xs:element name="manufacturing-auth-reference" type="rdm:string100"/>
+						<xs:element name="attach-annex-5-6" type="rdm:yes-no"/>
+						<xs:element name="eudraGMP-certificate-reference" type="rdm:string100"/>
+						<xs:element name="attach-annex-5-9" type="rdm:yes-no"/>
+						<xs:element name="qualified-person" type="rdm:string100"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="outside" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="DUNS-number" type="rdm:string100"/>
+						<xs:element name="attach-directive-annex-5-6" type="rdm:yes-no"/>
+						<xs:element name="gmp-compliance-eea" type="rdm:yes-no"/>
+						<xs:element name="gmp-compliance-eea-outcome" type="rdm:yes-no" minOccurs="0"/>
+						<xs:element name="three-year-auth-inspection" type="rdm:yes-no"/>
+						<xs:element name="attach-GMP-certificate" type="rdm:yes-no"/>
+						<xs:element name="eudraGMP-certificate-reference" type="rdm:string100"/>
+						<xs:element name="gmp-compliance-other" type="rdm:yes-no"/>
+						<xs:element name="gmp-compliance-other-outcome" type="rdm:yes-no" minOccurs="0"/>
+						<xs:element name="attach-annex-5-9" type="rdm:yes-no"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mark-auth">
+		<xs:sequence>
+			<xs:element name="selected" type="rdm:yes-no"/>
+			<xs:element name="mark-auth-detail" type="rdm:mark-auth-detail" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mark-auth-detail">
+		<xs:sequence>
+			<xs:element name="country" type="rdm:string100"/>
+			<xs:element name="date-of-auth" type="xs:date"/>
+			<xs:element name="invented-name" type="rdm:string250"/>
+			<xs:element name="auth-name" type="rdm:string50"/>
+			<xs:element name="date-refusal" type="xs:date"/>
+			<xs:element name="date-withdrawal" type="xs:date"/>
+			<xs:element name="date-suspension" type="xs:date"/>
+			<xs:element name="date-submission" type="xs:date"/>
+			<xs:element name="reason" type="rdm:string100"/>
+			<xs:element name="auth-number" type="rdm:string30"/>
+			<xs:element name="trade-name" type="rdm:string50"/>
+			<xs:element name="attach" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="procedure-number" type="rdm:string30"/>
+			<xs:element name="reason-refusal" type="rdm:string250"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="marketing-authorisation-holder">
+		<xs:complexContent>
+			<xs:extension base="rdm:contact-details-type">
+				<xs:sequence>
+					<xs:element name="sme-status" type="rdm:sme-status"/>
+					<xs:element name="Proof-of-payment" type="rdm:Proof-of-payment"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="member-states">
+		<xs:sequence>
+			<xs:element name="ref-member-state" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mia">
+		<xs:sequence>
+			<xs:element name="mia-number" type="xs:string"/>
+			<xs:element name="attachment" type="rdm:attachment" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="mp-authorisation-type">
+		<xs:sequence>
+			<xs:element name="authorisation-numbers" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="authorisation-number" type="rdm:string30" minOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="mrp-variation-number" type="xs:string"/>
+			<xs:element name="authorisation-holder" type="rdm:string30"/>
+			<xs:element name="authorisation-date" type="xs:date"/>
+			<xs:element name="country" type="xs:string"/>
+			<xs:element name="authorisation-status" type="xs:string"/>
+			<xs:element name="expiry-date" type="xs:date"/>
+			<xs:element name="mrp-dcp-procedure-number" type="xs:string"/>
+		</xs:sequence>
+		<xs:attribute name="is_marketed" type="rdm:yes-no"/>
+	</xs:complexType>
+	<xs:complexType name="mutual-recognition-procedure">
+		<xs:complexContent>
+			<xs:extension base="rdm:generic-procedure">
+				<xs:sequence>
+					<xs:element name="reference-member-state" type="xs:string"/>
+					<xs:element name="date-of-authorisation" type="xs:date"/>
+					<xs:element name="market-authorisation-number" type="rdm:string100"/>
+					<xs:element name="first-use" type="rdm:radiobutton"/>
+					<xs:element name="waiver-amendment-psur" type="xs:string" minOccurs="0"/>
+					<!-- <xs:element name="after-initial-procedure" type="rdm:radiobutton" minOccurs="0"/> -->
+					<xs:element name="member-renewals">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="member-renewal" minOccurs="1" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="member-states" type="rdm:member-states"/>
+											<xs:element name="proposed-agreed-renewal-date" type="xs:string" minOccurs="0"/>
+											<!-- xs:element name="agreed-common-renewal-date" type="xs:date"/ -->
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="national-procedure">
+		<xs:complexContent>
+			<xs:extension base="rdm:generic-procedure">
+				<xs:sequence>
+					<!-- xs:element name="company-name"/ -->
+					<xs:element name="application-number" type="xs:string"/>
+					<xs:element name="ref-member-state" type="xs:string"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="od-market-exclusivity">
+		<xs:sequence>
+			<xs:element name="isorphan" type="rdm:yes-no"/>
+			<xs:element name="granted-market-auth" type="rdm:yes-no"/>
+			<xs:element name="products">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="product" type="rdm:product-type" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="module171-172" type="rdm:yes-no"/>
+			<xs:element name="od-procedure-numbers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="od-procedure-number" type="rdm:string30"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="reference-medicinal-product" type="rdm:reference-medicinal-product-type" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="legislation" type="rdm:legislation" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="od-procedure">
+		<xs:sequence>
+			<xs:element name="been-applied" type="rdm:yes-no"/>
+			<xs:element name="pending" type="rdm:yes-no"/>
+			<xs:element name="granted" type="rdm:yes-no"/>
+			<xs:element name="refused" type="rdm:yes-no"/>
+			<xs:element name="withdrawn" type="rdm:yes-no"/>
+			<xs:element name="odp-numbers" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="odp-number" type="rdm:string100"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="od-authorisation" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="oda-date" type="xs:date"/>
+						<xs:element name="basedOnCriterion" type="rdm:yes-no"/>
+						<xs:element name="numberInRegister" type="rdm:string100"/>
+						<xs:element name="attachDesignationDecision" type="rdm:yes-no"/>
+						<xs:element name="oda-status" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="od-refused" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="od-refused-date" type="xs:date" minOccurs="0"/>
+						<xs:element name="od-decision-reference-number" type="rdm:string100" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="odp-start-date" type="xs:date" minOccurs="0"/>
+			<xs:element name="oda-withdrawn-date" type="xs:date" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="packages">
+		<xs:sequence>
+			<xs:element name="package" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="package-name" type="xs:string"/>
+						<xs:element name="package-size" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="size" type="xs:string"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="package-description"/>
+						<xs:element name="containers">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="container" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="shelf-life" type="rdm:shelf-life" maxOccurs="unbounded"/>
+												<xs:element name="container-details" maxOccurs="unbounded">
+													<xs:complexType>
+														<xs:sequence>
+															<xs:element name="material" type="xs:string"/>
+															<xs:element name="container-type" type="rdm:control-term"/>
+															<xs:element name="closure-material" type="rdm:control-term"/>
+															<xs:element name="administrative-device" type="rdm:control-term"/>
+															<xs:element name="container-material" type="xs:string" minOccurs="0"/>
+															<xs:element name="closure" type="xs:string"/>
+															<xs:element name="content-of-container" type="xs:string" maxOccurs="unbounded"/>
+															<xs:element name="description"/>
+														</xs:sequence>
+													</xs:complexType>
+												</xs:element>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="attachment" type="rdm:attachment"/>
+						<!-- This element has been modified two elements removed and another added -->
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pharmaproduct">
+		<xs:sequence>
+			<xs:element name="invented-name" type="rdm:string250"/>
+			<xs:element name="pharmaforms" type="xs:string"/>
+			<xs:element name="strengths" type="xs:string"/>
+			<xs:element name="act-substances" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pharmaco-vigilance">
+		<xs:complexContent>
+			<xs:extension base="rdm:contact-details-type">
+				<xs:sequence>
+					<xs:element name="number" type="xs:string"/>
+					<xs:element name="art57-database-box" type="rdm:yes-no"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="procedureTypeItem">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="selected" type="rdm:yes-no"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="product-type">
+		<xs:sequence>
+			<xs:element name="mp-authorisation" type="rdm:mp-authorisation-type"/>
+			<xs:element name="pharmaproduct" type="rdm:medicinal-product"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="Proof-of-payment">
+		<xs:sequence>
+			<xs:element name="payment" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="fees-paid" type="rdm:yes-no"/>
+						<xs:element name="member-states" type="rdm:member-states" maxOccurs="unbounded"/>
+						<xs:element name="billing-details" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="member-states" type="rdm:member-states" maxOccurs="unbounded"/>
+									<xs:element name="VAT-number" type="rdm:string100"/>
+									<xs:element name="Purchase-order-number" type="rdm:string100"/>
+									<xs:element name="contact-details-type" type="rdm:contact-details-type"/>
+									<xs:element name="reason" type="xs:string"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="reference-medicinal-product-type">
+		<xs:complexContent>
+			<xs:extension base="rdm:product-type">
+				<xs:sequence>
+					<xs:element name="member-states" type="rdm:member-states"/>
+					<xs:element name="community" type="rdm:yes-no"/>
+					<xs:element name="third-country" type="rdm:yes-no" minOccurs="0"/>
+					<xs:element name="mem-selected" type="rdm:yes-no"/>
+					<xs:element name="member-state" type="rdm:string100"/>
+					<xs:element name="date-authorization" type="xs:date"/>
+					<xs:element name="member-state-source" type="rdm:string100" minOccurs="0"/>
+					<xs:element name="bioavailability-ref-numbers" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="bioavailability-ref-number" type="rdm:string100"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="role">
+		<xs:sequence>
+			<xs:element name="party-identification" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="party-identification-type" type="rdm:CTL"/>
+						<xs:element name="identification-number"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="party-relationship" type="rdm:CTL" minOccurs="0"/>
+			<xs:element name="business-category" type="rdm:CTL" minOccurs="0"/>
+			<xs:element name="party-type" type="rdm:CTL" minOccurs="0"/>
+			<xs:element name="personal-title" type="rdm:string10" minOccurs="0"/>
+			<xs:element name="job-title" type="rdm:string50" minOccurs="0"/>
+			<xs:element name="given-name" type="rdm:string50"/>
+			<xs:element name="middle-name" type="rdm:string50" minOccurs="0"/>
+			<xs:element name="family-name" type="rdm:string50"/>
+			<xs:element name="initials" type="rdm:string10" minOccurs="0"/>
+			<xs:element name="qualifications" type="rdm:CTL" minOccurs="0"/>
+			<xs:element name="gender" type="rdm:CTL" minOccurs="0"/>
+			<xs:element name="name" type="rdm:string100"/>
+			<xs:element name="company-description" type="xs:string"/>
+			<xs:element name="contact-details" type="rdm:contact-details-type" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="route-of-administrations">
+		<xs:sequence>
+			<xs:element name="route-of-administration" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="rdm:control-term" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="code" type="rdm:control-term" minOccurs="1" maxOccurs="1"/>
+						<xs:element name="target_species" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="species" type="rdm:control-term"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sci-advice-details-type">
+		<xs:sequence>
+			<xs:element name="advice-given" type="rdm:yes-no"/>
+			<xs:element name="advice-details" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="date" type="xs:date"/>
+						<xs:element name="reference" type="rdm:string30"/>
+						<xs:element name="member-state" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="scientific-advice">
+		<xs:sequence>
+			<xs:element name="scientific-advice-chmp" type="rdm:sci-advice-details-type"/>
+			<xs:element name="scientific-advice-member-state">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="rdm:sci-advice-details-type">
+							<xs:sequence>
+								<xs:element name="attach-copy" type="rdm:yes-no"/>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="shelf-life">
+		<xs:sequence>
+			<xs:element name="shelf-life-after-open" type="rdm:string30"/>
+			<xs:element name="shelf-life-after-open-units" type="xs:string"/>
+			<xs:element name="shelf-life-after-dilution" type="xs:string"/>
+			<xs:element name="shelf-life-after-dilution-units" type="xs:string"/>
+			<xs:element name="shelf-life-before-open" type="rdm:string30"/>
+			<xs:element name="shelf-life-before-open-units" type="xs:string"/>
+			<xs:element name="spfs" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="special-precaution-for-storage" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="spfsao" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="special-precaution-for-storage-after-open" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="spfsadr" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="special-precaution-for-storage-after-dilution-reconstitution" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="shelf-life-duration" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="signatory">
+		<xs:sequence>
+			<xs:element name="payment" minOccurs="1" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="rdm:Proof-of-payment">
+							<xs:sequence>
+								<xs:element name="payment-selection" type="xs:string"/>
+								<xs:element name="fee-category-details" minOccurs="1" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="member-states" type="rdm:member-states" maxOccurs="unbounded"/>
+											<xs:element name="category" type="xs:string"/>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:extension>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="main-Signatory" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="role" type="rdm:role"/>
+						<xs:element name="date" type="xs:date"/>
+						<xs:element name="dec-signature" type="xs:string"/>
+						<xs:element name="signOnBehalf" type="rdm:yes-no"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="additional-Signatory" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="role" type="rdm:role"/>
+						<xs:element name="date" type="xs:date"/>
+						<xs:element name="dec-signature" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sme-status">
+		<xs:sequence>
+			<xs:element name="annex5-3" type="rdm:yes-no"/>
+			<xs:element name="assigned" type="rdm:yes-no"/>
+			<xs:element name="emea-sme-number" type="rdm:string30"/>
+			<xs:element name="date-of-expiry" type="xs:date"/>
+			<xs:element name="annex5-21" type="rdm:yes-no"/>
+			<xs:element name="annex5-7" type="rdm:yes-no"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="strength-excipient">
+		<xs:complexContent>
+			<xs:extension base="rdm:ingredient-type">
+				<xs:sequence>
+					<xs:element name="excipient"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="substance">
+		<xs:sequence>
+			<xs:element name="name" type="rdm:control-term" minOccurs="1" maxOccurs="1"/>
+			<xs:element name="code" type="rdm:control-term" minOccurs="1" maxOccurs="1"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="substance-certificate-vet">
+		<xs:sequence>
+			<xs:element name="active-substances">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ingredient-role" type="xs:string" minOccurs="0"/>
+			<xs:element name="reference-number-certificate" type="rdm:string30"/>
+			<xs:element name="National-ASMF-reference-number" type="rdm:string30"/>
+			<xs:element name="Applicant-part-version-number" type="rdm:string30"/>
+			<xs:element name="date-submission" type="xs:date" minOccurs="0"/>
+			<xs:element name="date-last-update" type="xs:date" minOccurs="0"/>
+			<xs:element name="cep-confirmation" type="rdm:yes-no"/>
+			<xs:element name="country" type="xs:string"/>
+			<xs:element name="certificate-holder">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="rdm:string100"/>
+						<xs:element name="manufacturer-name" type="rdm:string100"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="type">
+			<xs:annotation>
+				<xs:documentation>text choice(“CEP” | “ASMF” | “VAMF” | “PMF”)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="substance-certificate">
+		<xs:sequence>
+			<xs:element name="active-substances">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ingredient-role" type="xs:string" minOccurs="0"/>
+			<xs:element name="reference-number-certificate" type="rdm:string30"/>
+			<xs:element name="National-ASMF-reference-number" type="rdm:string30"/>
+			<xs:element name="Applicant-part-version-number" type="rdm:string30"/>
+			<xs:element name="date-submission" type="xs:date" minOccurs="0"/>
+			<xs:element name="date-last-update" type="xs:date" minOccurs="0"/>
+			<xs:element name="country" type="xs:string"/>
+			<xs:element name="certificate-holder">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="name" type="rdm:string100"/>
+						<xs:element name="manufacturer-name" type="rdm:string100"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="type">
+			<xs:annotation>
+				<xs:documentation>text choice(“CEP” | “ASMF” | “VAMF” | “PMF”)</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="condition">
+		<xs:sequence>
+			<xs:element name="isRelevant" type="rdm:yes-no" />
+			<xs:element name="title" type="xs:string"/>
+			<xs:element name="note" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="documentation">
+		<xs:sequence>
+			<xs:element name="isRelevant" type="rdm:yes-no"/>
+			<xs:element name="title" type="xs:string"/>
+			<xs:element name="note" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="variationItem">
+		<xs:sequence>
+			<xs:element name="selected" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="title" type="xs:string" minOccurs="0"/>
+			<xs:element name="identifier" type="xs:string" minOccurs="0"/>
+			<xs:element name="shortName" type="xs:string" minOccurs="0"/>		
+			<xs:element name="typeIA" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="typeIAIN" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="typeIB" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="typeIBun" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="typeII" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="typeIIart29" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="typeVet" type="xs:string"/>
+			
+			<xs:element name="alternative-timetable">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="alternative-timetable-rb" type="rdm:radiobutton"/>
+						<xs:element name="confirm-alternative-timetable-cb" type="rdm:yes-no"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+										
+			<xs:element name="article5" type="rdm:yes-no" minOccurs="0"/>
+			<xs:element name="date" type="xs:date" minOccurs="0"/>
+			<xs:element name="comment" type="rdm:string100" minOccurs="0"/>
+			<xs:element name="conditions" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="condition" type="rdm:condition" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="documentations" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="documentation" type="rdm:documentation" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="typeIAapplicable" type="xs:boolean" />
+			<xs:element name="typeIAINapplicable" type="xs:boolean" />
+			<xs:element name="typeIBapplicable" type="xs:boolean" />
+			<xs:element name="typeIBunapplicable" type="xs:boolean" />
+			<xs:element name="typeIIapplicable" type="xs:boolean" />
+			<xs:element name="typeIIart29applicable" type="xs:boolean" />
+			<xs:element name="article5applicable" type="xs:boolean" />
+			<xs:element name="conditionsapplicable" type="xs:boolean" />
+			<xs:element name="documentationsapplicable" type="xs:boolean" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="waiver">
+		<xs:sequence>
+			<xs:element name="waiver-decision-number" type="xs:string"/>
+			<xs:element name="waiver_type" type="xs:string"/>
+		</xs:sequence>
+		
+	</xs:complexType>
+	<xs:complexType name="ingredient-strength">
+		<xs:sequence>
+			<xs:element name="quantity-operator" type="rdm:control-term"/>
+			<xs:element name="low-strength-numerator-value" type="xs:float"/>
+			<xs:element name="low-strength-numerator-unit" type="rdm:control-term"/>
+			<xs:element name="low-strength-denominator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="low-strength-denominator-unit" type="rdm:control-term" minOccurs="0"/>
+			<xs:element name="high-strength-numerator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="high-strength-numerator-unit" type="rdm:control-term" minOccurs="0"/>
+			<xs:element name="high-strength-denominator-value" type="xs:float" minOccurs="0"/>
+			<xs:element name="high-strength-denominator-unit" type="rdm:control-term" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="ingredient">
+		<xs:sequence>
+			<xs:element name="ingredient-role" type="rdm:control-term"/>
+			<xs:element name="substance-name" type="rdm:substance"/>
+			<xs:element name="ingredient-strength" type="rdm:ingredient-strength" minOccurs="0"/>
+			<xs:element name="moiety-substance-name" type="rdm:substance"/>
+			<xs:element name="moiety-ingredient-strength" type="rdm:ingredient-strength" minOccurs="0"/>
+			<xs:element name="reference-monograph-standard" type="rdm:string250" minOccurs="0"/>
+			<xs:element name="reference-monograph-standard-base" type="rdm:string250" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="pharmaceutical-product">
+		<xs:sequence>
+			<xs:element name="pharmaceutical-form-names" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="composition-quantity" type="xs:string"/>
+						<xs:element name="low-strength-numerator-unit" type="rdm:control-term"/>
+						<xs:element name="pharmaceutical-form-name" type="rdm:control-term"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="pharmaceutical-form-details" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="pharmaceutical-form-strengths" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="mp-authorisation" type="rdm:mp-authorisation-type"/>
+									<xs:element name="pharmaceutical-form-strength-description" type="xs:string"/>
+									<xs:element name="units" type="rdm:control-term"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="active-substances-description" type="xs:string" minOccurs="0"/>
+						<xs:element name="active-substances" minOccurs="0">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="active-substances-details" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="active-substance-detail" type="xs:string"/>
+												<xs:element name="active-substance" type="rdm:ingredient" minOccurs="1" maxOccurs="unbounded"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="excipients" minOccurs="1" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="excipients-details" minOccurs="1" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="excipient-description" type="xs:string"/>
+												<xs:element name="excipient" type="rdm:ingredient" minOccurs="0" maxOccurs="unbounded"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="active-substance-overages" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="substance-code" type="rdm:control-term"/>
+						<xs:element name="overage" type="rdm:string250"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="excipient-overages" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="substance-code" type="rdm:control-term"/>
+						<xs:element name="overage" type="rdm:string250"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="Is_sucseptible-to-TSE"/>
+		<xs:attribute name="uses_EMEA_PMF"/>
+	</xs:complexType>
+	<xs:complexType name="medicinal-product">
+		<xs:sequence>
+			<xs:element name="invented-name" type="rdm:string250"/>
+			<xs:element name="pharmaceutical-products">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="pharmaceutical-product" type="rdm:pharmaceutical-product" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="therapeutic-indications" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="therapeutic-indication" type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="atc" type="rdm:atc" maxOccurs="unbounded"/>
+			<xs:element name="packages" type="rdm:packages" minOccurs="0"/>
+			<xs:element name="route-of-administrations" type="rdm:route-of-administrations" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="medicinal-product-renewals">
+		<xs:sequence>
+			<xs:element name="pharmaceutical-products">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="pharmaceutical-product" type="rdm:pharmaceutical-product" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="targetSpecies-atc" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="atc" type="rdm:atc"/>
+						<xs:element name="target" minOccurs="0" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="species" type="rdm:control-term"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="route-of-administrations" type="rdm:route-of-administrations" minOccurs="0"/>
+			<xs:element name="ma" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="member-states" maxOccurs="unbounded">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="member-state" type="rdm:member-states"/>
+									<xs:element name="ma-numbers" maxOccurs="unbounded">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="number" type="rdm:string50"/>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="non-centralised">
+		<xs:sequence>
+			<xs:element name="reference-member-state" type="rdm:string50"/>
+			<xs:element name="Date" type="xs:date"/>
+			<xs:element name="AuthorisationNumber" type="rdm:string50"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="admin-office">
+		<xs:sequence>
+			<xs:element name="company-name" type="rdm:string100"/>
+			<xs:element name="address1" type="rdm:string100"/>
+			<xs:element name="address2" type="rdm:string100"/>
+			<xs:element name="address3" type="rdm:string100"/>
+			<xs:element name="address4" type="rdm:string100"/>
+			<xs:element name="poBox" type="rdm:string100"/>
+			<xs:element name="city" type="rdm:string100"/>
+			<xs:element name="state" type="rdm:string100" minOccurs="0"/>
+			<xs:element name="county" type="rdm:string100"/>
+			<xs:element name="post-code" type="rdm:string10"/>
+			<xs:element name="country" type="rdm:control-term"/>
+			<xs:element name="orgID" type="rdm:string30"/>
+			<xs:element name="locID" type="rdm:string30"/>
+			<xs:element name="loc-modifiedDate" type="xs:date"/>
+			<xs:element name="org-modifiedDate" type="xs:date"/>
+			<xs:element name="language" type="rdm:string30"/>
+			<xs:element name="phone" type="rdm:string50"/>
+			<!-- <xs:element name="fax" type="rdm:string30"/> -->
+			<xs:element name="email" type="rdm:string100"/>
+			
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="manu-facility">
+		<xs:sequence>
+			<xs:element name="company-name" type="rdm:string100"/>
+			<xs:element name="address1" type="rdm:string100"/>
+			<xs:element name="address2" type="rdm:string100"/>
+			<xs:element name="address3" type="rdm:string100"/>
+			<xs:element name="address4" type="rdm:string100"/>
+			<xs:element name="poBox" type="rdm:string100"/>
+			<xs:element name="city" type="rdm:string100"/>
+			<xs:element name="state" type="rdm:string100" minOccurs="0"/>
+			<xs:element name="county" type="rdm:string100"/>
+			<xs:element name="post-code" type="rdm:string10"/>
+			<xs:element name="country" type="rdm:control-term"/>
+			<xs:element name="orgID" type="rdm:string30"/>
+			<xs:element name="locID" type="rdm:string30"/>
+			<xs:element name="loc-modifiedDate" type="xs:date"/>
+			<xs:element name="org-modifiedDate" type="xs:date"/>
+			<xs:element name="language" type="rdm:string30"/>
+			<xs:element name="phone" type="rdm:string50"/>
+			<!-- <xs:element name="fax" type="rdm:string30"/> -->
+			<xs:element name="email" type="rdm:string100"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="contact-during-procedure">
+		<xs:sequence>
+			<xs:element name="member-states" type="rdm:member-states"/>
+			<xs:element name="contact-details" type="rdm:contact-details-type" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="atc">
+		<xs:sequence>
+			<xs:element name="atc-code" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="code" type="rdm:string100"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="atc-name" type="rdm:string100"/>
+			<xs:element name="atc-version" type="xs:string" minOccurs="0"/>
+			<xs:element name="atc-status" type="rdm:yes-no"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

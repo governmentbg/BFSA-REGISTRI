@@ -1,0 +1,15 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "My service",
+    "description": "My service",
+    "version": "1.0.0"
+  },
+  "host": "",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+
+  }
+}

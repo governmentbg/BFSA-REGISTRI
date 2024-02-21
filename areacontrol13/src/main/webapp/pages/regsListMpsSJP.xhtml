@@ -1,0 +1,186 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/template/template.xhtml">
+    <f:metadata>
+        <f:viewAction action="#{userData.checkPageAccess(110)}" onPostback="false"/>
+        <f:viewAction action="#{userData.checkReloadPage}" onPostback="false"/>
+        <f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+    </f:metadata>
+
+    <ui:define name="title">#{navTexts['/pages/regsListMpsSJP.xhtml']}</ui:define>
+
+    <ui:define name="viewname">
+
+        <li>
+            <p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}"
+                           rendered="#{navigation.navPath.size()>1}">
+                <i class="fas fa-caret-left"/>
+            </p:commandLink>
+        </li>
+
+        <li>#{navTexts['/pages/regsListMpsSJP.xhtml']}</li>
+
+    </ui:define>
+
+    <ui:define name="content">
+        <h:form id="regForm">
+            <h:panelGroup id="pResult" layout="block" styleClass="margin-top">
+
+                <h:panelGroup id="panelTblToolbar">
+
+                    <div class="table-toolbar">
+
+                        <h:outputText
+                                value="#{ui_labels['general.reportResult']} #{regsListMpsSJP.regsList.rowCount}"
+                                styleClass="form-label p-mr-2"/>
+
+                    </div>
+                </h:panelGroup>
+
+                <p:dataTable id="tblRegsLst" var="row" value="#{regsListMpsSJP.regsList}" lazy="true"
+                			 scrollable="true"
+                             rowIndexVar="idx" sortMode="single" reflow="true"
+                             emptyMessage="#{labels['doc.listEmptyMsg']}"
+                             paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+                             rows="15" rowsPerPageTemplate="5,15,20,25" paginatorPosition="bottom"
+                             paginatorAlwaysVisible="true" paginator="true" sortBy="#{row.date_licenz}">
+
+                    <f:facet name="{Exporters}">
+
+                        <div style="float:left">
+
+                            <p:commandLink id="excel"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="excel2.png"/>
+                                <p:dataExporter type="xls" target="tblRegsLst" fileName="regsListMpsSJP"
+                                                postProcessor="#{regsListMpsSJP.postProcessXLS}"/>
+                            </p:commandLink>
+
+                            <p:commandLink id="pdf"
+                                           update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                <h:graphicImage library="images" name="pdf.png"/>
+                                <p:dataExporter type="pdf" target="tblRegsLst" fileName="regsList"
+                                                encoding="windows-1251"
+                                                preProcessor="#{regsListMpsSJP.preProcessPDF}"
+                                                options="#{regsListMpsSJP.pdfOptions()}"/>
+                            </p:commandLink>
+
+                             <p:commandLink id="csv" update="tblRegsLst" process="tblRegsLst" partialSubmit="true">
+                                 <h:graphicImage library="images" name="csv.png"   />
+                                 <p:dataExporter type="csv" target="tblRegsLst" fileName="regsList"  encoding="CP1251"/>
+                             </p:commandLink> 
+                        </div>
+                    </f:facet>
+   
+                    <!-- Номер по ред-->
+                    <p:column width="40" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+                        <h:outputText value="#{idx + 1}"/>
+                    </p:column>
+
+                     <!-- Рег. номер на разрешителното;-->
+                    <p:column width="110" sortBy="#{row.nomer_licenz}" headerText="#{labels['regPub.udostDocRegN']}">
+                        <h:outputText value="#{row[1]} "/>
+                    </p:column>
+                    
+                      <!-- Дата на регистрация-->
+                    <p:column width="110" sortBy="#{row.date_licenz}" headerText="#{labels['docu.docDate']}">
+                     <h:outputText value="#{row[2]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{regsListMpsSJP.timeZone}"/>
+                        </h:outputText>
+                         </p:column>
+
+                    <!-- Заявител(имена на физическо лице или наименование на юридическо лице);-->
+                    <p:column width="180" sortBy="#{row.licenziant_name}" headerText="#{labels['babhZaiavList.zaiavitel']}">
+                        <h:outputText value=" #{row[7]} "/> 
+                    </p:column>
+                    
+                     <!-- ЕИК (за ЮЛ);-->
+                    <p:column width="110" sortBy="#{row.licenziant_egn}" headerText="#{labels['admStruct.eik']}">
+                        <h:outputText value="#{row[6]== 4 ? '-':row[8]}"/> 
+                    </p:column>
+
+					<!-- Вид на ТС:-->
+					<p:column width="140" sortBy="#{row.mps_vid}" headerText="#{labels['regMps.vidTS']}">
+						<h:outputText value=" #{row[9]} " />
+					</p:column>
+
+					<!-- Марка и модел;-->
+					<p:column width="160" sortBy="#{row.mps_markaModel}" headerText="#{labels['compMPSsearch.model']}">
+						<h:outputText value=" #{row[10]} " />
+					</p:column>
+
+					<!-- Рег. номер и дата на талона;-->
+					<p:column width="110" sortBy="#{row.mps_nomer}" headerText="#{labels['compMPSsearch.regN']}">
+						<h:outputText value=" #{row[11]} " />
+					</p:column>
+
+                    <!-- Товароподемност-->
+                    <p:column width="110" sortBy="#{row.mps_tovar}" headerText="#{labels['regTargovtsiFuraj.maxTovar']}">
+                        <h:outputText value=" #{row[12]} "/> 
+                    </p:column>
+
+ 
+					<!-- международния сертификат-->
+                    <p:column width="110" sortBy="#{row.mps_cert1}" headerText="#{labels['regZJ.lizMPrevoz']}">
+                        <h:outputText value="#{row[13]}"/>
+                    </p:column>
+                    
+                    <!-- вътрешен сертификат-->
+                    <p:column width="110" sortBy="#{row.mps_cert2}" headerText="#{labels['regZJ.lizVPrevoz']}">
+                        <h:outputText value="#{row[14]}"/>
+                    </p:column>
+
+                     <!-- Категория на СЖП; (много)-->
+                    <p:column width="200" sortBy="#{row.mps_spj_cat}" headerText="#{labels['regTarvotsiFuraj.kategoriaSJP']}">
+                        <h:outputText value=" #{row[21]} "/> 
+                    </p:column>
+
+
+                    <!-- ОДБХ, издало лиценза;-->
+                    <p:column width="140" sortBy="#{row.registratura_id}" headerText="#{labels['general.odbh']}">
+                        <h:outputText value="#{systemData.decodeItems(BabhConstants.CODE_CLASSIF_REGISTRATURI, row[3], regsListMpsSJP.currentLang, now)}"/>
+                    </p:column>
+                    
+                    <!-- Област (Заявител)-->
+                    <p:column width="160" sortBy="#{row.ref_oblast_text}" headerText="#{labels['regPub.oblastZaiav']}">
+                        <h:outputText value="#{row[17]}"/>
+                    </p:column>
+
+                    <!-- Община (Заявител)-->
+                    <p:column  width="160" sortBy="#{row.ref_obshtina_text}" headerText="#{labels['regPub.obstinaZaiav']}">
+                        <h:outputText value="#{row[18]}"/>
+                    </p:column>
+
+                      <!-- Населено място (Заявител)-->
+                    <p:column width="220"  sortBy="#{row.ref_ekatte_text}" headerText="#{labels['regPub.nasMestoZaiav']}">
+                        <h:outputText value="#{row[19]}"/>
+                    </p:column>
+
+                    <!-- Улица/сграда (Заявител)-->
+                    <p:column width="220"  sortBy="#{row.ref_ulica}" headerText="#{labels['regPub.adresZaiav']}">
+                        <h:outputText value="#{row[20]}"/>
+                    </p:column>
+                    
+                     <!-- обстоятелства по вписването -->
+                    <p:column width="250" sortBy="#{row.info}" headerText="#{labels['docu.note']}">
+                        <h:outputText value="#{row[15]}"/>
+                    </p:column>
+
+                     <!-- Рег. номер на заповедта
+                    <p:column sortBy="#{row.reg_nom_zaqvl_vpisvane}" headerText="#{labels['registerMainTab.regNumZaiav']}">
+                        <h:outputText value=" #{row[4]} /"/>
+                         <h:outputText value="#{row[5]}">
+                            <f:convertDateTime pattern="dd.MM.yyyy" type="date" timeZone="#{regsListMpsSJP.timeZone}"/>
+                        </h:outputText>
+                    </p:column>-->
+
+                </p:dataTable>
+            </h:panelGroup>
+
+
+        </h:form>
+    </ui:define>
+</ui:composition>

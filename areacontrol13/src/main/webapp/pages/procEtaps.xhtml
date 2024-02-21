@@ -1,0 +1,596 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<f:event type="preRenderComponent" listener="#{procEtaps.initTab}" />
+
+	<h:outputText value="#{beanMessages['procEtaps.noStartProc']}" style="color: #ff7f00; font-size: 1.5rem; font-style: italic; margin-right: 10px;" rendered="#{procEtaps.docsListWithProc.size() == 0}" />
+
+	<h:panelGroup id="tdPanelProcEtaps" layout="block" rendered="#{procEtaps.docsListWithProc.size() != 0}">
+
+		<div class="#{guestPreferences.containerPosition}">
+
+			<div class="title-group">
+				<p:commandLink class="extended-search-toggle" onclick="toggleSection(this, '##{clId}:docsList')">
+					<h:outputText value="#{labels['procEtaps.titleTblDocs']}" />
+					<i class="fas fa-caret-right"></i>
+				</p:commandLink>
+			</div>
+
+			<div jsf:id="docsList" style="#{procEtaps.onlyOneProc ? 'display: none;': ''}">
+
+				<p:dataTable id="tblDocsWithProc" var="row" value="#{procEtaps.docsListWithProc}" lazy="false"
+					rowIndexVar="idx" sortMode="single" emptyMessage="" rowExpandMode="single"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+					rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="false"
+					paginator="true" showGridlines="true" sortBy="#{row[2]}">
+
+					<p:column width="20" exportable="false" style="text-align: center;" headerText="#{ui_labels['general.No-symbol']}">
+						<h:outputText value="#{idx + 1}" />
+					</p:column>
+					
+					<p:column width="10" exportable="false" style="text-align: center;">							
+						<h:panelGroup rendered="#{row[6] eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_EXE}">
+							<i class="fas fa-circle" style="color: #e01818;" title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_STAT, BabhConstants.CODE_ZNACHENIE_PROC_STAT_EXE, procEtaps.currentLang, now)}"></i>
+						</h:panelGroup>	
+						
+						<h:panelGroup rendered="#{row[6] eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_IZP}">
+							<i class="fas fa-check-circle" style="color: #99ce6b;" title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_STAT, BabhConstants.CODE_ZNACHENIE_PROC_STAT_IZP, procEtaps.currentLang, now)}"></i>
+						</h:panelGroup>	
+						
+						<h:panelGroup rendered="#{row[6] eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_IZP_SROK}">
+							<i class="fas fa-check-circle" style="color: #99ce6b;" title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_STAT, BabhConstants.CODE_ZNACHENIE_PROC_STAT_IZP_SROK, procEtaps.currentLang, now)}"></i>
+						</h:panelGroup>	
+						
+						<h:panelGroup rendered="#{row[6] eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_STOP}">
+							<i class="fas fa-times-circle" title="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_STAT, BabhConstants.CODE_ZNACHENIE_PROC_STAT_STOP, procEtaps.currentLang, now)}"></i>
+						</h:panelGroup>						
+					</p:column>
+
+					<p:column width="20" exportable="false" style="text-align: center;">
+						<p:commandButton id="btnChP" styleClass="p-mr-2" title="#{ui_labels['general.edit']}"
+							action="#{procEtaps.actionLoadDataForProc(row[4], row[5])}"
+							partialSubmit="true" process="#{clId}:dataForProc #{clId}:procData @this" update="#{clId}:dataForProc #{clId}:procData" 
+							icon="fas fa-edit" onclick="highlightElement(this ,'tr');" />
+					</p:column>
+
+					<p:column sortBy="#{row[1]}" width="60">
+						<f:facet name="header">
+							<h:outputText value="#{labels['docu.regNom']}" />
+						</f:facet>
+						<h:outputText value="#{row[1]}" />
+					</p:column>
+
+					<p:column sortBy="#{row[2]}" width="60">
+						<f:facet name="header">
+							<h:outputText value="#{labels['docu.dateDoc']}" />
+						</f:facet>
+						<h:outputText value="#{row[2]}">
+							<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{procEtaps.timeZone}" />
+						</h:outputText>
+					</p:column>
+
+					<p:column sortBy="#{row[3]}" width="300">
+						<f:facet name="header">
+							<h:outputText value="#{labels['docu.vid']}" />
+						</f:facet>
+						<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row[3], procEtaps.currentLang, now)}" />
+					</p:column>
+					
+					<p:column sortBy="#{row[6]}" width="70">
+						<f:facet name="header">
+							<h:outputText value="#{labels['procEtaps.statusProc']}" />
+						</f:facet>
+						<p:outputLabel value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_STAT, row[6], procEtaps.currentLang, now)}" />
+					</p:column>
+					
+					<p:column sortBy="#{row[7]}" width="70">
+						<f:facet name="header">
+							<h:outputText value="#{labels['procEtaps.beginProc']}" />
+						</f:facet>
+						<h:outputText value="#{row[7]}">
+							<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeZone="#{procEtaps.timeZone}" />
+						</h:outputText>
+					</p:column>
+					
+					<p:column sortBy="#{row[8]}" width="60">
+						<f:facet name="header">
+							<h:outputText value="#{labels['procEtaps.srokProc']}" />
+						</f:facet>
+						<h:outputText value="#{row[8]}">
+							<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{procEtaps.timeZone}" />
+						</h:outputText>
+					</p:column>
+
+				</p:dataTable>
+
+			</div>
+
+			<h:panelGroup id="dataForProc">
+
+				<!--Основни данни за процедурата-->
+				<div class="title-group">
+					<p:commandLink class="extended-search-toggle" onclick="toggleSection(this, '##{clId}:basicDataProcExe')">
+						<h:outputText value="#{labels['procEtaps.basiDataProc']}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+
+				<div jsf:id="basicDataProcExe" style="#{!procEtaps.onlyOneProc ? 'display: none;': ''}">
+
+					<div jsf:id="procData">
+
+						<p:toolbar styleClass="margin-bottom">
+
+							<f:facet name="left">
+								<p:commandButton icon="fas fa-cog" oncomplete="PF('modalDefProc').show();" update="#{clId}:basicDataProcExe #{clId}:idDefProc"
+									value="#{labels['procExeEdit.btnDef']}" rendered="#{procEtaps.procDef.id ne null}" />
+
+								<span class="fas fa-ellipsis-v SoftGray p-mx-2" jsf:rendered="#{procEtaps.defEtapsList.size() > 0}" />
+
+								<p:button icon="fas fa-project-diagram" href="testDiagramView.xhtml?faces-redirect=true" target="_blank" 
+									styleClass="ui-button-success" title="#{labels['general.diagram']}" rendered="#{procEtaps.defEtapsList.size() > 0}">
+									<f:param name="idProc" value="#{procEtaps.procDef.id}" />
+								</p:button>
+
+							</f:facet>
+
+							<f:facet name="right">
+								<p:commandButton icon="fas fa-times" oncomplete="PF('modalStopProc').show();" update="#{clId}:tdPanelProcEtaps" 
+									value="#{labels['procExeEdit.btnStopProc']}" styleClass="ui-button-danger p-mr-2"
+									rendered="#{procEtaps.procExe.id ne null and procEtaps.procExe.status eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_EXE}" />
+
+								<h:panelGroup id="pRegInfoProcExe" rendered="#{procEtaps.procExe.id ne null}">
+									<ibg:compObjAudit idObj="#{procEtaps.procExe.id}"
+										codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_PROC_EXE}"
+										identInfo="#{procEtaps.procExe.procName}" />
+								</h:panelGroup>
+							</f:facet>
+
+						</p:toolbar>
+
+					</div>
+
+					<div class="p-grid ui-fluid">
+
+						<ui:remove>
+							<!-- Номер на процедура -->
+							<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-1">
+								<h:outputText value="#{labels['procDefList.nomProc']}: " styleClass="form-label" />
+								<p:outputLabel value="#{procEtaps.procExe.id}" />
+							</div>
+						</ui:remove>
+
+						<!-- Наименование на процедура -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-6 p-xl-6">
+							<h:outputText value="#{labels['procDefList.nameProc']}: " styleClass="form-label" />
+							<p:outputLabel value="#{procEtaps.procExe.procName}" />
+						</div>
+
+						<!-- Срок в дни -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-1 p-xl-1">
+							<h:outputText value="#{labels['procDefList.srokDni']}: " styleClass="form-label" style="white-space: nowrap;" />
+							<p:outputLabel value="#{procEtaps.procExe.srokDays}" />
+						</div>
+
+						<!-- Само в работни дни -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2 p-xl-2">
+							<h:outputText value="#{labels['procExeEdit.workDaysOnly']}: " styleClass="form-label" style="white-space: nowrap;" />
+							<p:outputLabel value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DANE, procEtaps.procExe.workDaysOnly, procEtaps.currentLang, now)}" />
+						</div>
+
+						<!-- Статус -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-3">
+							<h:outputText value="#{labels['procDefList.status']}: " styleClass="form-label" />
+							<p:outputLabel value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_STAT, procEtaps.procExe.status, procEtaps.currentLang, now)}" />
+						</div>
+
+						<!-- Начало -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2 p-xl-2">
+							<h:outputText value="#{labels['procList.begin']}: " styleClass="form-label" />
+							<p:outputLabel value="#{procEtaps.procExe.beginDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeZone="#{procEtaps.timeZone}" />
+							</p:outputLabel>
+						</div>
+
+						<!-- Срок -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2 p-xl-2">
+							<h:outputText value="#{labels['procDefEdit.srok']}: " styleClass="form-label" />
+							<p:outputLabel value="#{procEtaps.procExe.srokDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{procEtaps.timeZone}" />
+							</p:outputLabel>
+						</div>
+
+						<!-- Край -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2 p-xl-2">
+							<h:outputText value="#{labels['procList.end']}: " styleClass="form-label" />
+							<p:outputLabel value="#{procEtaps.procExe.endDate}">
+								<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeZone="#{procEtaps.timeZone}" />
+							</p:outputLabel>
+						</div>
+
+						<ui:remove>
+							<!-- Забележка по изпълнението -->
+							<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-3">
+								<h:outputText value="#{labels['procExeEdit.comments']}: " styleClass="form-label" />
+								<p:outputLabel value="#{procEtaps.procExe.comments}" style="color:#F28686;" id="comments" />
+							</div>
+
+							<!-- Причина за прекратяване -->
+							<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-3">
+								<h:outputText value="#{labels['procExeEdit.stopReason']}: " styleClass="form-label" />
+								<p:outputLabel value="#{procEtaps.procExe.stopReason}" id="stopReason" />
+							</div>
+						</ui:remove>
+
+						<!-- Описание на процедура -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12">
+							<h:outputText value="#{labels['procDefList.opisProc']}: " styleClass="form-label" />
+							<p:outputLabel value="#{procEtaps.procExe.procInfo}" />
+						</div>
+
+					</div>
+
+					<div class="title-group">
+						<p:commandLink class="extended-search-toggle expanded" onclick="toggleSection(this, '##{clId}:procEtaps')">
+							<h:outputText value="#{labels['procEtaps.procExeEtaps']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+
+					<div jsf:id="procEtaps" class="p-grid ui-fluid">
+
+						<p:dataTable id="tblProcExecList" var="row" value="#{procEtaps.etapExeList}" rowIndexVar="idx" lazy="true"
+							emptyMessage="#{ui_labels['general.norows']}" rows="10" sortMode="single" 
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="false" paginator="true">
+
+							<f:facet name="{Exporters}">
+
+								<div style="float: left">
+
+									<p:commandLink id="excel" update="tblProcExecList" process="tblProcExecList" partialSubmit="true">
+										<h:graphicImage library="images" name="excel2.png" />
+										<p:dataExporter type="xls" target="tblProcExecList" fileName="procExecListXls" postProcessor="#{procEtaps.postProcessXLSProcEtapExeList}" />
+									</p:commandLink>
+
+									<p:commandLink id="pdf" update="tblProcExecList" process="tblProcExecList" partialSubmit="true">
+										<h:graphicImage library="images" name="pdf.png" />
+										<p:dataExporter type="pdf" target="tblProcExecList" fileName="procExecListPdf" encoding="windows-1251" preProcessor="#{procEtaps.preProcessPDFProcEtapExeList}" options="#{procEtaps.pdfOptions}" />
+									</p:commandLink>
+
+									<p:commandLink id="csv" update="tblProcExecList" process="tblProcExecList" partialSubmit="true">
+										<h:graphicImage library="images" name="csv.png" />
+										<p:dataExporter type="csv" target="tblProcExecList" fileName="procExecListCsv" encoding="CP1251" />
+									</p:commandLink>
+
+								</div>
+
+							</f:facet>
+
+							<p:column width="7" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="7" exportable="false">
+								<p:commandButton icon="fas fa-check" title="#{labels['procEtaps.endEtap']}" action="#{procEtaps.actionCompleteEtap(false, row[0])}"
+									styleClass="ui-button-success" style="text-align:center" update="#{clId}:tdPanelProcEtaps #{clId}:tblProcExecList" process="@this #{clId}:tdPanelProcEtaps #{clId}:tblProcExecList" partialSubmit="true"
+									rendered="#{row[4] eq BabhConstants.CODE_ZNACHENIE_NE and row[11] eq BabhConstants.CODE_ZNACHENIE_ETAP_STAT_EXE and procEtaps.procExe.status eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_EXE}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['procEtaps.endEtap']}" icon="fas fa-exclamation-triangle" />
+								</p:commandButton>
+
+								<p:commandButton icon="fas fa-check" title="#{labels['procEtaps.endEtap']}" action="#{procEtaps.actionFindDataForEtap(true, row[0])}"
+									styleClass="ui-button-success" style="text-align:center" update="#{clId}:tdPanelProcEtaps #{clId}:tblProcExecList" process="@this #{clId}:tdPanelProcEtaps #{clId}:tblProcExecList" partialSubmit="true"
+									rendered="#{row[4] eq BabhConstants.CODE_ZNACHENIE_DA and row[11] eq BabhConstants.CODE_ZNACHENIE_ETAP_STAT_EXE and procEtaps.procExe.status eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_EXE}" />
+							</p:column>
+
+							<p:column width="7" exportable="false">
+								<p:commandButton icon="fas fa-rotate-left" title="#{labels['procEtaps.cancelEtap']}" action="#{procEtaps.actionReturnEtap(row[0])}"
+									styleClass="ui-button-danger p-mr-2" style="text-align:center" update="#{clId}:tdPanelProcEtaps #{clId}:tblProcExecList" process="@this #{clId}:tdPanelProcEtaps #{clId}:tblProcExecList" partialSubmit="true"
+									rendered="#{idx > 0 and row[11] eq BabhConstants.CODE_ZNACHENIE_ETAP_STAT_EXE and procEtaps.procExe.status eq BabhConstants.CODE_ZNACHENIE_PROC_STAT_EXE}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['procEtaps.cancelEtap']}" icon="fas fa-exclamation-triangle" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column width="20" headerText="#{labels['procExeEdit.numEtap']}" style="white-space: nowrap;">
+								<h:outputText value="#{row[1]}" />
+							</p:column>
+
+							<p:column width="120" headerText="#{labels['procDefList.nameProc']}">
+								<h:outputText value="#{row[2]}" />
+							</p:column>
+
+							<p:column width="2" exportable="false" id="opis">
+								<f:facet name="header">
+									<p:tooltip value="#{labels['procDefList.opisProc']}" for="opis" />
+								</f:facet>
+								<p:commandLink id="procInfo">
+									<i class="fas fa-info-circle table-icon"></i>
+								</p:commandLink>
+								<p:overlayPanel for="procInfo" style="width: 400px;" at="right center">
+									<span class="form-label">#{labels['procDefList.opisProc']}: </span>
+									<h:outputText value="#{row[3]}" escape="false" />
+								</p:overlayPanel>
+							</p:column>
+
+							<p:column width="110" headerText="#{labels['procDefList.opisProc']}" visible="false" exportable="true">
+								<h:outputText value="#{labels['procDefList.opisProc']}: " />
+								<h:outputText value="#{row[3]}" escape="false" />
+							</p:column>
+
+							<ui:remove>
+								<p:column width="8" headerText="#{labels['procDefEdit.etapUsl']}">
+									<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DANE, row[4], procEtaps.currentLang, now)}" />
+								</p:column>
+							</ui:remove>
+
+							<p:column width="100" headerText="#{labels['procExeEdit.prev']}">
+								<h:outputText value="#{labels['procExeEdit.numEtap']}: #{row[6]}, " rendered="#{row[6] ne null}" />
+								<h:outputText value="#{row[7]}" rendered="#{row[7] ne null}" />
+							</p:column>
+
+							<p:column width="24" headerText="#{labels['procList.begin']}">
+								<h:outputText value="#{row[8]}">
+									<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeZone="#{procEtaps.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column width="24" headerText="#{labels['procDefEdit.srok']}">
+								<h:outputText value="#{row[9]}">
+									<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{procEtaps.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column width="24" headerText="#{labels['procList.end']}">
+								<h:outputText value="#{row[10]}">
+									<f:convertDateTime pattern="dd.MM.yyyy HH:mm" timeZone="#{procEtaps.timeZone}" />
+								</h:outputText>
+							</p:column>
+
+							<p:column width="35" headerText="#{labels['procDefList.status']}">
+								<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ETAP_STAT, row[11], procEtaps.currentLang, now)}" />
+							</p:column>
+
+							<p:column width="100" headerText="#{labels['docDestruction.note']}">
+								<h:outputText value="#{row[13]}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+
+				</div>
+
+			</h:panelGroup>
+
+		</div>
+
+		<p:dialog appendTo="@form" header="#{ui_labels['general.comfirmation']}" width="600" widgetVar="modalEndEtap" dynamic="true" modal="true">
+
+			<p:messages>
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:outputPanel id="panelEndEtap">
+
+				<div class="p-grid ui-fluid">
+
+					<div class="p-col-12 p-md-12" align="center">
+						<h:outputText value="#{beanMessages['procEtaps.choiceEndEtap']}" styleClass="form-label" />
+					</div>
+
+					<div class="p-col-12 p-md-12" align="center">
+						<p:selectOneRadio id="workDaysOnly" value="#{procEtaps.next}">
+							<f:selectItems value="#{procEtaps.nameNext}" var="nameNext" itemLabel="#{nameNext.label}" itemValue="#{nameNext.value}" />
+						</p:selectOneRadio>
+					</div>
+
+					<ui:remove>
+						<div class="p-col-12 p-md-6" align="left">
+							<h:outputText value="#{labels['procDefEdit.nextOk']}" />
+							<p:dataTable id="tblnextOkList" var="row" value="#{procEtaps.etapDef.nextOkList}" reflow="true"
+								styleClass="ui-datatable-gridlines" emptyMessage="#{ui_labels['general.norows']}" rows="1" style="width:99%">
+
+								<p:column width="20" headerText="#{labels['procDefList.nomProc']}">
+									<h:outputText value="#{row[1]}" />
+								</p:column>
+
+								<p:column width="100" headerText="#{labels['procDefList.nameProc']}">
+									<h:outputText value="#{row[2]}" />
+								</p:column>
+
+							</p:dataTable>
+						</div>
+
+						<div class="p-col-12 p-md-6">
+							<h:outputText value="#{labels['procDefEdit.nextNot']}" styleClass="text-align: left;" />
+							<p:dataTable id="tblnextNotList" var="row" value="#{procEtaps.etapDef.nextNotList}" reflow="true"
+								styleClass="ui-datatable-gridlines" emptyMessage="#{ui_labels['general.norows']}" rows="1" style="width:99%">
+
+								<p:column width="20" headerText="#{labels['procDefList.nomProc']}">
+									<h:outputText value="#{row[1]}" />
+								</p:column>
+
+								<p:column width="100" headerText="#{labels['procDefList.nameProc']}">
+									<h:outputText value="#{row[2]}" />
+								</p:column>
+
+							</p:dataTable>
+						</div>
+					</ui:remove>
+
+				</div>
+
+			</p:outputPanel>
+
+			<f:facet name="footer">
+
+				<div class="p-grid p-nogutter">
+					<div class="p-col-6" align="left">
+						<p:commandButton icon="fas fa-check-double" value="#{labels['procEtaps.confirmEndEtap']}"
+							action="#{procEtaps.actionCompleteEtap(true, procEtaps.idEtapExe)}" update="#{clId}:tdPanelProcEtaps #{clId}:tblDocsWithProc" />
+					</div>
+
+					<div class="p-col-6" align="right">
+						<p:commandButton update="panelEndEtap" process="@this panelEndEtap" icon="fas fa-times"
+							styleClass="ui-button-secondary" value="#{ui_labels['general.cancel']}" oncomplete="PF('modalEndEtap').hide();" />
+					</div>
+				</div>
+
+			</f:facet>
+
+		</p:dialog>
+
+		<p:dialog appendTo="@form" header="#{labels['procExeEdit.btnStopProc']}" width="600" widgetVar="modalStopProc" dynamic="true" modal="true">
+
+			<p:messages>
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:outputPanel id="panelStopProc">
+
+				<div class="p-grid ui-fluid">
+
+					<div class="p-col-12 p-md-12">
+						<h:outputText value="#{labels['procExeEdit.reasonForStop']}" styleClass="form-label" />
+						<p:inputText value="#{procEtaps.procExe.stopReason}" maxlength="1020" id="txtStopReason" />
+					</div>
+
+				</div>
+
+			</p:outputPanel>
+
+			<f:facet name="footer">
+
+				<div class="p-grid p-nogutter">
+					<div class="p-col-6" align="left">
+						<p:commandButton icon="fas fa-check-double" value="#{labels['procExeEdit.confirmStopProc']}"
+							action="#{procEtaps.actionStopProc}" update="#{clId}:tdPanelProcEtaps #{clId}:tblDocsWithProc" />
+					</div>
+
+					<div class="p-col-6" align="right">
+						<p:commandButton update="panelStopProc" process="@this panelStopProc" icon="fas fa-times"
+							styleClass="ui-button-secondary" value="#{ui_labels['general.cancel']}" oncomplete="PF('modalStopProc').hide();" />
+					</div>
+				</div>
+
+			</f:facet>
+
+		</p:dialog>
+
+		<p:dialog id="idDefProc" appendTo="@form" header="#{labels['procExeEdit.defProc']}" widgetVar="modalDefProc" dynamic="true" modal="true" position="top" responsive="true" style="max-width:85%;">
+
+			<p:messages>
+				<p:autoUpdate />
+			</p:messages>
+
+			<p:outputPanel id="panelDefProc">
+
+				<div class="p-grid ui-fluid">
+
+					<!-- Номер на процедура -->
+					<div class="p-col-12 p-md-2">
+						<h:outputText value="#{labels['procDefList.nomProc']}: " styleClass="form-label" />
+						<p:outputLabel value="#{procEtaps.procDef.id}" />
+					</div>
+
+					<!-- Наименование на процедура -->
+					<div class="p-col-12 p-md-10">
+						<h:outputText value="#{labels['procDefList.nameProc']}: " styleClass="form-label" />
+						<p:outputLabel value="#{procEtaps.procDef.procName}" />
+					</div>
+
+					<!-- Срок за изпълнение в дни -->
+					<div class=" p-col-12 p-md-4">
+						<h:outputText value="#{labels['procExeEdit.srokIzpDays']}: " styleClass="form-label" style="white-space: nowrap;" />
+						<p:outputLabel value="#{procEtaps.procDef.srokDays}" />
+					</div>
+
+					<!-- Само в работни дни -->
+					<div class=" p-col-12 p-md-4" align="center">
+						<h:outputText value="#{labels['procDefEdit.workDaysOnly']}: " styleClass="form-label" />
+						<p:outputLabel value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DANE, procEtaps.procDef.workDaysOnly, procEtaps.currentLang, now)}" />
+					</div>
+
+					<!-- Статус -->
+					<div class=" p-col-12 p-md-4">
+						<h:outputText value="#{labels['procDefList.status']}: " styleClass="form-label" />
+						<p:outputLabel value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_DEF_STAT, procEtaps.procDef.status, procEtaps.currentLang, now)}" />
+					</div>
+
+					<!-- Описание на процедура -->
+					<div class="p-col-12 p-md-12">
+						<h:outputText value="#{labels['procDefList.opisProc']}: " styleClass="form-label" />
+						<p:outputLabel value="#{procEtaps.procDef.procInfo}" />
+					</div>
+
+					<!-- Файлове -->
+					<div class="p-col-12 p-md-12">
+						<ibg:compFileUpload listObj="#{procEtaps.filesListForDefProc}" codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_PROC_DEF}"
+							header="false" idObj="#{procEtaps.procDef.id}" autoSave="true" display="list" view="true" />
+					</div>
+
+				</div>
+
+				<div class="p-grid ui-fluid">
+
+					<div class="p-col-12 p-md-12">
+						<h:outputText value="#{labels['procDefEdit.defEtaps']} " styleClass="form-label" />
+					</div>
+
+					<div class="p-col-12 p-md-12">
+
+						<p:dataTable id="tblEtapsList" var="row" value="#{procEtaps.defEtapsList}" rowIndexVar="idx"
+							emptyMessage="#{ui_labels['general.norows']}" rows="5" sortMode="single" reflow="true"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							paginatorPosition="bottom" paginatorAlwaysVisible="true" paginator="true">
+
+							<p:column width="10" headerText="#{labels['procDefList.nomProc']}">
+								<h:outputText value="#{row.nomer}" />
+							</p:column>
+
+							<p:column width="120" headerText="#{labels['procDefList.nameProc']}">
+								<h:outputText value="#{row.etapName}" />
+							</p:column>
+
+							<p:column width="30" headerText="#{labels['procDefEdit.etapNextOk']}">
+								<h:outputText value="#{row.nextOk}" />
+							</p:column>
+
+							<p:column width="30" headerText="#{labels['procDefEdit.etapNextNot']}">
+								<h:outputText value="#{row.nextNot}" />
+							</p:column>
+
+							<p:column width="60" headerText="#{labels['procDefEdit.srok']}">
+								<h:outputText value="#{labels['procDefEdit.extendProcSrok']} с/със: " rendered="#{row.extendProcSrok eq BabhConstants.CODE_ZNACHENIE_DA}" />
+								<h:outputText value="#{row.srokDays}д" rendered="#{row.srokDays ne null and row.srokHours eq null}" />
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+
+				</div>
+
+			</p:outputPanel>
+
+			<f:facet name="footer">
+
+				<div class="p-grid p-nogutter">
+					<div class="p-col-12" align="right">
+						<p:commandButton update="panelDefProc" process="@this panelDefProc" icon="fas fa-times"
+							styleClass="ui-button-secondary" value="#{ui_labels['general.close']}" oncomplete="PF('modalDefProc').hide();" />
+					</div>
+				</div>
+
+			</f:facet>
+
+		</p:dialog>
+
+	</h:panelGroup>
+
+</ui:composition>

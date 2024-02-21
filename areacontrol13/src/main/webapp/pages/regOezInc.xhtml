@@ -1,0 +1,73 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<!-- ШАБЛОН ЗА СТРАННИЦИТЕ ЗА РЕГИСТРИ..  -->
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(null)}" onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+		<h:form id="oezForm">
+			
+			<div class="#{guestPreferences.containerPosition}" jsf:rendered="#{regOEZ.access}">
+				<div class="card">
+
+					<h:panelGroup id="vpTitle"
+						style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+						<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+						<h:outputText
+							value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regOEZ.vpisvane.idRegister, regOEZ.currentLang, now)}"
+							styleClass="form-label" />
+						<br />	
+						<h:outputText value="#{labels['babhMigr.msgmigr']}" style="color:red" rendered="#{regOEZ.vpisvane.fromМigr eq 0}"/>
+
+					</h:panelGroup>
+					
+					<p:remoteCommand name="onTabChangeProcess" process="registerTabs @this"/> <ui:remove><!-- без това, при местене между табовете не субмитва данните --></ui:remove>
+					<p:tabView id="registerTabs" dynamic="true" cache="true" styleClass="p-mt-4"   onTabChange="onTabChangeProcess()">
+
+	  					<p:ajax event="tabChange" listener="#{regOEZ.onTabChange}" update="registerTabs" process="registerTabs" partialSubmit="true"/>
+		
+						<!-- ТАБ ОСНОВНИ ДАННИ -->
+						<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+							  <ui:include src="regOezTab1.xhtml" >  </ui:include>
+						</p:tab>
+
+						<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+						<p:tab title="#{labels['register.danniVpisvaneTab']}" id="danniVpisvaneTab" disabled="#{regOEZ.vpisvane.id eq null}">
+							  <ui:include src="vpStatusData.xhtml" >
+							 	<ui:param name="clId" value="oezForm:registerTabs" />
+							 </ui:include> 
+						</p:tab>
+
+
+						<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+						<p:tab title="#{labels['register.docsVpisvaneTab']}" id="docVpisvaneTab" disabled="#{regOEZ.vpisvane.id eq null}">
+							<ui:include src="vpDocs.xhtml">
+								<ui:param name="clId" value="oezForm:registerTabs" />
+							</ui:include>
+						</p:tab>
+						
+						<!-- ТАБ ЕТАПИ НА ОБРАБОТКА -->
+					 	<p:tab title="#{labels['register.etapiVpisvaneTab']}" id="etapiVpisvaneTab" disabled="#{regOEZ.vpisvane.id eq null}">
+	 						<ui:include src="procEtaps.xhtml" >
+							 	<ui:param name="clId" value="oezForm:registerTabs" />
+							 </ui:include>
+						</p:tab>
+						 
+					</p:tabView>
+
+				</div>
+			</div>
+
+		</h:form>
+
+</ui:composition>

@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:c="http://java.sun.com/jsp/jstl/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"> 
+          
+	<div>
+      
+		<!-- 1.  Панел за ObektDeinost mnogo" -->
+		<div jsf:id="dpDataObDM">
+			<h:panelGroup  layout="block" class="p-grid">
+				<div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#vlpTargForm:registerTabs:obDeinMnogoPanel')">
+						<h:outputText value="#{panelObektDeinMnogoLabel}" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+				    <div class="p-col-6 p-sm-1 p-md-1 p-lg-1 p-xl-1" >
+						<p:commandButton id="addObDBtn"
+							rendered="#{isView ne 1}"
+							icon="fas fa-plus" partialSubmit="true"
+							process="vlpTargForm:registerTabs:dpObDeinMData @this"
+							update="vlpTargForm:registerTabs:dpObDeinMData"
+							styleClass="ui-button-success"
+							oncomplete="PF('mObektDein').show(); "
+							action="#{regVLP.actionAddObektDein}"
+							value="Нов"
+							title="Нов" />
+					</div>
+				</h:panelGroup>
+				
+			
+
+			
+				<div class="p-grid ui-fluid" jsf:id="obDeinMnogoPanel">
+	
+					<h:panelGroup id="panelTblObDeinM" layout="block"
+						class="p-grid p-col-12">
+	
+						<div class="p-col-10" >
+							<p:dataTable id="tblObDeinM" var="row" value="#{regVLP.obektDeinList}" lazy="true" rowKey="#{row.id}"	 
+								rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " showGridlines="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true">
+								
+							  	<p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+									<h:outputText value="#{idx + 1}" />
+								</p:column>	
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{regVLP.actionEditObektDein(row, idx)}"
+										partialSubmit="true" update="vlpTargForm:registerTabs:dpObDeinMData"
+										icon="fas fa-edit" styleClass="ui-button-success"
+										title="Промяна данни">
+									</p:commandButton>
+								</p:column>
+													
+								<p:column  sortBy="#{row.obektDeinost.naimenovanie}" headerText="Наименование">
+									<h:outputText value="#{row.obektDeinost.naimenovanie}"  />								    
+								</p:column>
+
+								<p:column width="150" sortBy="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_EKATTE, row.obektDeinost.nasMesto, regVLP.currentLang, now)}" headerText="Местонахождение">
+									<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_EKATTE, row.obektDeinost.nasMesto, regVLP.currentLang, now)}"  />								    
+								</p:column>
+								
+								<p:column headerText="Предназначение">
+									<p:repeat var="item" value="#{row.obektDeinost.prednaznachenieList}">
+										<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PREDN_OBEKT, item, regVLP.currentLang, now)}; " />
+									</p:repeat> 																	    
+								</p:column>
+								<p:column  sortBy="#{row.dateBeg}" headerText="Начална дата" width="120">
+									<h:outputText value="#{row.dateBeg}"  >
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+									</h:outputText>													    
+								</p:column>
+								<p:column  sortBy="#{row.dateEnd}" headerText="Начална дата" width="120">
+									<h:outputText value="#{row.dateEnd}"  >
+										<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+									</h:outputText>								    
+								</p:column>
+								
+								<p:column width="30" exportable="false">							
+									<p:commandButton id="removeObDBtn"
+										rendered="#{isView ne 1}"
+										icon="fas fa-times" partialSubmit="true"
+										process="vlpTargForm:registerTabs:tblObDeinM @this"
+										update="vlpTargForm:registerTabs:tblObDeinM"
+										styleClass="ui-button-danger"										
+										action="#{regVLP.actionRemoveObektDein(idx)}"
+										title="Изтриване" />				
+								</p:column>
+								
+							
+							</p:dataTable>
+						</div>
+						 
+					</h:panelGroup>
+				</div>
+		</div>
+		
+		<h:panelGroup id="dpObDeinMData">
+				
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="Въвеждане на обект" fitViewport="true"
+					resizable="true" responsive="true" position="top"
+					widgetVar="mObektDein" dynamic="true" id="modalObektDeinD" modal="true">
+					
+					<p:messages id="modalMsg" showDetail="true" closable="false">
+						<p:autoUpdate />
+					</p:messages>
+					
+					<div class="container #{guestPreferences.containerPosition}">
+						
+						<div class="card">
+							<ui:include src="/pages/regVLPObektDeinInc.xhtml">
+								<ui:param name="isView" value="#{isView}" />
+								<ui:param name="prednaznachenieLabel" value="Предназначение" />								
+								<ui:param name="obektDeinDatBegLabel" value="Начална дата" />
+								<ui:param name="obektDeinDatEndLabel" value="Крайна дата" />
+								<ui:param name="prednObektReq" value="req" />
+							</ui:include>	
+						</div>
+						<!-- 1.  Панел за ВЕТЕРИНАРНИ ЛЕКАРИ" -->
+							<div>
+								<h:panelGroup id="panelTblLicaObDein" layout="block" class="p-grid">
+									<div class="title-group p-mt-3">
+										<p:commandLink class="extended-search-toggle expanded"
+											onclick="toggleSection(this, '#vlpTargForm:registerTabs:licaObDein')">
+											<h:outputText value="#{licaOtnLabel}" />
+											<i class="fas fa-caret-right"></i>
+										</p:commandLink>
+										
+									</div>	
+										<div class="p-col-6 p-sm-3 p-md-3 p-lg-3 p-xl-3" jsf:id="vidDoc">
+											<p:selectOneMenu id="roleLice" value="#{regVLP.tipCurrentVrazkaLiceObDein}" >
+											     <f:selectItem value="#{null}" itemValue="#{null}"/>
+											     <f:selectItems  value="#{systemData.getSysClassification(codeClassifLiceRoleObDein, now, regVLP.currentLang)}" 
+											         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+											     <p:ajax event="change" process="@this" update="addButtonDivObDein" />
+										    </p:selectOneMenu>
+										</div>
+									    <div class="p-col-6 p-sm-1 p-md-1 p-lg-1 p-xl-1" jsf:id="addButtonDivObDein">
+											<p:commandButton id="addLekarBtnObDein"
+												rendered="#{isView ne 1 and regVLP.tipCurrentVrazkaLiceObDein ne null}"
+												icon="fas fa-plus" partialSubmit="true"
+												process="vlpTargForm:registerTabs:dpLiceObDeinData @this"
+												update="vlpTargForm:registerTabs:dpLiceObDeinData"
+												styleClass="ui-button-success"
+												oncomplete="PF('mLiceObDeinD').show(); "
+												action="#{regVLP.actionNewLiceObDein}"
+												value="Ново"
+												title="Ново" />
+										</div>
+									</h:panelGroup>
+											
+										
+									
+		
+									<div jsf:id="licaObDein">
+										<div class="p-grid ui-fluid">
+											<div class="p-col-12 ">
+												<p:dataTable id="tblLicaObDein" var="row" value="#{regVLP.obektDein.obektDeinostLica}" lazy="true" rowKey="#{row.id}"	 
+													rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " showGridlines="true"
+													paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+													rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+													paginatorAlwaysVisible="false" paginator="true">
+																	
+													 
+												  	<p:column width="10" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+														<h:outputText value="#{idx + 1}" />
+													</p:column>	
+													<p:column width="30" exportable="false">
+														<p:commandButton
+															action="#{regVLP.actionEditObektDeinLice(row, idx)}"
+															partialSubmit="true" update="vlpTargForm:registerTabs:dpLiceObDeinData"
+															icon="fas fa-edit" styleClass="ui-button-success"
+															oncomplete="PF('mLiceObDeinD').show(); "
+															title="Промяна данни">
+														</p:commandButton>
+													</p:column>
+																
+													<p:column  sortBy="#{row.codeRef}" headerText="Имена">
+														<h:outputText value="#{row.referent.refName}"  />								    
+													</p:column>
+
+													<p:column  sortBy="#{row.role}" headerText="Роля">
+														<h:outputText value="#{systemData.decodeItem(codeClassifLiceRoleObDein, row.role, regVLP.currentLang, now)}"  />								    
+													</p:column>
+													
+													<p:column width="150" sortBy="#{row.referent.dateBeg}" headerText="Начална дата">
+														<h:outputText value="#{row.referent.dateBeg}"  >
+															<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+														</h:outputText>								    
+													</p:column>
+													
+													<p:column width="150" sortBy="#{row.referent.dateEnd}" headerText="Крайна дата">
+														<h:outputText value="#{row.referent.dateEnd}"  >
+															<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLP.timeZone}"/>
+														</h:outputText>								    
+													</p:column>
+													
+													<p:column width="30" exportable="false">							
+														<p:commandButton id="removeLekarBtn"
+															rendered="#{isView ne 1}"
+															icon="fas fa-times" partialSubmit="true"
+															process="vlpTargForm:registerTabs:tblLicaObDein @this"
+															update="vlpTargForm:registerTabs:tblLicaObDein"
+															styleClass="ui-button-danger"															
+															action="#{regVLP.actionRemoveLiceObDein(idx)}"
+															title="Изтриване" />				
+													</p:column>
+													
+												
+												</p:dataTable>
+											</div>
+											 
+										</div>
+									</div>
+							</div>
+					</div>
+					<f:facet name="footer">
+		          	
+			          	<div class="p-grid p-nogutter">
+				       		<div class="p-col-6" align="left">
+						       	 	<p:commandButton id="bntClose"  icon="fas fa-times" action="#{regVLP.actionCancelReturnObDein}"
+						       	 	styleClass="ui-button-secondary" value="#{labels['register.cancel']}" oncomplete="PF('mObektDein').hide();" />	
+						 	</div>
+				       		<div class="p-col-6" align="right">
+						       	 	<p:commandButton id="btnReturnObDein" rendered="#{isView ne 1}" action="#{regVLP.actionReturnObDein}" update="vlpTargForm:registerTabs:tblObDeinM" 
+						       	 	value="Добавяне"  />	
+						 	</div>
+						 	
+				       	</div>
+			       	</f:facet>
+				</p:dialog>
+			</h:panelGroup>
+			
+			<h:panelGroup id="dpLiceObDeinData">
+				 
+				
+				
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{regVLP.tipCurrentVrazkaLice==BabhConstants.CODE_ZNACHENIE_VRAZ_LICE_VET_LEKAR?'Въвеждане/актуализация на ветеринарен лекар':'Въвеждане и актуализация на лице'}" fitViewport="true"
+					resizable="true" responsive="true" position="top"
+					widgetVar="mLiceObDeinD" dynamic="true" id="modalLekarD" modal="true">
+					<div class="container #{guestPreferences.containerPosition}">
+
+						
+						<ibg:refCorrespData id="licaObDeinComp"  readonly="#{isView eq 1}"
+											 codeRef="#{regVLP.currentLiceObDein.code}"
+											 refObj="#{regVLP.currentLiceObDein}"				 				 
+											 mainDataLabel="#{regVLP.tipCurrentVrazkaLice==BabhConstants.CODE_ZNACHENIE_VRAZ_LICE_VET_LEKAR?'Данни за ветеринарния лекар':'Данни за лице'}"
+											 saveInComponent="false"
+											 showKorespAdress="false"
+											 showContacts="true"
+											 showPostAdress="true"
+											 showReturnButton="true"
+											 showChujdiLica="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+											 showIdentNom="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL_F)}"
+											 showLnch="#{systemData.isElementVisible(regVLP.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+											 showRadio="false"											 
+											 showDocs="#{showDocs}"
+											 showObraz="#{showObraz}"
+											 showOpit="#{showOpit}"
+											 showDatBegEnd="true"
+											 showUrn="false"
+											 refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+											 vidDoc="#{regVLP.zaiavlVp.docVid}"
+											 searchTxt="#{regVLP.txtRef2}" 
+											 dateClassif="#{regVLP.decodeDate}"
+											 modal="true"
+											 update="vlpTargForm:registerTabs:tblLicaObDein"
+											 onComplete="PF('mLiceObDeinD').hide();"/>
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+	</div> 
+</html>

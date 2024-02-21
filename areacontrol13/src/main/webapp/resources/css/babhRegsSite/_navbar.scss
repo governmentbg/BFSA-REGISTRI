@@ -1,0 +1,74 @@
+// navbar
+
+.topnav {
+	background-color: var(--primary-color);
+	min-height: 43px;
+	
+	a {
+		display: inline-block;
+		color: #ffffff;
+		text-align: center;
+		padding: 12px 16px;
+		text-decoration: none;
+		font-size: 16px;
+		transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+		
+		&:hover {
+			background-color: var(--primary-color-dark);
+		}
+		
+		&.active {
+			border-bottom: 5px solid var(--secondary-color);
+		}
+	}
+	
+	.icon {
+		display: none;
+	}
+	
+	.nav-links {
+		display: none;
+	}
+	
+	.menu-items {
+		display: flex;
+    	justify-content: center;
+	}
+}
+
+@media only screen and (max-width: 991px) {
+	.topnav {
+		display: flex;
+		flex-direction: row;
+		align-items: flex-start;
+		
+		.menu-items {
+			display: block;
+			flex-grow: 1;
+			
+			> a {
+				display: none;
+			}
+		}
+		
+		&.responsive {
+			.menu-items {
+				> a {
+					display: block;
+					max-width: inherit;
+				}
+			}
+			.nav-links {
+				display: block;
+			}
+		}
+		
+		.icon {
+			display: block;
+		}
+		
+		.nav-links {
+			display: inline-block;
+		}
+	}
+}

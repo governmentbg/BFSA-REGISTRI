@@ -1,0 +1,169 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">	
+	
+  	<ui:define name="metadata">
+  		<f:metadata>
+  			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />			
+			<f:viewAction action="#{userData.checkPageAccess(45)}" onPostback="false" />			
+		</f:metadata>
+	</ui:define>
+                
+    <ui:define name="title">#{navTexts['/pages/procDefList.xhtml']}</ui:define>
+   
+    <ui:define name="viewname">
+        <li>#{navTexts['/pages/procDefList.xhtml']}</li> 
+    </ui:define>
+	
+	<ui:define name="content">				
+			
+			<h:form id="formProcDefList" >
+				
+				<div class="container #{guestPreferences.containerPosition}">
+				
+					<!-- FILTER -->	
+					<h:panelGroup id="panelFilter" >
+	
+						<div class="card">
+		
+							<div class="p-grid ui-fluid">
+								
+								<!-- Номер на процедура -->
+								<p:focus for="nomProc" />
+								<div  class=" p-col-12 p-md-2" >								
+									<h:outputText value="#{labels['procDefList.nomProc']}" styleClass="form-label"/>
+									<p:inputText value="#{procDefList.nomerProc}" id="nomProc"/>						
+								</div>
+								
+								<!-- Наименование на процедура -->
+								<div  class="p-col-12 p-md-7" >								
+									<h:outputText value="#{labels['procDefList.nameProc']}" styleClass="form-label"/>
+									<p:inputText value="#{procDefList.nameProc}" />						
+								</div>
+								
+								<!-- Статус -->
+								<div class="p-col-12 p-md-3">
+							        <h:outputText value="#{labels['procDefList.status']}" styleClass="form-label" />
+									<p:selectOneMenu value="#{procDefList.status}" id="status">
+											<f:selectItem value="#{null}" itemValue="#{null}"/>
+							                <f:selectItems value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PROC_DEF_STAT, now, procDefList.currentLang)}"                           
+							                   			var="itemSc" itemLabel="#{itemSc.tekst}" itemValue="#{itemSc.code}"/>
+									</p:selectOneMenu>								        
+								</div>	
+								
+							</div>
+		
+							<div class="filter-buttons">
+								
+								<p:commandButton icon="fas fa-search" value="#{ui_labels['general.search']}" 
+												id="btnSearchProc" update="resultTable panelFilter" partialSubmit="true"
+												process="@this panelFilter resultTable" actionListener="#{procDefList.actionSearch}" styleClass="p-mr-3"/>
+								<p:defaultCommand target="btnSearchProc" scope="panelFilter"/>
+		
+		
+								<p:commandButton icon="fas fa-eraser" value="#{ui_labels['general.clear']}" 
+												 id="btnClear" update="resultTable panelFilter" partialSubmit="true"
+												 process="@this panelFilter resultTable" actionListener="#{procDefList.actionClear}"
+												 styleClass="ui-button-warning" />	
+							</div>
+		
+						</div>
+					
+					</h:panelGroup>
+				
+				</div>
+				
+				<h:panelGroup id="resultTable" layout="block" styleClass="margin-top">
+
+				<h:panelGroup layout="block" styleClass="card">
+
+					<div class="table-toolbar">
+
+						<p:commandButton icon="fas fa-file" action="#{procDefList.actionGotoNew}" ajax="false" value="#{labels['procDefList.newDefProc']}" styleClass="ui-button-success" />
+
+						<span class=" p-mx-2" jsf:rendered="#{procDefList.defProcList.rowCount > 0}"> 
+							<span class="fas fa-ellipsis-v" />
+						</span>			
+
+						<h:outputText value="#{ui_labels['general.reportResult']} #{procDefList.defProcList.rowCount} " styleClass="form-label" rendered="#{procDefList.defProcList.rowCount > 0}"/>
+
+					</div>
+
+					<p:dataTable id="tblProcDefList" var="row" value="#{procDefList.defProcList}" lazy="true" rendered="#{procDefList.defProcList != null}"
+						rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}" rows="15" sortMode="single" reflow="true"
+						paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+						rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom" paginatorAlwaysVisible="true" paginator="true">
+
+						<f:facet name="{Exporters}" >
+
+							<div style="float: left" jsf:rendered="#{procDefList.defProcList.rowCount > 0}">
+
+								<h:commandLink id="excel">
+									<h:graphicImage library="images" name="excel2.png" />
+									<p:dataExporter type="xls" target="tblProcDefList" fileName="procDefListXls" postProcessor="#{procDefList.postProcessXLSProcDefList}" />
+								</h:commandLink>
+
+								<h:commandLink id="pdf">
+									<h:graphicImage library="images" name="pdf.png" />
+									 <p:dataExporter type="pdf" target="tblProcDefList" fileName="procDefListPdf" 	 encoding="windows-1251"
+					        			preProcessor="#{procDefList.preProcessPDFProcDefList}" options="#{procDefList.pdfOptions()}"/>
+								</h:commandLink>
+
+								<h:commandLink id="csv">
+									<h:graphicImage library="images" name="csv.png" />
+									<p:dataExporter type="csv" target="tblProcDefList" fileName="procDefListCsv" encoding="CP1251" />
+								</h:commandLink>
+
+							</div>
+
+						</f:facet>
+
+						<p:column width="5" exportable="false" headerText="#{ui_labels['general.No-symbol']}">
+							<h:outputText value="#{idx + 1}" />
+						</p:column>
+
+						<p:column width="15" exportable="false">
+							<p:commandButton icon="fas fa-edit" action="#{procDefList.actionGoto(row[0])}" ajax="false" styleClass="btn-new" />							
+						</p:column>
+						
+						<p:column width="15" exportable="false">
+							<p:commandButton icon="fas fa-clone" action="#{procDefList.actionCopyDefProc(row[0])}" styleClass="btn-new" title="#{labels['procDefList.btnCopy']}" 
+									ajax="false" partialSubmit="true" update="formProcDefList:resultTable" process="@this formProcDefList:resultTable" />							
+						</p:column>	
+						
+						<p:column width="30" sortBy="#{row.a0}" headerText="#{labels['procDefList.nomProc']}">
+							<h:outputText value="#{row[0]}" />
+						</p:column>
+
+						<p:column width="200" sortBy="#{row.a1}" headerText="#{labels['procDefList.nameProc']}">
+							<h:outputText value="#{row[1]}" />
+						</p:column>
+						
+						<p:column width="50" sortBy="#{row.a3}" headerText="#{labels['procDefList.status']}">
+							<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_PROC_DEF_STAT, row[3], procDefList.currentLang, now)}" />							
+						</p:column>
+						
+						<p:column width="50" sortBy="#{row.a4}" headerText="#{labels['procDefList.srokDni']}">
+							<h:outputText value="#{row[4]}" />
+						</p:column>
+
+						<p:column width="300" sortBy="#{row.a2}" headerText="#{labels['procDefList.opisProc']}">
+							<h:outputText value="#{row[2]}"/>								
+						</p:column>		
+
+					</p:dataTable>
+
+				</h:panelGroup>
+
+			</h:panelGroup>
+			
+		</h:form>
+			
+	</ui:define>	
+	
+</ui:composition>

@@ -1,0 +1,736 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(null)}"
+				onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+
+	<script>
+        function transformText() {
+            var inputTextElement = document.getElementById('targovtsiFurajForm:registerTabs:odobTSregN');
+            
+            var inputText = inputTextElement.value;
+            var transformedText = inputText.toUpperCase().replace(/\s/g, '');
+            
+            inputTextElement.value = transformedText;
+        }
+    </script>
+
+	<h:form id="targovtsiFurajForm">
+
+		<div class="#{guestPreferences.containerPosition}"
+			jsf:rendered="#{regMpsFuraj.showEkran}">
+
+
+			<div class="card">
+				<h:panelGroup id="vpTitle"
+					style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+					<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regMpsFuraj.registerOptions.registerId, regMpsFuraj.currentLang, null)}"
+						styleClass="form-label" />
+					<br />
+					<h:outputText value="#{labels['babhMigr.msgmigr']}"
+						style="color:red" rendered="#{regMpsFuraj.vpisvane.fromМigr eq 0}" />
+				</h:panelGroup>
+
+
+				<ui:remove>
+					<!-- без това, при местене между табовете не субмитва данните -->
+				</ui:remove>
+				<p:remoteCommand name="onTabChangeProcess"
+					process="registerTabs @this" />
+
+				<p:tabView id="registerTabs" dynamic="true" cache="true"
+					styleClass="p-mt-4" onTabChange="onTabChangeProcess()">
+
+					<p:ajax event="tabChange" process="registerTabs"
+						listener="#{regMpsFuraj.onTabChange}" update="registerTabs"
+						partialSubmit="true" />
+
+					<!-- ТАБ ОСНОВНИ ДАННИ -->
+					<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+						<h:panelGroup id="tdPanelOsnDanni" layout="block">
+							<p:sticky target="tlbr" margin="100">
+
+								<!-- ТООЛБАР ОСОВНИ ДАННИ-->
+								<p:toolbar id="tlbr" styleClass="p-mb-2">
+
+									<f:facet name="left">
+										<p:commandButton icon="fas fa-save"
+											value="#{ui_labels['general.save']}" id="btnSave"
+											partialSubmit="true"
+											oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+											action="#{regMpsFuraj.actionSave}"
+											process="tdPanelOsnDanni  @this" update="registerTabs"
+											rendered="#{isView ne 1}"
+											disabled="#{regMpsFuraj.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}" />
+
+										<span class="fas fa-ellipsis-v p-mx-2"
+											jsf:rendered="#{isView ne 1}" />
+
+										<ibg:compAccess readonly="#{isView eq 1}"
+											alue="#{labels['regTargovtsiFuraj.compAccess']}"
+											rendered="#{regMpsFuraj.vpisvane.id ne null}"
+											idObj="#{regMpsFuraj.vpisvane.id}"
+											infoJournal="#{regMpsFuraj.vpisvane.licenziant}"
+											taskInfo="#{regMpsFuraj.babhDoc.taskInfo}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}"
+											dateClassif="#{regMpsFuraj.decodeDate}" />
+
+
+										<p:button value="#{labels['registerMainTab.viewZaiav']}"
+											title="#{ui_labels['general.view']}" icon="fas fa-eye"
+											target="_blank" styleClass="ui-button-secondary p-mr-2"
+											outcome="#{regMpsFuraj.actionGotoZaiav()}" />
+
+										<p:commandButton
+											rendered="#{regMpsFuraj.filesList.size() ne 0}"
+											value="#{labels['babhZaiavEdit.upFiles']}"
+											styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-paperclip" partialSubmit="true"
+											update="targovtsiFurajForm:panelAttFiles"
+											oncomplete="PF('attFilesVar').show();" />
+
+										<p:button
+											rendered="#{regMpsFuraj.vpisvane.id ne null and regMpsFuraj.lastDoc[0] ne null}"
+											value="#{labels['registerMainTab.lastDoc']}"
+											title="#{ui_labels['general.view']}"
+											styleClass="ui-button-secondary p-mr-2"
+											icon="fas fa-arrow-left" target="_blank"
+											outcome="#{regMpsFuraj.actionGotoLastZaiav()}" ajax="false" />
+
+									</f:facet>
+
+									<f:facet name="right">
+									
+										<ui:remove>
+											<!-- КК иска само справка, ако лицето е лицензиант -->
+											<ibg:compVpisvaneZaiav
+												rendered="#{regMpsFuraj.referent2.code ne null}"
+												codeRef="#{regMpsFuraj.referent2.code}"
+												idVpisvane="#{regMpsFuraj.vpisvane.id}"
+												onComplete="PF('vpZaiavVar').hide();" />
+
+											<span class="fas fa-ellipsis-v p-mx-2"
+												jsf:rendered="#{regMpsFuraj.referent2.code ne null}" />
+										</ui:remove>
+
+
+										<ibg:compSendEmail
+											mailTo="#{regMpsFuraj.referent2.contactEmail}"
+											subject="#{labels['regTargovtsiFuraj.otnosno']} #{regMpsFuraj.vpisvane.regNomZaqvlVpisvane}"
+											rendered="#{regMpsFuraj.referent2.contactEmail ne null}" />
+
+										<h:panelGroup id="pRegInfo">
+											<ibg:compObjAudit id="compJ"
+												idObj="#{regMpsFuraj.vpisvane.id}"
+												codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+										</h:panelGroup>
+
+										<span class="fas fa-ellipsis-v p-mx-2"
+											jsf:rendered="#{regMpsFuraj.vpisvane.id ne null and isView ne 1}" />
+
+										<p:commandButton icon="fas fa-times"
+											styleClass="ui-button-danger"
+											value="#{ui_labels['general.delete']}" partialSubmit="true"
+											action="#{regMpsFuraj.actionDelete}"
+											rendered="#{isView ne 1 and regMpsFuraj.vpisvane.id ne null and !regMpsFuraj.ud.limitedAccess}"
+											disabled="#{regMpsFuraj.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+											<p:confirm header="#{ui_labels['general.comfirmation']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+									</f:facet>
+
+								</p:toolbar>
+
+							</p:sticky>
+
+							<p:divider align="right" type="dashed" style="margin: 0rem;">
+
+								<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: "
+									styleClass="form-label" />
+								<h:outputText id="regNumZaiav"
+									value="#{regMpsFuraj.vpisvane.regNomZaqvlVpisvane} / " />
+								<h:outputText id="dateZaiav" styleClass="p-mr-2"
+									value="#{regMpsFuraj.vpisvane.dateZaqvlVpis}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regMpsFuraj.timeZone}" />
+								</h:outputText>
+
+								<h:outputText value="#{labels['registerMainTab.statusV']}: "
+									styleClass="form-label" />
+								<h:outputText id="statusV"
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regMpsFuraj.vpisvane.status, regMpsFuraj.currentLang, null)}" />
+								<h:outputText value="   "
+									rendered="#{regMpsFuraj.vpisvane.id ne null}" />
+								<h:outputText id="dateSv"
+									rendered="#{regMpsFuraj.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+									value="#{regMpsFuraj.vpisvane.dateStatus}">
+									<f:convertDateTime pattern="dd.MM.yyyy"
+										timeZone="#{regMpsFuraj.timeZone}" />
+								</h:outputText>
+
+								<!-- Дължима такса -->
+								<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+									styleClass="form-label"
+									rendered="#{regMpsFuraj.daljimaSuma ne null and regMpsFuraj.daljimaSuma gt 0}" />
+								<h:outputText value="#{regMpsFuraj.daljimaSuma}"
+									style="color: red"
+									rendered="#{regMpsFuraj.daljimaSuma ne null and regMpsFuraj.daljimaSuma gt 0}" />
+
+								<!-- УД -->
+								<h:panelGroup
+									rendered="#{regMpsFuraj.vpisvane.regNomResult ne null}">
+									<h:outputText value="#{labels['ud.udNomer']}: "
+										styleClass="form-label" />
+									<h:outputText value="#{regMpsFuraj.vpisvane.regNomResult} / " />
+									<h:outputText value="#{regMpsFuraj.vpisvane.dateResult}">
+										<f:convertDateTime pattern="dd.MM.yyyy"
+											timeZone="#{regMpsFuraj.timeZone}" />
+									</h:outputText>
+								</h:panelGroup>
+							</p:divider>
+
+
+							<!-- Представляващо лице -->
+							<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}"
+								refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+								binding="#{regMpsFuraj.bindingReferent1}"
+								refObj="#{regMpsFuraj.referent1}"
+								codeRef="#{regMpsFuraj.referent1.code}"
+								mainDataLabel="#{labels['docu.podatel']}"
+								saveInComponent="false" modal="false" showContacts="false"
+								showRadio="flase" showBtnClear="true" showKachectvoLice="true" />
+
+							<ibg:refCorrespData id="liceZaqvitel" readonly="#{isView eq 1}"
+								binding="#{regMpsFuraj.bindingReferent2}"
+								codeRef="#{regMpsFuraj.referent2.code}"
+								refObj="#{regMpsFuraj.referent2}"
+								mainDataLabel="#{labels['registerMainTab.zaiavitel']}"
+								saveInComponent="false" vidDoc="#{regMpsFuraj.babhDoc.docVid}"
+								dateClassif="#{regMpsFuraj.decodeDate}" modal="false"
+								showDopInfo="false" showKorespAdress="true" showBtnClear="true"
+								showContacts="true" showRadio="true" regixPermAddress="true"
+								btnPostAdress="true" />
+
+
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#targovtsiFurajForm:registerTabs:deinostData')">
+									<h:outputText
+										value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, BabhConstants.CODE_ZNACHENIE_DEIN_ODOBRENIE_TS_SJP, regMpsFuraj.currentLang, now)}" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+
+							<div jsf:id="deinostData">
+
+								<div class="p-grid p-ai-stretch vertical-container">
+
+									<!-- ВИД НА ТС -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2 ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.vidTS']}"
+											styleClass="form-label req" />
+										<p:selectOneMenu id="odobTSvid" autoWidth="false"
+											filter="true" filterMatchMode="startsWith"
+											value="#{regMpsFuraj.vpisvane.mps.vid}"
+											disabled="#{isView eq 1}">
+											<f:selectItem value="#{null}" itemValue="#{null}" />
+											<f:selectItems
+												value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_MPS, now, regMpsFuraj.currentLang)}"
+												var="slcItem" itemLabel="#{slcItem.tekst}"
+												itemValue="#{slcItem.code}" />
+										</p:selectOneMenu>
+									</div>
+
+									<!-- РЕГ. НОМЕР -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['regTarvotsiFuraj.regN']}"
+											styleClass="form-label req" />
+										<div class="ui-inputgroup">
+											<p:inputText id="odobTSregN" oninput="transformText();"
+												value="#{regMpsFuraj.vpisvane.mps.nomer}">
+												<p:ajax event="change" process="@this deinostData"
+													update="@this deinostData" partialSubmit="true"
+													listener="#{regMpsFuraj.actionCheckRegN()}" />
+											</p:inputText>
+
+											<p:commandButton
+												rendered="#{regMpsFuraj.vpisvane.mps.id ne null}"
+												icon="fas fa-car" id="viewMpsData" process="@this"
+												update="targovtsiFurajForm:panelMpsData"
+												action="#{regMpsFuraj.actionShowMpsData}"
+												title="#{labels['regMpsFuraj.viewMpsData']}"
+												partialSubmit="true" oncomplete="PF('mpsDataVar').show();" />
+
+											<ui:remove>
+												<ibg:compMPSsearch
+													rendered="#{regMpsFuraj.vpisvane.mps.id eq null}"
+													selectedMPS="#{regMpsFuraj.vpisvane.mps}"
+													update="targovtsiFurajForm:registerTabs:deinostData"
+													onComplete="PF('mpsSearchVar').hide();" />
+											</ui:remove>
+										</div>
+									</div>
+
+									<!--МОДЕЛ -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2 ui-fluid">
+										<h:outputText value="#{labels['compMPSsearch.model']}"
+											styleClass="form-label req" />
+										<p:inputText id="model"
+											value="#{regMpsFuraj.vpisvane.mps.model}" />
+									</div>
+
+
+									<!-- КАТЕГОРИЯ СЖП -->
+									<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-6 ui-fluid ">
+										<h:outputText
+											value="#{labels['regTarvotsiFuraj.kategoriaSJP']}"
+											styleClass="form-label req" />
+										<p:selectCheckboxMenu id="odobTSkategoria" filter="true"
+											filterMatchMode="startsWith" multiple="true"
+											value="#{regMpsFuraj.vpisvane.mps.categoryList}"
+											disabled="#{isView eq 1}">
+											<f:selectItems
+												value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_CATEGORY_SJP, now, regMpsFuraj.currentLang)}"
+												var="item" itemLabel="#{item.tekst}"
+												itemValue="#{item.code}" />
+										</p:selectCheckboxMenu>
+									</div>
+
+									<!-- ДОПУСТИМА МАКС.МАСА -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.maxMasa']}"
+											styleClass="form-label req" />
+										<p:inputText id="odobTSmaxMasa"
+											value="#{regMpsFuraj.vpisvane.mps.maxMasa}" />
+									</div>
+
+									<!-- ТОВАРОПОДЕМНОСТ -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.maxTovar']}"
+											styleClass="form-label" />
+										<p:inputText id="odobTStovar"
+											value="#{regMpsFuraj.vpisvane.mps.tovaropodemnost}" />
+									</div>
+
+									<!-- ОБЕМ -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.obem']}"
+											styleClass="form-label" />
+										<p:inputText id="odobTSobem"
+											value="#{regMpsFuraj.vpisvane.mps.obem}" />
+									</div>
+
+									<!-- ДОП.ИНФО  -->
+									<div class="p-col-12  ui-fluid">
+										<h:outputText value="#{labels['targovtsiFuraj.furajInfo']}"
+											styleClass="form-label" />
+										<p:inputTextarea rows="3" id="odobTSdopInfo"
+											value="#{regMpsFuraj.vpisvane.mps.dopInfo}" />
+									</div>
+
+									<!-- ЛИЦЕНЗ -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-4  ui-fluid">
+										<div class="p-grid">
+											<div class="p-col-12">
+												<h:outputText value="#{labels['regZJ.lizMPrevoz']}"
+													styleClass="form-label p-text-italic" />
+											</div>
+
+											<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+												<h:outputText value="#{labels['reg.nomLiz']}"
+													styleClass="form-label" />
+												<p:inputText value="#{regMpsFuraj.refDocNom1}" id="liznom" />
+											</div>
+
+											<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+												<h:outputText value="#{labels['reg.dateLiz']}"
+													styleClass="form-label" />
+												<p:datePicker id="lizDat" pattern="dd.MM.yyyy" mask="true"
+													value="#{regMpsFuraj.refDocDate1}" showIcon="true"
+													locale="bg" rendered="#{isView ne 1}" />
+												<p:inputText id="lizDatV" rendered="#{isView eq 1}"
+													value="#{regMpsFuraj.refDocDate1}" readonly="true">
+													<f:convertDateTime pattern="dd.MM.yyyy"
+														timeZone="#{regMpsFuraj.timeZone}" />
+												</p:inputText>
+											</div>
+										</div>
+									</div>
+
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-4  ui-fluid">
+										<div class="p-grid">
+											<div class="p-col-12">
+												<h:outputText value="#{labels['regZJ.lizVPrevoz']}"
+													styleClass="form-label p-text-italic" />
+												<i class="fas fa-info-circle"
+													title="Посочва се, в случай, че трансп. средство е с максимално допустима маса в натоварено състояние над 3,5 тона"></i>
+											</div>
+											<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+												<h:outputText value="#{labels['reg.nomLiz']}"
+													styleClass="form-label" />
+												<p:inputText id="liznom2" value="#{regMpsFuraj.refDocNom2}" />
+											</div>
+											<div class="p-col-12 p-md-6 p-lg-6 p-xl-6">
+												<h:outputText value="#{labels['reg.dateLiz']}"
+													styleClass="form-label" />
+												<p:datePicker id="lizDat2" pattern="dd.MM.yyyy" mask="true"
+													value="#{regMpsFuraj.refDocDate2}" showIcon="true"
+													locale="bg" rendered="#{isView ne 1}" />
+												<p:inputText id="lizDat2V" rendered="#{isView eq 1}"
+													value="#{regMpsFuraj.refDocDate2}" readonly="true">
+													<f:convertDateTime pattern="dd.MM.yyyy"
+														timeZone="#{regMpsFuraj.timeZone}" />
+												</p:inputText>
+											</div>
+										</div>
+									</div>
+
+									<p:divider type="dashed" style="margin-bottom: 0rem;" />
+
+									<!-- КОД НА ДЕЙНОСТТА -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['regTargovtsiFuraj.codeDein']}"
+											styleClass="form-label" />
+										<p:inputText id="codeDein"
+											value="#{regMpsFuraj.vpisvane.eventDeinostFuraji.codeDeinost}" />
+									</div>
+								</div>
+							</div>
+
+							<ui:remove>
+								<!-- НА ПРЕДСТАВЯНЕТО ТЕ ПОИСКАХА ДА СЕ МАХНЕ!!! -->
+
+								<!-- МЕСТОДОМУВАНЕ  /САМО ЗА ЛИЦЕНЗИРАНЕ НА ТС ЗА ПРЕНОС НА СЖП/-->
+								<div class="title-group p-mt-3">
+									<p:commandLink class="extended-search-toggle expanded"
+										onclick="toggleSection(this, '#targovtsiFurajForm:registerTabs:mestodomData')">
+										<h:outputText value="#{labels['regTargovtsiFuraj.mestodom']}" />
+										<i class="fas fa-caret-right"></i>
+									</p:commandLink>
+
+									<p:commandButton icon="fas fa-clone" id="btnCopyZaiav"
+										partialSubmit="true" process="@this"
+										update="@this mestodomData" rendered="#{isView eq 0}"
+										action="#{regMpsFuraj.actionCopyAdresZaiav}"
+										value="#{labels['regTargovtsiFuraj.copyZaiav']}" />
+								</div>
+
+
+								<div jsf:id="mestodomData" class="p-grid">
+
+									<!-- НАСЕЛЕНО МЯСТО -->
+									<div class="p-col-12 p-sm-12 p-md-3 p-lg-3 p-xl-2  ui-fluid">
+										<h:outputText value="#{labels['registerMainTab.city']}"
+											styleClass="form-label req" />
+										<ibg:selectOneModalA id="nasMesto"
+											update="targovtsiFurajForm:registerTabs:mestodomData"
+											codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+											selectedCode="#{regMpsFuraj.vpisvane.mps.nasMesto}"
+											emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+											saveStateTree="false" withBtnClear="true" compType="3"
+											minQueryLength="3" dopInfoAutoComp="true"
+											readonly="#{isView eq 1}"
+											onClear="#{regMpsFuraj.actionClearAdres}"
+											dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+									</div>
+
+									<!-- ОБЛАСТ -->
+									<div class="p-col-12 p-sm-12 p-md-3 p-lg-4 p-xl-3  ui-fluid">
+										<h:outputText value="#{labels['registerMainTab.area']}"
+											styleClass="form-label" />
+										<h:panelGroup id="mestodomObsh">
+											<p:inputText readonly="true"
+												value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, regMpsFuraj.vpisvane.mps.nasMesto, regMpsFuraj.currentLang, now)}" />
+										</h:panelGroup>
+									</div>
+
+									<!-- УЛИЦА/СГРАДА -->
+									<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-3 ui-fluid">
+										<h:outputText value="#{labels['registerMainTab.street']}"
+											styleClass="form-label req" />
+										<p:inputText id="mestodomUl"
+											value="#{regMpsFuraj.vpisvane.mps.adres}" />
+									</div>
+
+								</div>
+							</ui:remove>
+
+
+							<!-- ДОПЪЛНИТЕЛНА ИНФОРМАЦИЯ ЗА ВПИСВАНЕТО-->
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#targovtsiFurajForm:registerTabs:vpisvaneInfo')">
+									<h:outputText value="#{labels['reg.dopInfoVpisvane']}" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+							</div>
+
+							<div jsf:id="vpisvaneInfo">
+								<div class="p-grid ui-fluid">
+									<div class="p-col-12 ui-fluid">
+										<p:inputTextarea rows="4" value="#{regMpsFuraj.vpisvane.info}" />
+									</div>
+								</div>
+							</div>
+						</h:panelGroup>
+					</p:tab>
+
+					<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.danniVpisvaneTab']}"
+						id="danniVpisvaneTab"
+						disabled="#{regMpsFuraj.vpisvane.id eq null}">
+						<ui:include src="vpStatusData.xhtml">
+							<ui:param name="isView" value="0" />
+							<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+						</ui:include>
+					</p:tab>
+
+
+					<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.docsVpisvaneTab']}"
+						id="docVpisvaneTab" disabled="#{regMpsFuraj.vpisvane.id eq null}">
+						<ui:include src="vpDocs.xhtml">
+							<ui:param name="isView" value="0" />
+							<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+						</ui:include>
+					</p:tab>
+
+					<!-- ТАБ ЕТАПИ НА ОБРАБОТКА -->
+					<p:tab title="#{labels['register.etapiVpisvaneTab']}"
+						id="etapiVpisvaneTab"
+						disabled="#{regMpsFuraj.vpisvane.id eq null}">
+						<ui:include src="procEtaps.xhtml">
+							<ui:param name="clId" value="targovtsiFurajForm:registerTabs" />
+						</ui:include>
+					</p:tab>
+				</p:tabView>
+
+			</div>
+		</div>
+
+		<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ТС -->
+		<h:panelGroup id="panelMpsData">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['regMpsFuraj.viewMpsData']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="mpsDataVar" dynamic="true" id="modalMps" modal="true">
+
+				<p:messages id="modalMpsMsg" showDetail="true" closable="false"
+					style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+
+				<div class="container #{guestPreferences.containerPosition}"
+					jsf:id="modalMpsData">
+
+					<div class="p-grid">
+
+						<!-- РЕГ. НОМЕР -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['regTarvotsiFuraj.regN']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true" value="#{regMpsFuraj.mpsData.nomer}" />
+						</div>
+
+						<!--МОДЕЛ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2 ui-fluid">
+							<h:outputText value="#{labels['compMPSsearch.model']}"
+								styleClass="form-label" />
+							<p:inputText readonly="" value="#{regMpsFuraj.mpsData.model}" />
+						</div>
+					</div>
+
+					<div class="p-grid">
+
+						<!-- ДОПУСТИМА МАКС.МАСА -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.maxMasa']}"
+								styleClass="form-label " />
+							<p:inputText readonly="true"
+								value="#{regMpsFuraj.mpsData.maxMasa}" />
+						</div>
+
+						<!-- МАСА -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.masa']}"
+								styleClass="form-label " />
+							<p:inputText readonly="true" value="#{regMpsFuraj.mpsData.masa}" />
+						</div>
+
+
+						<!-- ТОВАРОПОДЕМНОСТ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.maxTovar']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true"
+								value="#{regMpsFuraj.mpsData.tovaropodemnost}" />
+						</div>
+
+						<!-- ОБЕМ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.obem']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true" value="#{regMpsFuraj.mpsData.obem}" />
+						</div>
+
+						<!-- ПЛОЩ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.plosht']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true"
+								value="#{regMpsFuraj.mpsData.plosht}" />
+						</div>
+
+						<!-- ДОП.ИНФО  -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furajInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea rows="3" readonly="true"
+								value="#{regMpsFuraj.mpsData.dopInfo}" />
+						</div>
+
+						<!-- НОМЕР И ДАТА НА ИЗДАВАНЕ НА СЕРТИФИКАТ ЗА ОДОБРЕНИЕ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputText
+								value="#{labels['regTargovtsiFuraj.nomIzdavaneMpsL']}"
+								styleClass="form-label" />
+							<p:inputText readonly="true"
+								value="#{regMpsFuraj.mpsData.nomDatSert}" />
+						</div>
+
+						<!-- КАТЕГОРИЯ СЖП ЗА ПРЕВОЗ -->
+						<div class="p-col-12 ui-fluid">
+							<h:outputText value="#{labels['regTarvotsiFuraj.kategoriaSJP']}"
+								styleClass="form-label" />
+							<p:selectCheckboxMenu disabled="true" multiple="true"
+								filter="true" filterMatchMode="startsWith" autoWidth="false"
+								value="#{regMpsFuraj.mpsData.categoryList}">
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_CATEGORY_SJP, now, regMpsFuraj.currentLang)}"
+									var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}" />
+							</p:selectCheckboxMenu>
+						</div>
+
+						<!-- КАПАЦИТЕТ ЗА ПРЕВОЗ НА ЖИВОТНИ -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText
+								value="#{labels['regTargovtsiFuraj.kapacitetPrevoz']}"
+								styleClass="form-label" />
+
+							<p:dataTable id="tblKapacitetPrevoz" var="row" lazy="true"
+								value="#{regMpsFuraj.mpsData.mpsKapacitetJiv}" rowIndexVar="idx"
+								emptyMessage="#{ui_labels['general.norows']}" rows="5"
+								sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true"
+								showGridlines="true">
+
+								<p:column width="30" exportable="false"
+									headerText="#{ui_labels['general.No-symbol']}">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+
+								<p:column headerText="#{labels['targovtsiFuraj.vidJivotno']}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_JIVOTNO_PREVOZ, row.vidJiv, regMpsFuraj.currentLang, null)}" />
+								</p:column>
+
+								<p:column headerText="#{labels['reg.broj']}">
+									<h:outputText value="#{row.broiJiv}" />
+								</p:column>
+
+							</p:dataTable>
+						</div>
+
+						<!-- ВРЪЗКИ С ЛИЦА -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vrazLica']}"
+								styleClass="form-label" />
+
+							<p:dataTable id="tblLica" var="row" lazy="true"
+								value="#{regMpsFuraj.mpsData.mpsLice}" rowIndexVar="idx"
+								emptyMessage="#{ui_labels['general.norows']}" rows="5"
+								sortMode="single" reflow="true"
+								paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+								rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+								paginatorAlwaysVisible="false" paginator="true"
+								showGridlines="true">
+
+								<p:column width="30" exportable="false"
+									headerText="#{ui_labels['general.No-symbol']}">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+
+								<p:column headerText="#{labels['regTargovtsiFuraj.vidVrazka']}">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VRAZ_LICE_OBEKT, row.tipVraz, regMpsFuraj.currentLang, null)}" />
+								</p:column>
+
+								<p:column headerText="#{labels['regTargovtsiFuraj.lice']}">
+									<h:outputText value="#{row.referent.refName}" />
+								</p:column>
+
+							</p:dataTable>
+
+						</div>
+
+					</div>
+				</div>
+
+			</p:dialog>
+		</h:panelGroup>
+
+
+
+
+
+		<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+		<h:panelGroup id="panelAttFiles">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+				modal="true">
+
+				<p:messages id="attFilesModalMsg" showDetail="true" closable="false"
+					style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:compFileUpload id="filesDoc"
+						listObj="#{regMpsFuraj.filesList}"
+						codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+						header="true" idObj="#{regMpsFuraj.babhDoc.id}" hideDel="false"
+						view="true" display="list" typeSign="0" saveFirst="true"
+						dragDropSupport="table"
+						headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+				</div>
+
+			</p:dialog>
+		</h:panelGroup>
+
+
+
+	</h:form>
+
+
+</ui:composition>

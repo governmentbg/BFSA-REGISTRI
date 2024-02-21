@@ -1,0 +1,105 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+<div class="sticky-side">
+	<header class="header-wrapper">
+		<div class="header">
+			<h:form id="headerForm">
+
+				<div class="top-menu-wrapper">
+					<div class="top-menu">
+
+						<div class="menu-option">
+							<p:commandLink id="access-trigger" styleClass="topbar-icon" title="Опции за достъпност" partialSubmit="true" process="@none">
+								<i class="fas fa-universal-access"></i>
+							</p:commandLink>
+
+							<span class="separator">|</span>
+
+							<h:link outcome="#{view.viewId}" includeViewParams="true"
+								value="Български">
+								<f:param name="locale" value="bg" />
+							</h:link>
+
+							<span class="separator">|</span>
+
+							<h:link outcome="#{view.viewId}" includeViewParams="true"
+								value="English">
+								<f:param name="locale" value="en" />
+							</h:link>
+						</div>
+					</div>
+				</div>
+
+				<div style="position: relative">
+					<div class="logo-container" id="logo-container">
+						<div class="logos-wrapper">
+							<a href="#{request.contextPath}/index.xhtml?faces-redirect=true">
+								<p:graphicImage name="images/logo-nvms.png" library="mirage-layout" class="logo-gerb" id="logo-gerb" alt="#{labels['general.systemName']}"/>
+							</a>
+						</div>
+					</div>
+				</div>
+			</h:form>
+		</div>
+	</header>
+
+	<!-- MENU -->
+	<h:form id="menuForm">
+	  <nav>
+		<div class="topnav" id="myTopnav">
+
+			<a href="javascript:void(0);" class="icon" onclick="changeMenuJs()">
+				<i class="fas fa-bars"></i>
+			</a>
+
+			<div class="menu-items" jsf:rendered="#{view.viewId ne '/index.xhtml'}">
+
+				<a href="#{request.contextPath}/pagesPublic/animals.xhtml?faces-redirect=true&amp;locale=#{!empty(param['locale'])?param['locale']:'bg'}&amp;lang=#{!empty(param['lang'])?param['lang']:1}"
+					class="#{view.viewId eq '/pagesPublic/animals.xhtml' ? 'active' : ''}">
+					#{labels['ext.homeTile.jivotni']}
+				</a>
+
+				<a href="#{request.contextPath}/pagesPublic/vlp.xhtml?faces-redirect=true&amp;locale=#{!empty(param['locale'])?param['locale']:'bg'}&amp;lang=#{!empty(param['lang'])?param['lang']:1}"
+					class="#{view.viewId eq '/pagesPublic/vlp.xhtml' ? 'active' : ''}">
+					#{labels['ext.homeTile.vlp']}
+				</a>
+
+				<a href="#{request.contextPath}/pagesPublic/furaji.xhtml?faces-redirect=true&amp;locale=#{!empty(param['locale'])?param['locale']:'bg'}&amp;lang=#{!empty(param['lang'])?param['lang']:1}"
+					class="#{view.viewId eq '/pagesPublic/furaji.xhtml' ? 'active' : ''}">
+					#{labels['ext.homeTile.furaji']}
+				</a>
+
+				<a href="/jasperserver/flow.html?_flowId=viewReportFlow&amp;_flowId=viewReportFlow&amp;ParentFolderUri=/public/kh&amp;reportUnit=/public/kh/home&amp;standAlone=true&amp;j_username=public&amp;j_password=public">
+					#{labels['ext.homeTile.hrani']}
+				</a>
+
+				<a href="/jasperserver/flow.html?_flowId=viewReportFlow&amp;_flowId=viewReportFlow&amp;ParentFolderUri=/public/pest&amp;reportUnit=/public/pest/home&amp;standAlone=true&amp;j_username=public&amp;j_password=public">
+					#{labels['ext.homeTile.torove']}
+				</a>
+
+				<a href="/jasperserver/flow.html?_flowId=viewReportFlow&amp;_flowId=viewReportFlow&amp;ParentFolderUri=/public/phy&amp;reportUnit=/public/phy/home&amp;standAlone=true&amp;j_username=public&amp;j_password=public">
+					#{labels['ext.homeTile.kontrol']}
+				</a>
+			</div>
+
+			<div>
+				<h:link outcome="#{view.viewId}" includeViewParams="true" value="EN" styleClass="nav-links">
+					<f:param name="locale" value="en" />
+				</h:link>
+
+				<h:link outcome="#{view.viewId}" includeViewParams="true" value="BG" styleClass="nav-links">
+					<f:param name="locale" value="bg" />
+				</h:link>
+			</div>
+
+		</div>
+	  </nav>
+	</h:form>
+</div>
+
+</ui:composition>

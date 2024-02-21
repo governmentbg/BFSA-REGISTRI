@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+	<!-- МОЖЕ БИ ЗА JUNIT ТЕСТОВЕ Е ДОБРЕ ДА СЕ ПИШЕ САМО В КОНЗОЛАТА -->
+
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>
+
+		 <File name="MigrateFile" fileName="d:\migrate.log" immediateFlush="true"
+			append="true">
+			<PatternLayout
+				pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</File>
+
+	</Appenders>
+
+	<Loggers>
+		<Root level="info">
+			<AppenderRef ref="Console" />
+		</Root>
+
+		 <Logger name="org.hibernate.SQL" level="debug"> </Logger>
+
+	    <!-- set to "trace" to view parameters -->
+	     <Logger name="org.hibernate.type" level="OFF">
+	    	<!-- <AppenderRef ref="Console"/> -->
+	    </Logger>
+	     <Logger name="org.hibernate" level="info" additivity="false">
+	    	 <AppenderRef ref="Console"/>
+	    </Logger>
+	    <!-- <logger name="org.ehcache" level="debug">
+	    	 <AppenderRef ref="Console"/>
+	    </logger> -->
+	    <logger name="org.infinispan" level="debug">
+	    	 <AppenderRef ref="Console"/>
+	    </logger>
+	    <logger name="org.hibernate.cache" level="debug">
+
+	    </logger>
+
+	     <Logger name="bg.egov.eforms.utils.EFormUtils" level="debug"></Logger>
+
+	     <Logger name="com.ib.babhregs.migr.OEZMigrate" level="debug" additivity="false">
+	     	<AppenderRef ref="MigrateFile"/>
+	     </Logger>
+
+		<Logger name="eu.europa.ema.v1_26.EAFUtils" level="debug"></Logger>
+
+		<Logger name="eu.europa.ema.v1_26.TestVassi" level="debug" additivity="true">
+	     	<AppenderRef ref="MigrateFile"/>
+	     </Logger>
+
+
+
+
+
+	</Loggers>
+
+</Configuration>

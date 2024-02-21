@@ -1,0 +1,617 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<!-- Рег. на ВЛЗ -->
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:viewAction action="#{userData.checkPageAccess(null)}" onPostback="false" />
+		</f:metadata>
+	</ui:define>
+
+
+	<h:form id="vlzForm">
+	
+		<div class="#{guestPreferences.containerPosition}" jsf:rendered="#{regVLZ.access}">
+
+			<div class="card">
+
+				<h:panelGroup id="vpTitle"
+					style="padding: 7px 12px; background-color:rgba(216,222,233,0.35); border-radius: 4px; font-weight: bold; display:block; text-align:center; font-size:16px; font-style: italic;">
+
+					<!-- КОНКРЕТНОТО НАИМЕНОВАНИЕ НА РЕГИСТЪРА -->
+					<h:outputText
+						value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_REGISTRI, regVLZ.vpisvane.idRegister, regVLZ.currentLang, now)}"
+						styleClass="form-label" />
+					<br />
+					<h:outputText value="#{labels['babhMigr.msgmigr']}" style="color:red" rendered="#{regVLZ.vpisvane.fromМigr eq 0}"/>
+					
+				</h:panelGroup>
+
+				<p:remoteCommand name="onTabChangeProcess" process="registerTabs @this"/> <ui:remove><!-- без това, при местене между табовете не субмитва данните --></ui:remove>
+
+				<p:tabView id="registerTabs" dynamic="true" cache="true"
+					styleClass="p-mt-4" onTabChange="onTabChangeProcess()">
+
+					<p:ajax event="tabChange" listener="#{regVLZ.onTabChange}" update="registerTabs" process="registerTabs" partialSubmit="true"/>
+					<!-- ТАБ ОСНОВНИ ДАННИ -->
+					<p:tab title="#{labels['register.mainTab']}" id="osnovniDanniTab">
+						<p:outputPanel id="mainDataPanel">
+						<p:sticky target="tlbr" margin="125">
+
+							<!-- ТООЛБАР ОСОВНИ ДАННИ-->
+							<p:toolbar id="tlbr" styleClass="p-mb-5">
+
+								<f:facet name="left">
+									<p:commandButton icon="fas fa-save" action="#{regVLZ.actionSave}"
+										value="#{ui_labels['general.save']}" id="btnSave"
+										partialSubmit="true" process="mainDataPanel  @this"
+										update="registerTabs"
+										oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+										styleClass="p-mr-2"
+										rendered ="#{isView ne 1}"
+										disabled="#{regVLZ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}"/>
+									
+									<span class="fas fa-ellipsis-v p-mx-2" />
+					
+									<ibg:compAccess readonly="#{isView eq 1}" 
+										    header="Служители с изричен достъп до вписването"
+											rendered="#{regVLZ.vpisvane.id ne null}" 
+											idObj="#{regVLZ.vpisvane.id}"
+											infoJournal="#{regVLZ.vpisvane.licenziant}" 
+											taskInfo="#{regVLZ.zaiavlVp.taskInfo}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" 
+											dateClassif="#{regVLZ.decodeDate}"/>
+										
+									<span class="fas fa-ellipsis-v p-mx-2" />
+
+									<p:button 
+										value="#{labels['registerMainTab.viewZaiav']}"
+										title="#{ui_labels['general.view']}"
+									 	icon="fas fa-eye" target="_blank"
+									 	styleClass="ui-button-secondary p-mr-2"
+										outcome="#{regVLZ.actionGotoZaiav()}" />
+										
+									<p:commandButton  rendered="#{regVLZ.filesList.size() ne 0}"
+										value="#{labels['babhZaiavEdit.upFiles']}"
+										styleClass="ui-button-secondary p-mr-2"
+										icon="fas fa-paperclip" partialSubmit="true"													
+										update="vlzForm:panelAttFiles"
+										oncomplete="PF('attFilesVar').show();"  />
+										
+									<p:button 
+										rendered="#{regVLZ.vpisvane.id ne null and regVLZ.lastDoc[0] ne null}"
+										value="#{labels['registerMainTab.lastDoc']}"
+										title="#{ui_labels['general.view']}"
+									 	styleClass="ui-button-secondary p-mr-2"
+										icon="fas fa-arrow-left" target="_blank"
+										outcome="#{regVLZ.actionGotoLastZaiav()}"
+										ajax="false"  />
+				 
+									 
+								</f:facet>
+
+								<f:facet name="right">
+									<ibg:compSendEmail mailTo="#{regVLZ.referent2.contactEmail}" 	subject="Отговор до заявителя..."  />
+			
+									<h:panelGroup id="pRegInfo">
+										<ibg:compObjAudit id="compJ" idObj="#{regVLZ.vpisvane.id}"
+											codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_VPISVANE}" />
+									</h:panelGroup>
+				
+									<span class="fas fa-ellipsis-v p-mx-2" />
+				
+									<p:commandButton icon="fas fa-times"
+											styleClass="ui-button-danger"
+											action="#{regVLZ.actionDelete}"
+											value="#{ui_labels['general.delete']}" partialSubmit="true"
+										    rendered ="#{isView ne 1 and regVLZ.vpisvane.id ne null and !regVLZ.ud.limitedAccess}"
+											disabled="#{regVLZ.vpisvane.vpLocked eq BabhConstants.CODE_ZNACHENIE_DA}">
+											<p:confirm header="#{ui_labels['general.comfirmation']}"
+												message="#{beanMessages['general.confirmDeleteMsg']}"
+												icon="fas fa-exclamation-triangle" />
+										</p:commandButton>
+								</f:facet>
+							
+
+							</p:toolbar>
+
+						</p:sticky>
+
+						<p:divider align="right" type="dashed" style="margin: 0rem;">
+							<!-- ЗАЯВЛЕНИЕ ЗА ВПИСВАНЕ -->
+							<h:outputText value="#{labels['registerMainTab.regNumZaiav']}: " styleClass="form-label" />
+							<h:outputText id="regNumZaiav"
+								value="#{regVLZ.vpisvane.regNomZaqvlVpisvane} / " />
+							<h:outputText id="dateZaiav" styleClass="p-mr-2"
+								value="#{regVLZ.vpisvane.dateZaqvlVpis}">
+								<f:convertDateTime pattern="dd.MM.yyyy"
+									timeZone="#{regVLZ.timeZone}" />
+							</h:outputText>
+							
+							<!-- Статус -->
+							<h:outputText value="#{labels['registerMainTab.statusV']}: "
+								styleClass="form-label" />
+							<h:outputText id="statusV"
+								value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_STATUS_VPISVANE, regVLZ.vpisvane.status, regVLZ.currentLang, null)}" />
+							<h:outputText value="   "
+								rendered="#{regVLZ.vpisvane.id ne null}" />
+							<h:outputText id="dateSv"
+								rendered="#{regVLZ.vpisvane.status ne BabhConstants.STATUS_VP_WAITING}"
+								value="#{regVLZ.vpisvane.dateStatus}">
+								<f:convertDateTime pattern="dd.MM.yyyy"
+									timeZone="#{regVLZ.timeZone}" />
+							</h:outputText>
+														
+							<!-- Дължима такса -->
+							<h:outputText value="#{labels['registerMainTab.daljimaSuma']}: "
+								styleClass="form-label" rendered="#{regVLZ.daljimaSuma ne null and regVLZ.daljimaSuma gt 0}" />
+							<h:outputText value="#{regVLZ.daljimaSuma}" style="color: red"
+								 rendered="#{regVLZ.daljimaSuma ne null and regVLZ.daljimaSuma gt 0}" />
+							<!-- УД -->
+							<h:panelGroup  rendered="#{regVLZ.vpisvane.regNomResult ne null}">
+								<h:outputText value="#{labels['ud.udNomer']}: "
+									styleClass="form-label" />
+								<h:outputText value="#{regVLZ.vpisvane.regNomResult} / " />
+								<h:outputText value="#{regVLZ.vpisvane.dateResult}"   >
+									  <f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLZ.timeZone}" />
+								</h:outputText>
+							</h:panelGroup>
+						</p:divider>
+
+
+						<!-- Представляващо лице -->
+						<ibg:refCorrespData id="licеPоdatel" readonly="#{isView eq 1}"
+								refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}" 
+								binding = "#{regVLZ.bindingReferent1}"
+							  	refObj="#{regVLZ.referent1}" 
+								codeRef="#{regVLZ.referent1.code}"
+								mainDataLabel="#{labels['docu.podatel']}"
+								saveInComponent="false" 	
+								modal="false"
+								showContacts="false"
+								showRadio="flase"
+								showBtnClear="true"
+								showKachectvoLice="true"/>
+								
+						<!-- ЗАЯВИТЕЛ -->
+						<ibg:refCorrespData id="liceZaqvitel"  readonly="#{isView eq 1}"
+						     binding = "#{regVLZ.bindingReferent2}"
+							 codeRef="#{regVLZ.referent2.code}"
+							 refObj="#{regVLZ.referent2}"				 				 
+							 mainDataLabel="Заявител"
+							 saveInComponent="false"
+							 showKorespAdress="true"
+							 showContacts="true"
+							 showBtnClear="true"
+							 showDocs="false"
+							 vidDoc="#{regVLZ.zaiavlVp.docVid}"
+							 searchTxt="#{regVLZ.txtRef2}" 
+							 dateClassif="#{regVLZ.decodeDate}"
+							 modal="false"
+							 regixPermAddress="true"
+							 btnPostAdress="true"/>	
+						 								
+
+						<!-- Данни за вет. практика -->
+						<div class="title-group p-mt-3">
+							<p:commandLink class="extended-search-toggle expanded"
+								onclick="toggleSection(this, '#vlzForm:registerTabs:basicData')">
+								<h:outputText value="Данни за ветеринарната практика" />
+								<i class="fas fa-caret-right"></i>
+							</p:commandLink>
+							<p:commandButton icon="fas fa-clone" id="btnCopyZaiav" styleClass="p-mr-3"
+								partialSubmit="true" process="@this"
+								update="@this basicData"
+								action="#{regVLZ.actionCopyAdresZaiav}"
+								rendered="#{isView ne 1 and regVLZ.vlz.regNom eq null}"
+								value="#{labels['regTargovtsiFuraj.copyZaiav']}" />
+										
+						</div>
+
+						<div jsf:id="basicData" class="p-grid ui-fluid">
+							
+							<div class="p-col-12"  >
+								<div class="form-label">
+									<h:outputText value="Наименование" styleClass="form-label " id="naimPraktika"  />
+								</div> 
+								<p:inputText id="naimPrakt" value="#{regVLZ.vlz.naimenovanie}"  />								   					
+							</div>
+							
+							<!-- ДЪРЖАВА -->
+							<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-3  ui-fluid">
+								<h:outputText value="#{labels['registerMainTab.country']}"
+									styleClass="form-label req" />
+								<ibg:selectOneModalA id="cntryC" readonly="#{isView eq 1}"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+									selectedCode="#{regVLZ.vlz.darj}"
+									emptyMessage="#{labels['docu.countryEmptyMsg']}"
+									saveStateTree="false" withBtnClear="true" compType="3"
+									styleAutoComp="width:99%;" minQueryLength="2" update="@this"
+									onClear="cmdChCountry()" onComplete="cmdChCountry()" />
+								<p:remoteCommand name="cmdChCountry"
+									update="@this vlzForm:registerTabs:basicData"
+									partialSubmit="true"
+									process="@this vlzForm:registerTabs:basicData"
+									actionListener="#{regVLZ.actionChangeCountry}" />
+			
+							</div>
+							<!-- НАСЕЛЕНО МЯСТО -->
+							<div class="p-col-12 p-sm-6 p-md-6 p-lg-4 p-xl-2"
+								jsf:rendered="#{regVLZ.vlz.darj ne null and regVLZ.vlz.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}">
+								<h:outputText value="#{labels['registerMainTab.city']}"
+									styleClass="form-label req" />
+								<ibg:selectOneModalA id="mestoC" readonly="#{isView eq 1}"
+									update="vlzForm:registerTabs:basicData"
+									codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+									specifics="#{regVLZ.specificsEkatte}"
+									selectedCode="#{regVLZ.vlz.nasMesto}"
+									emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+									saveStateTree="false" withBtnClear="true" compType="3"
+									minQueryLength="3" dopInfoAutoComp="true" styleAutoComp=""
+									dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}"
+									onComplete="#{regVLZ.actionVlzOblCheck()}" 
+									onClear="#{regVLZ.actionVlzOblClear()}" />
+							</div>
+			
+							<!-- ОБЛАСТ -->
+							<div class="p-col-12 p-sm-6 p-md-5 p-lg-4 p-xl-2  "
+								jsf:rendered="#{regVLZ.vlz.darj ne null and regVLZ.vlz.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}">
+								<h:outputText value="#{labels['registerMainTab.area']}"
+									styleClass="form-label" />
+								<h:panelGroup id="cOblObsh">
+									<p:inputText readonly="true" value="#{regVLZ.vlzObhObl}" />
+								</h:panelGroup>
+							</div>
+			
+							<!-- УЛИЦА/СГРАДА -->
+							<div class="p-col-8 p-sm-8 p-md-5 p-lg-8 p-xl-4 ">
+								<h:outputText value="Адрес" styleClass="form-label" rendered="#{regVLZ.vlz.darj == null or regVLZ.vlz.darj ne BabhConstants.CODE_ZNACHENIE_BULGARIA}"/>
+								<h:outputText value="#{labels['registerMainTab.street']}" styleClass="form-label" rendered="#{regVLZ.vlz.darj ne null and regVLZ.vlz.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}"/>
+								<p:inputText id="street"
+									value="#{regVLZ.vlz.address}" />
+							</div>
+			
+							<!-- ПОЩЕНСКИ КОД -->
+							<div class="p-col-4 p-sm-4 p-md-2 p-lg-2 p-xl-1  "
+								jsf:rendered="#{regVLZ.vlz.darj ne null and regVLZ.vlz.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}">
+								<h:outputText value="#{labels['registerMainTab.postalCode']}"
+									styleClass="form-label" />
+								<p:inputText id="postalCode"
+									value="#{regVLZ.vlz.postCode}">
+									<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+								</p:inputText>
+							</div>
+							
+							<div class="p-col-12 p-sm-12 p-md-12 p-lg-7 p-xl-7"  >
+								<div class="form-label">
+									<h:outputText value="Вид"  styleClass="form-label req"/>
+								</div> 
+								<p:selectOneMenu id="vidPraktika" value="#{regVLZ.vlz.vidVlz}" disabled="#{isView eq 1}">
+								     <f:selectItem value="#{null}" itemValue="#{null}"/>
+								     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_VLZ, now, regVLZ.currentLang)}" 
+								         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+							    </p:selectOneMenu>					
+							</div>
+							<div class="p-col-6 p-sm-6 p-md-6 p-lg-2 p-xl-2"  >
+								<div class="form-label">
+									<h:outputText value="УРН" styleClass="form-label " id="urnLabel"  />
+								</div> 
+								<p:inputText id="urn" value="#{regVLZ.vlz.regNom}" readonly="true" disabled="true" style="width:99%"/>
+							</div>
+							
+							<div class="p-col-6 p-sm-6 p-md-6 p-lg-3 p-xl-3"  >
+								<div class="form-label">
+									<h:outputText value="Обслужвани животни"  styleClass="form-label req"/>
+								</div> 
+								<p:selectOneMenu id="obslJiv" value="#{regVLZ.vlz.obslujvaniJiv}" disabled="#{isView eq 1}">
+								     <f:selectItem value="#{null}" itemValue="#{null}"/>
+								     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_OBSL_JIV_VLZ, now, regVLZ.currentLang)}" 
+								         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+							    </p:selectOneMenu>					
+							</div>
+							
+							<div  class="p-col-4 p-sm-4 p-md-4 p-lg-3 p-xl-2"   >
+								<div class="form-label">
+									<h:outputText value="Образна диагностика"  styleClass="form-label req"/>
+								</div> 
+								<p:selectOneRadio id="obrDiag" value="#{regVLZ.vlz.sektorObrDiag}"  disabled="#{isView eq 1}">
+								     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DANE, now, regVLZ.currentLang)}" 
+								         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+							  	</p:selectOneRadio>				
+							</div>
+							<div  class="p-col-4 p-sm-4 p-md-4 p-lg-3 p-xl-2"   >
+								<div class="form-label">
+									<h:outputText value="Физиотерапия"  styleClass="form-label req"/>
+								</div> 
+								<p:selectOneRadio id="fizTerapia" value="#{regVLZ.vlz.sektorFizio}"  disabled="#{isView eq 1}">
+								     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DANE, now, regVLZ.currentLang)}" 
+								         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+							    </p:selectOneRadio>					
+							</div>
+							<div  class="p-col-4 p-sm-4 p-md-4 p-lg-3 p-xl-2"   >
+								<div class="form-label">
+									<h:outputText value="Стационар"  styleClass="form-label req"/>
+								</div> 
+								<p:selectOneRadio id="stacionar" value="#{regVLZ.vlz.stacionar}"  disabled="#{isView eq 1}">
+								     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DANE, now, regVLZ.currentLang)}" 
+								         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+								</p:selectOneRadio>				
+							</div>
+							
+							<div class="p-col-12"  >
+								<div class="form-label">
+									<h:outputText value="Видове изследвания" styleClass="form-label "  />
+								</div> 
+								<p:inputTextarea id="vidIzsl" value="#{regVLZ.vlz.vidIzsl}" rows="4"/>
+							</div>
+						</div>
+					
+						
+						<!-- 1.  Панел за ВЕТЕРИНАРНИ ЛЕКАРИ" -->
+						<div>
+							<div class="title-group p-mt-3">
+								<p:commandLink class="extended-search-toggle expanded"
+									onclick="toggleSection(this, '#vlzForm:registerTabs:vetLekari')">
+									<h:outputText value="Управител и ветеринарни лекари" />
+									<i class="fas fa-caret-right"></i>
+								</p:commandLink>
+								
+								<p:commandButton id="addLekarBtn"
+									rendered="#{isView ne 1}"
+									icon="fas fa-plus" partialSubmit="true"
+									styleClass="ui-button-success  p-mr-2"
+									process="vlzForm:dpLekarData @this "
+									update="vlzForm:dpLekarData"
+									oncomplete="PF('mLekarD').show(); "
+									action="#{regVLZ.actionNewLekar}"
+									value="Ново лице"
+									title="Добавяне на нов лекар/управител" />
+									
+								
+							</div>
+	
+							<div class="p-grid ui-fluid" jsf:id="vetLekari">
+								<div class="p-col-12 ">
+									<p:dataTable id="tblLekari" var="row" value="#{regVLZ.lekarList}" lazy="true" rowKey="#{row.id}"	 
+										rowIndexVar="idx" sortMode="single" reflow="true" emptyMessage=" " 
+										paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+										rows="5" rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+										paginatorAlwaysVisible="true" paginator="true" showGridlines="true" scrollable="true">
+															
+									  	<p:column width="20" exportable="false" headerText="#{ui_labels['general.No-symbol']}" >
+											<h:outputText value="#{idx + 1}" />
+										</p:column>	
+				
+										<p:column width="30"  exportable="false">
+												<p:commandButton id="lrEdit"
+													rendered="#{isView ne 1}"
+													partialSubmit="true"
+													process="vlzForm:dpLekarData @this"
+													update="vlzForm:dpLekarData"
+													oncomplete="PF('mLekarD').show(); "
+													action="#{regVLZ.actionEditLekar(row, idx)}"
+													icon="fas fa-edit"
+													styleClass="ui-button-success" title="Промяна на данни" />
+												
+										</p:column>	
+										
+										<p:column  width="70" sortBy="#{row.fzlEgn}" headerText="ЕГН">
+											<h:outputText value="#{row.fzlEgn}"  />								    
+										</p:column>
+										
+										<p:column  width="200"  sortBy="#{row.refName}" headerText="Имена">
+											<h:outputText value="#{row.refName}"  />								    
+										</p:column>
+
+										<p:column width="150"  sortBy="#{row.dbEmplPosition}" headerText="Роля">
+											<h:outputText value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VRAZ_LICE_OBEKT, row.dbEmplPosition, regVLZ.currentLang, now)}"  />								    
+										</p:column>
+										.<p:column width="100" headerText="УРН">
+											<h:outputText value="#{row.urn}" />
+										</p:column>
+										<p:column width="250" headerText="№ / дата на дипломата">
+											<h:outputText value="#{regVLZ.actionLiceDoc(row, BabhConstants.CODE_ZNACHENIE_VIDDOC_DIPLOMA)}" />
+										</p:column>
+										<p:column width="250" headerText="№ / дата на удостоверение от БВС">
+											<h:outputText value="#{regVLZ.actionLiceDoc(row, BabhConstants.CODE_ZNACHENIE_VIDDOC_UDOST_BVS)}" />
+										</p:column>
+										<ui:remove><!-- скривам ги докато решим какво правим с тях - няма ги в бланката		 --></ui:remove>
+										<p:column width="120" sortBy="#{row.dateBeg}" headerText="Начална дата">
+											<h:outputText value="#{row.dateBeg}"  >
+												<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLZ.timeZone}"/>
+											</h:outputText>								    
+										</p:column>
+										
+										<p:column width="120" sortBy="#{row.dateEnd}" headerText="Крайна дата">
+											<h:outputText value="#{row.dateEnd}"  >
+												<f:convertDateTime pattern="dd.MM.yyyy" timeZone="#{regVLZ.timeZone}"/>
+											</h:outputText>								    
+										</p:column>
+								
+										<p:column width="30" exportable="false">							
+											<p:commandButton id="removeLekarBtn" 
+												rendered="#{isView ne 1}"
+												icon="fas fa-trash"  partialSubmit="true"
+												process="vlzForm:registerTabs:vetLekari @this"
+												update="vlzForm:registerTabs:vetLekari "
+												styleClass="ui-button-danger"
+												action="#{regVLZ.actionRemoveLekar(idx)}"
+												title="Изтриване" />				
+										</p:column>
+										
+									
+									</p:dataTable>
+								</div>
+								
+							</div>
+						</div>
+						<div class="p-grid ui-fluid p-col-12 ">
+							<h:outputText value="#{labels['reg.dopInfoVpisvane']}"
+								styleClass="form-label" />
+							<p:inputTextarea rows="2" value="#{regVLZ.vpisvane.info}" />
+						</div>				
+						 
+						<ui:remove>
+						<!--  
+						
+						<div class="title-group p-mt-3">
+							<p:commandLink class="extended-search-toggle expanded"
+								onclick="toggleSection(this, '#vlzForm:registerTabs:udostDoc')">
+								<h:outputText value="Удостоверителен документ" />
+								<i class="fas fa-caret-right"></i>
+							</p:commandLink>
+						</div>
+
+						
+						<div jsf:id="udostDoc">
+					 
+							<div class="p-grid ui-fluid">
+								<div class="p-col-4 ">
+									<h:outputText value="Начин на получаване на удостоверителния документ" styleClass="form-label" />
+								
+									<p:selectOneMenu id="udoc1" value="#{regVLZ.zaiavlVp.receiveMethod}"  disabled="#{isView eq 1}">
+									     <f:selectItem value="#{null}" itemValue="#{null}"/>
+									     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DVIJ_METHOD, now, regVLZ.currentLang)}" 
+									         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+								    </p:selectOneMenu>	
+								</div>
+								<div class="p-col-8 ">
+									<h:outputText value="Адрес за получаване" styleClass="form-label" />
+									<p:inputTextarea id="udocAdr" value="#{regVLZ.zaiavlVp.adressRezultat}"  rows="1" />
+								</div>
+								<div class="p-col-12 ">
+									<h:outputText value="Допълнителна информация за начина на получаване" styleClass="form-label" />
+									<p:inputTextarea id="udocDopinfo" value="#{regVLZ.zaiavlVp.receivedBy}"  rows="1" />
+								</div>
+							</div>
+						</div> --></ui:remove>
+						
+						
+						</p:outputPanel>
+					</p:tab>
+
+					<!-- ТАБ ДАННИ ЗА ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.danniVpisvaneTab']}" id="danniVpisvaneTab" disabled="#{regVLZ.vpisvane.id eq null}">
+						<ui:include src="vpStatusData.xhtml" >
+						 	<ui:param name="clId" value="vlzForm:registerTabs" />
+						 </ui:include> 
+					</p:tab>
+					
+					<!-- ТАБ ДОКУМЕНТИ ПО ВПИСВАНЕ -->
+					<p:tab title="#{labels['register.docsVpisvaneTab']}" id="docVpisvaneTab" disabled="#{regVLZ.vpisvane.id eq null}">
+						<ui:include src="vpDocs.xhtml" >
+						 	<ui:param name="clId" value="vlzForm:registerTabs" />
+						 </ui:include> 
+					</p:tab>
+					
+					<!-- ТАБ Етапи на обработка-->
+					<p:tab title="#{labels['register.etapiVpisvaneTab']}" id="etapiVpisvaneTab" disabled="#{regVLZ.vpisvane.id eq null}">
+						<ui:include src="procEtaps.xhtml" >
+						 	<ui:param name="clId" value="vlzForm:registerTabs" />
+						 </ui:include> 							
+					</p:tab>
+
+				</p:tabView>
+
+			</div>
+		</div>
+		
+		<h:panelGroup id="dpLekarData">
+			<p:dialog appendTo="@form" closeOnEscape="true"
+					header="Въвеждане/актуализация на данни за лице}" fitViewport="true"
+					resizable="true" responsive="true" position="top"
+					widgetVar="mLekarD" dynamic="true" id="modalLekarD" modal="true">
+				<div class="container #{guestPreferences.containerPosition}">			
+					<div class="p-grid ui-fluid" jsf:id="panelLica">
+						<div class=" p-col-10">
+							<h:outputText value="Позиция: "	styleClass="form-label req" />
+							<p:selectOneRadio id="rolia" value="#{regVLZ.tipCurrentVrazkaLice}" >						
+								<f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_TIP_VRAZ_VLZ_LICE, regVLZ.decodeDate, regVLZ.currentLang)}"
+										var="itemSc" itemLabel="#{itemSc.tekst}"
+										itemValue="#{itemSc.code}" />										
+							</p:selectOneRadio>
+						</div>
+						<div class=" p-col-2">
+							<p:commandButton icon="fas fa-clone" id="btnCopyZaiav" styleClass="p-mr-3"
+								partialSubmit="true" process="@this"
+								update="@this panelLica"
+								action="#{regVLZ.actionCopyDataZaiav}"
+								value="#{labels['regTargovtsiFuraj.copyZaiav']}" 
+								rendered="#{regVLZ.referent2TypeFZL()}"/>
+						</div>
+						<div class=" p-col-12">
+							
+							<ibg:refCorrespData   binding = "#{regVLZ.bindingLekar}"
+							        id="vetLekariComp"  readonly="#{isView eq 1}"
+									codeRef="#{regVLZ.lekar.code}"
+									refObj="#{regVLZ.lekar}"				 				 
+									mainDataLabel="Данни за лице"
+									saveInComponent="false"
+									showKorespAdress="false"
+									showContacts="true"
+									showPostAdress="true"
+									showReturnButton="false"
+									showChujdiLica="#{systemData.isElementVisible(regVLZ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+									showIdentNom="#{systemData.isElementVisible(regVLZ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_UL_F)}"
+									showLnch="#{systemData.isElementVisible(regVLZ.zaiavlVp.docVid, BabhConstants.EKRAN_ATTR_FL_F)}"
+									showRadio="false"											 
+									showDocs="true"
+									showDatBegEnd="true"
+									showUrn="true"
+									refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+									vidDoc="#{regVLZ.zaiavlVp.docVid}"
+									searchTxt="#{regVLZ.txtRef2}" 
+									dateClassif="#{regVLZ.decodeDate}"
+									modal="true"/>
+						</div>
+					</div>
+					
+					<f:facet name="footer">
+		
+						<p:commandButton id="btnClose5"
+							action="#{regVLZ.actionAddLice}" partialSubmit="true"
+							update="vlzForm:registerTabs:vetLekari"
+							process="@this vlzForm:panelLica"
+							value="#{ui_labels['general.comfirmation']}" />
+		
+					</f:facet>
+				</div>
+			</p:dialog>
+		</h:panelGroup>
+		
+		<!-- МОДАЛЕН ЗА РАЗГЛЕЖДАНЕ НА ПРИКАЧЕНИТЕ ФАЙЛОВЕ КЪМ ЗАЯВЛЕНИЕТО ЗА ВПИСВАНЕ -->
+		<h:panelGroup id="panelAttFiles">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['babhZaiavEdit.upFiles']}" fitViewport="true"
+				responsive="true" resizable="true" position="top"
+				widgetVar="attFilesVar" dynamic="true" id="attFilesModal"
+				modal="true">
+
+				<p:messages id="attFilesModalMsg" showDetail="true"
+					closable="false" style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:compFileUpload id="filesDoc"
+						listObj="#{regVLZ.filesList}"
+						codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_DOC}"
+						header="true" idObj="#{regVLZ.zaiavlVp.id}"
+						hideDel="false" view="true" display="list" typeSign="0"
+						saveFirst="true" dragDropSupport="table" 
+						headerLabel="#{labels['regTargovtsiFuraj.zaiavFiles']}" />
+				</div>
+
+			</p:dialog>
+		</h:panelGroup>
+
+	</h:form>
+
+	 
+</ui:composition>

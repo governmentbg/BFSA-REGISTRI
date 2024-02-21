@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"> 
+          
+<div  >
+     
+		<div jsf:id="dpDataCZaqvitelOD">
+	          <div class="title-group p-mt-3">
+					<p:commandLink class="extended-search-toggle expanded"
+						onclick="toggleSection(this, '#vlpTargForm:registerTabs:basicData')">
+						<h:outputText value="Обект на дейност" />
+						<i class="fas fa-caret-right"></i>
+					</p:commandLink>
+				</div>
+	
+				<div jsf:id="basicData" class="p-grid ui-fluid">
+					
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid" jsf:rendered="#{prednaznachenieLabel ne null}">
+						<h:outputText value="#{prednaznachenieLabel}" styleClass="form-label #{prednObektReq}" />
+						<ibg:selectManyModalA id="selectManyModalPredn" 
+								readonly="#{isView eq 1}"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_PREDN_OBEKT}"
+								selectedCodes="#{regVLP.prednazCodes}"								
+								selectedClassifs="#{regVLP.prednazClassif}"
+								showRadioBtn="false"  minQueryLength="2"
+								compType="2" saveStateTree="false"
+								styleAutoComp="width:100%; " />	
+					</div>
+					
+					
+					<div class="p-col-6"  >
+						<div class="form-label">
+							<h:outputText value="Наименование" styleClass="form-label #{naimObektReq}" id="naimPraktika"  />
+						</div> 
+						<p:inputText id="naimPrakt" disabled="#{isView eq 1}" value="#{regVLP.obektDein.naimenovanie}"  style="width:99%"/>
+						   					
+					</div>
+					
+					<!-- ДЪРЖАВА -->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+					
+						<h:outputText value="#{labels['registerMainTab.country']}"
+							styleClass="form-label req" />
+						<ibg:selectOneModalA id="cntryC"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_COUNTRIES}"
+							selectedCode="#{regVLP.obektDein.darj}"
+							readonly="#{isView eq 1}"
+							emptyMessage="#{labels['docu.countryEmptyMsg']}"
+							saveStateTree="false" withBtnClear="true" compType="3"
+							styleAutoComp="width:99%;" minQueryLength="2" update="@this"
+							onClear="cmdChCountry()" onComplete="cmdChCountry()" />
+						<p:remoteCommand name="cmdChCountry"
+							update="@this vlpTargForm:registerTabs:basicData"
+							partialSubmit="true"
+							process="@this vlpTargForm:registerTabs:basicData"
+							actionListener="#{regVLP.actionChangeCountry}" />
+	
+					</div>
+					<!-- НАСЕЛЕНО МЯСТО -->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid"
+						jsf:rendered="#{regVLP.obektDein.darj ne null and regVLP.obektDein.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}">
+						<h:outputText value="#{labels['registerMainTab.city']}"
+							styleClass="form-label req" />
+						<ibg:selectOneModalA id="mestoC"
+							update="vlpTargForm:registerTabs:basicData"
+							codeClassif="#{BabhConstants.CODE_CLASSIF_EKATTE}"
+							selectedCode="#{regVLP.obektDein.nasMesto}"
+							readonly="#{isView eq 1}"
+							specifics="#{regVLP.specificsEkatte}"
+							emptyMessage="#{labels['docu.mestoEmptyMsg']}"
+							saveStateTree="false" withBtnClear="true" compType="3"
+							minQueryLength="3" dopInfoAutoComp="true"
+							dopInfoTitleAutoComp="#{ui_labels['general.ekatteObshObl']}" />
+
+					</div>
+	
+					<!-- ОБЛАСТ -->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid"
+						jsf:rendered="#{regVLP.obektDein.darj ne null and regVLP.obektDein.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}">
+						<h:outputText value="#{labels['registerMainTab.area']}"
+							styleClass="form-label" />
+						<h:panelGroup id="cOblObsh">
+							<p:inputText readonly="true" disabled="#{isView eq 1}"
+								value="#{systemData.decodeItemDopInfo(BabhConstants.CODE_CLASSIF_EKATTE, regVLP.obektDein.nasMesto, regVLP.currentLang, now)}" />
+						</h:panelGroup>
+					</div>
+	
+					<!-- УЛИЦА/СГРАДА -->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-5 ui-fluid">
+						<h:outputText value="#{ui_labels['general.adres']}" styleClass="form-label" rendered="#{regVLP.obektDein.darj == null or regVLP.obektDein.darj ne BabhConstants.CODE_ZNACHENIE_BULGARIA}" />
+						<h:outputText value="#{labels['registerMainTab.street']}" styleClass="form-label" rendered="#{regVLP.obektDein.darj ne null and regVLP.obektDein.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}" />
+						<p:inputText id="street" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.address}" />
+					</div>
+	
+					<!-- ПОЩЕНСКИ КОД -->
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-2 p-xl-2  ui-fluid"
+						jsf:rendered="#{regVLP.obektDein.darj ne null and regVLP.obektDein.darj eq BabhConstants.CODE_ZNACHENIE_BULGARIA}">
+						<h:outputText value="#{labels['registerMainTab.postalCode']}"
+							styleClass="form-label" />
+						<p:inputText id="postalCode" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.postCode}">
+							<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+						</p:inputText>
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{labels['registratura.contactPhone']}"
+							styleClass="form-label" />
+						<p:inputText id="phone" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.tel}">							
+						</p:inputText>
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-2  ui-fluid">
+						<h:outputText value="#{ui_labels['general.email']}"
+							styleClass="form-label" />
+						<p:inputText id="emailOD" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.email}">							
+						</p:inputText>
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{obektDeinDopInfoLabel ne null}">
+						<h:outputText value="#{obektDeinDopInfoLabel}"
+							styleClass="form-label" />
+						<p:inputText id="obektDeinDopInfo" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.dopInfo}">							
+						</p:inputText>
+					</div>
+					
+					 <div class="p-col-12 p-sm-12 p-md-4 p-lg-4 p-xl-4  ui-fluid" jsf:rendered="#{obektDeinAktNomDocLabel ne null}">
+						<h:outputText value="#{obektDeinAktNomDocLabel}"
+							styleClass="form-label" />
+						<p:inputText id="obektDeinAktNomDoc" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.nomDatAkt}">							
+						</p:inputText>
+					</div>
+					
+					 <div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-2  ui-fluid" jsf:rendered="#{obektDeinDogovorNomDocLabel ne null}">
+						<h:outputText value="#{obektDeinDogovorNomDocLabel}"
+							styleClass="form-label" />
+						<p:inputText id="obektDeinDogovorNomDoc" disabled="#{isView eq 1}"
+							value="#{regVLP.obektDein.nomDatDogovor}">							
+						</p:inputText>
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2" jsf:rendered="#{obektDeinDatBegLabel ne null}">
+						<h:outputText value="#{obektDeinDatBegLabel}" styleClass="form-label " />
+						<p:datePicker id="datBegObDein" mask="true" showIcon="true" disabled="#{isView eq 1}"
+							pattern="dd.MM.yyyy" locale="bg" value="#{regVLP.datBegObDeinDein}" />
+					</div>
+	
+					<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-2" jsf:rendered="#{obektDeinDatEndLabel ne null}">
+						<h:outputText value="#{obektDeinDatEndLabel}" styleClass="form-label " />
+						<p:datePicker id="datEndObDein" mask="true" showIcon="true" disabled="#{isView eq 1}"
+							pattern="dd.MM.yyyy" locale="bg" value="#{regVLP.datEndObDeinDein}" />
+					</div>
+				</div>      
+		</div> 
+	</div>  
+</html>

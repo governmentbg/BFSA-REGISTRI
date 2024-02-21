@@ -1,0 +1,13 @@
+/* Add your customizations of theme here */
+
+.layout-config {
+    .layout-config-content {
+        .layout-themes {
+            a.large {
+                i {
+                    color: $primaryColor;
+                }
+            }
+        }
+    }
+}

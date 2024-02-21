@@ -1,0 +1,199 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			<f:viewAction action="#{userData.checkPageAccess(45)}" onPostback="false" />			
+		</f:metadata>
+	</ui:define>
+
+	<ui:define name="title">#{navTexts['/pages/procDefEtapEdit.xhtml']}</ui:define>
+
+	<ui:define name="viewname">
+		<li><p:commandLink title="#{ui_labels['general.back']}" action="#{navigation.goBack()}" rendered="#{navigation.navPath.size()>1}">
+				<i class="fas fa-caret-left" />
+			</p:commandLink>
+		</li>
+		<li>#{navTexts['/pages/procDefEtapEdit.xhtml']}</li>
+	</ui:define>
+
+	<ui:define name="content">
+
+		<h:form id="formProcDefEtap">
+
+			<div class="#{guestPreferences.containerPosition}">
+
+				<div class="card">
+
+					<p:toolbar id="tlbButton">
+
+						<f:facet name="left">
+
+							<p:commandButton icon="fas fa-save" value="#{labels['procDefEtapEdit.saveEtap']}" id="btnSave"
+								update="formProcDefEtap" action="#{procDefEtapEdit.actionSaveEtap}">
+							</p:commandButton>
+							<span class="p-mx-2"  jsf:rendered="#{procDefEtapEdit.proc.status eq BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}">
+		                         <span class="fas fa-ellipsis-v SoftGray" />
+		                   </span>
+							<p:commandButton icon="fas fa-edit" action="#{procDefEtapEdit.actionNewEtap}" update="formProcDefEtap" value="#{labels['procDefEdit.newEtap']}" styleClass="ui-button-success" rendered="#{procDefEtapEdit.proc.status eq BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}"/>
+
+						</f:facet>
+
+						<f:facet name="right">
+							<h:panelGroup id="pRegInfoProcDefEtap" rendered="#{procDefEtapEdit.defEtap.id ne null}">
+								<ibg:compObjAudit idObj="#{procDefEtapEdit.defEtap.id}" 
+											 	codeObj="#{BabhConstants.CODE_ZNACHENIE_JOURNAL_PROC_DEF_ETAP}"
+											 	identInfo="#{procDefEtapEdit.defEtap.etapName}"/>
+							</h:panelGroup>	
+							<p:commandButton icon="fas fa-times" id="btnDelete" value="#{ui_labels['general.delete']}" update="formProcDefEtap"
+								partialSubmit="true" process="formProcDefEtap @this" rendered="#{procDefEtapEdit.defEtap.id ne null and procDefEtapEdit.proc.status eq BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}"
+								actionListener="#{procDefEtapEdit.actionDeleteEtap}" styleClass="ui-button-danger p-ml-2">
+								<p:confirm header="#{ui_labels['general.comfirmation']}" message="#{beanMessages['procDefEtapEdit.sureEraseDefEtap']}" icon="fas fa-exclamation-triangle" />
+							</p:commandButton>
+
+						</f:facet>
+
+					</p:toolbar>
+
+					<div class="title-group">
+						<p:commandLink class="extended-search-toggle expanded" onclick="toggleSection(this, '#formProcDefEtap:basicDataForEtap')">
+							<h:outputText value="#{labels['procDefEdit.dataForEtap']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+
+					<div jsf:id="basicDataForEtap" class="p-grid p-nogutter">
+
+							<div jsf:id="dataEtap" class="p-grid ui-fluid p-align-end">
+
+								<!-- Номер на етапа -->
+								<div class=" p-col-12 p-md-1" jsf:id="nomer">
+									<h:outputText value="#{labels['procDefList.nomProc']}" styleClass="form-label req" />
+									<p:inputNumber value="#{procDefEtapEdit.defEtap.nomer}" decimalPlaces="0" thousandSeparator="" id="etapNomer" style="display:inline-block;" disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}" minValue="1">
+										<p:ajax event="change" update="formProcDefEtap:nomer" partialSubmit="true" process="@this" listener="#{procDefEtapEdit.actionCheckForEtapNomer}" />
+									</p:inputNumber>
+								</div>
+
+								<!-- Наименование на етапа -->
+								<div class=" p-col-12 p-md-7">
+									<h:outputText value="#{labels['procDefList.nameProc']}" styleClass="form-label req" />
+									<p:inputText value="#{procDefEtapEdit.defEtap.etapName}" id="etapName" maxlength="1020"/>
+								</div>
+								
+								<!-- Срок в дни -->
+								<div class=" p-col-12 p-md-1">
+									<h:outputText value="#{labels['procDefList.srokDni']}" styleClass="form-label req" style="white-space: nowrap;"/>
+									<p:inputNumber id="etapSrokDays" value="#{procDefEtapEdit.defEtap.srokDays}" decimalPlaces="0" thousandSeparator="" style="display:inline-block;" minValue="0"/>
+								</div>
+								
+								<!--  Удължаване на общия срок на процедурата  -->
+								<div class=" p-col-12 p-md-3" align="center">
+									<p:outputLabel for="extendProcSrok" value="#{labels['procDefEdit.extendProcSrok']}" styleClass="form-label" />
+									<p:selectOneRadio id="extendProcSrok" value="#{procDefEtapEdit.defEtap.extendProcSrok}" unselectable="true" disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}">
+										<f:selectItem itemLabel="Да" itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+										<f:selectItem itemLabel="Не" itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+									</p:selectOneRadio>
+								</div>
+								
+								<!-- Описание на етапа -->
+								<div class=" p-col-12 p-md-12">
+									<h:outputText value="#{labels['procDefList.opisProc']}" styleClass="form-label" />
+									<p:inputTextarea value="#{procDefEtapEdit.defEtap.etapInfo}" rows="2" id="etapInfo" autoResize="false" maxlength="4000"/>
+								</div>
+								
+								<!-- Следващи етапи (при ДА)  -->
+								<div class=" p-col-12 p-md-6">
+								<ui:remove>
+									<h:outputText value="#{labels['procDefEdit.etapNextOk']}" styleClass="form-label" />
+									<p:autoComplete id="nextOk" multiple="true" value="#{procDefEtapEdit.selNextOk}" dropdown="true" forceSelection="true"
+										completeMethod="#{procDefEtapEdit.actionComplete}" converter="sysClassifItemConverter" queryEvent="keyup"
+										var="item" itemLabel="#{item.code} - #{item.tekst}" itemValue="#{item}" disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}">
+
+										<p:ajax event="itemSelect" listener="#{procDefEtapEdit.onItemSelectNextOk}"
+											partialSubmit="true" process="@this" update="@this" />
+										<p:ajax event="itemUnselect" listener="#{procDefEtapEdit.onItemUnselectNextOk}"
+											partialSubmit="true" process="@this" update="@this" />
+											
+										<p:column>
+											<h:outputText style="margin-left:-5px; margin-top:10px;" value="#{item.code} - #{item.tekst}" />
+										</p:column>
+									</p:autoComplete>
+								</ui:remove>
+									
+									<h:outputText value="#{labels['procDefEdit.etapNextOk']}" styleClass="form-label" />
+									<p:selectOneMenu value="#{procDefEtapEdit.defEtap.nextOk}" id="nextOk" autoWidth="false"
+										disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}" >
+										<f:selectItem value="#{null}" itemValue="#{null}" />
+										<f:selectItems value="#{procDefEtapEdit.selNextOk}" var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}" />										
+									</p:selectOneMenu>
+									
+								</div>
+
+								<!-- Следващи етапи при НЕ -->
+								<div class=" p-col-12 p-md-6">
+								<ui:remove>
+									<h:outputText value="#{labels['procDefEdit.etapNextNot']}" styleClass="form-label" />									
+									<p:autoComplete id="nextNot" multiple="true" value="#{procDefEtapEdit.selNextNot}" dropdown="true" forceSelection="true"
+										completeMethod="#{procDefEtapEdit.actionComplete}" converter="sysClassifItemConverter" queryEvent="keyup"
+										var="item" itemLabel="#{item.code} - #{item.tekst}" itemValue="#{item}" disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}">
+
+										<p:ajax event="itemSelect" listener="#{procDefEtapEdit.onItemSelectNextNot}"
+											partialSubmit="true" process="@this" update="@this" />
+										<p:ajax event="itemUnselect" listener="#{procDefEtapEdit.onItemUnselectNextNot}"
+											partialSubmit="true" process="@this" update="@this" />
+											
+										<p:column>
+											<h:outputText style="margin-left:-5px; margin-top:10px;" value="#{item.code} - #{item.tekst}" />
+										</p:column>
+									</p:autoComplete>
+								</ui:remove>
+									
+									<h:outputText value="#{labels['procDefEdit.etapNextNot']}" styleClass="form-label" />
+									<p:selectOneMenu value="#{procDefEtapEdit.defEtap.nextNot}" id="nextNot" autoWidth="false"
+										disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}" >
+										<f:selectItem value="#{null}" itemValue="#{null}" />
+										<f:selectItems value="#{procDefEtapEdit.selNextNot}" var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}" />										
+									</p:selectOneMenu>
+									
+								</div>
+								
+								<!--  Следващи етапи-опционални -->
+								<ui:remove>
+								<div class=" p-col-12 p-md-6">
+									<h:outputText value="#{labels['procDefEdit.nextOptional']}" styleClass="form-label" />
+									<p:autoComplete id="nextOpt" multiple="true" value="#{procDefEtapEdit.selNextOpt}" dropdown="true" forceSelection="true"
+										completeMethod="#{procDefEtapEdit.actionComplete}" converter="sysClassifItemConverter" queryEvent="keyup"
+										var="item" itemLabel="#{item.code} - #{item.tekst}" itemValue="#{item}" disabled="#{procDefEtapEdit.proc.status ne BabhConstants.CODE_ZNACHENIE_PROC_DEF_STAT_DEV}">
+
+										<p:ajax event="itemSelect" listener="#{procDefEtapEdit.onItemSelectNextOpt}"
+											partialSubmit="true" process="@this" update="@this" />
+										<p:ajax event="itemUnselect" listener="#{procDefEtapEdit.onItemUnselectNextOpt}"
+											partialSubmit="true" process="@this" update="@this" />
+											
+										<p:column>
+											<h:outputText style="margin-left:-5px; margin-top:10px;" value="#{item.code} - #{item.tekst}" />
+										</p:column>
+									</p:autoComplete>
+								</div>
+								</ui:remove>
+									
+							</div>
+
+					</div>					
+
+				</div>
+
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+</ui:composition>

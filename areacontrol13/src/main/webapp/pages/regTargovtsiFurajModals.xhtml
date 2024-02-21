@@ -1,0 +1,718 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+	<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ НА ЖИВОТНО -->
+	<h:panelGroup id="addAnimalDlg">
+		<p:dialog appendTo="@form" closeOnEscape="true"
+			header="#{labels['targovtsiFuraj.addAnimalTitle']}"
+			fitViewport="true" position="top" responsive="true" dynamic="true"
+			id="modalAnimal" modal="true" widgetVar="modalAnimalVar" width="600">
+
+			<p:messages id="modalAnimalMsg" showDetail="true" closable="false"
+				style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div jsf:id="modalAnimalData">
+
+				<div class="p-grid">
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TRG_SJP17) or systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.vidJivotno']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu filter="true" filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.prednaznachenieJiv.vidJiv}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_JIVOTNI_SJP_23, now, regTargovtsiFuraj.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{!systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TRG_SJP17) and !systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.vidJivotno']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="vidJiv" filter="true"
+								filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.prednaznachenieJiv.vidJiv}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_OBEKT_VID_JIVOTNI_FURAJ, now, regTargovtsiFuraj.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{!systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.kolichestvo']}"
+								styleClass="form-label req" />
+							<p:inputText id="kolJiv" readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.prednaznachenieJiv.kolichestvo}">
+								<p:keyFilter regEx="/[0-9]/" preventPaste="false" />
+							</p:inputText>
+						</div>
+					</c:if>
+
+				</div>
+			</div>
+
+			<p:divider />
+
+			<div class="p-col-12 filter-buttons">
+				<p:commandButton value="#{ui_labels['general.comfirmation']}"
+					styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+					action="#{regTargovtsiFuraj.actionAddJiv()}"
+					process="@this modalAnimalData" rendered="#{isView eq 0}"
+					update="modalAnimalData targovtsiFurajForm:registerTabs:jivVid" />
+			</div>
+
+		</p:dialog>
+	</h:panelGroup>
+
+
+	<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ НА ВИД ФУРАЖ -->
+	<h:panelGroup id="addFurajDlg">
+		<p:dialog appendTo="@form" closeOnEscape="true"
+			header="#{labels['targovtsiFuraj.addFuraj']}" fitViewport="true"
+			responsive="true" position="top" dynamic="true" id="modalFuraj"
+			modal="true" widgetVar="modalFurajVar" width="800">
+
+			<p:messages id="modalFurajMsg" showDetail="true" closable="false"
+				style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+			<div jsf:id="modalFurajData">
+
+				<div class="p-grid ui-fluid">
+
+					<ui:remove>
+						<!-- ПРОИЗВОДСТВО НА КОМБИНИРАНИ ФУРАЖИ ПО ЧЛ. 18 -->
+					</ui:remove>
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_FR_PROIZV_KF18) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_FR_PROIZV_KF18)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furaj']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="vidFurajKF18" filter="true"
+								filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_FURAJI_KOMBINIRANI_18, now, regTargovtsiFuraj.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_FR_PROIZV_KF18) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_FR_PROIZV_KF18)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.prednaznachenie']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="prednFuraj" filter="true"
+								filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.predmetDeinost.prednaznachenie}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PREDNAZNACHENIE_FURAJI, now, regTargovtsiFuraj.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+					</c:if>
+
+
+
+					<ui:remove>
+						<!-- ВНОС НА ФУРАЖИ -->
+					</ui:remove>
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_VNOS_FURAJI)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-10  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furaj']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_VNOS_9}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								readonly="#{isView ne 0}" isSelectNode="false"
+								styleAutoComp="width:99%;" minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_VNOS_FURAJI)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.kol']}"
+								styleClass="form-label" />
+							<p:inputText id="kolF" readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.kolichestvo}" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_VNOS_FURAJI)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furajInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+
+					<ui:remove>
+						<!-- РЕГИСТРАЦИЯ НА ПРЕВОЗВАЧИ -->
+					</ui:remove>
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_REG_PREVOZVACHI)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furaj']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_PREVOZ}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="4"
+								readonly="#{isView ne 0}" styleAutoComp="width:99%;"
+								minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_REG_PREVOZVACHI)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.sastoianieTS']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="sastoianie" filter="true"
+								filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.predmetDeinost.sastoianie}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_SAST_FURAJ_PREVOZ, now, regTargovtsiFuraj.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+					</c:if>
+
+					<ui:remove>
+						<!-- ПРОИЗВОДСТВО НА ФУРАЖИ ПО ЧЛ. 16 -->
+					</ui:remove>
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_F16) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_F16)}">
+						<div class="p-col-12   ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furaj']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VID_FURAJ_PR16}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="4"
+								readonly="#{isView ne 0}" styleAutoComp="width:99%;"
+								minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_F16) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_F16)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furajInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+
+
+					<ui:remove>
+						<!-- ПРОИЗВОДСТВО НА КОМБИНИРАНИ ФУРАЖИ ПО ЧЛ. 16 -->
+					</ui:remove>
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_KF_FDOB_PREM_16) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_KF_FDOB_PREM_16)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furaj']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_PR_FURAJI_KOMBINIRANI_16}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="4"
+								readonly="#{isView ne 0}" styleAutoComp="width:99%;"
+								minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_KF_FDOB_PREM_16) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_PROIZ_KF_FDOB_PREM_16)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-4  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.prednaznachenie']}"
+								styleClass="form-label" />
+							<p:selectOneMenu id="prednFuraj" filter="true"
+								filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.predmetDeinost.prednaznachenie}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PREDNAZNACHENIE_FURAJI, now, regTargovtsiFuraj.currentLang)}"
+									var="clPer" itemLabel="#{clPer.tekst}"
+									itemValue="#{clPer.code}" />
+							</p:selectOneMenu>
+						</div>
+					</c:if>
+
+					<ui:remove>
+						<!-- ТЪРГОВИЯ НА СЖП БЕЗ СЪХРАНЕНИЕ НА ПРАТКИ -->
+					</ui:remove>
+					<c:if
+						test="#{(systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_IZGARIANE_SJP)) or (systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_MEJDINNI_DEIN))}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vidSJP']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								readonly="#{isView ne 0}" saveStateTree="false"
+								withBtnClear="true" compType="2" isSelectNode="false"
+								styleAutoComp="width:99%;" minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{(systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_IZGARIANE_SJP)) or (systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_MEJDINNI_DEIN))}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.poiasnenie']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+					<ui:remove>
+						<!-- ИЗПОЛЗВАНЕ НА СЖП ЗА НАУЧНИ ЦЕЛИ -->
+					</ui:remove>
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_SJP_NAUCHNI_CELI)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-8  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vidSJP']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								isSelectNode="false" styleAutoComp="width:99%;"
+								readonly="#{isView ne 0}" minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_SJP_NAUCHNI_CELI)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.poiasnenie']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+					<ui:remove>
+						<!-- ИЗНОС НА СЖП НА ТРЕТИ СТРАНИ -->
+					</ui:remove>
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_IZNOS_SJP)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-10  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vidSJP']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								isSelectNode="false" styleAutoComp="width:99%;"
+								readonly="#{isView ne 0}" minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_IZNOS_SJP)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.kol']}"
+								styleClass="form-label" />
+							<p:inputText id="kolF" readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.kolichestvo}" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_IZNOS_SJP)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.poiasnenie']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+					<ui:remove>
+						<!-- ИЗПОЛЗВАНЕ НА СЖП/ПП ПО ЧЛ.23е -->
+					</ui:remove>
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vidSJP']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								isSelectNode="false" styleAutoComp="width:99%;"
+								readonly="#{isView ne 0}" minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_TARGAVOIA_SJP_23)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furajInfo']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+					<ui:remove>
+						<!-- ИЗДАВАНЕ НА СЕРТИФИКАТ ЗА ИЗНОС НА ФУРАЖИ -->
+					</ui:remove>
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_IZNOS_FURAJI_53) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_IZNOS_FURAJI_53)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-8 p-xl-10  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vidSJP']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_FURAJI_SJP_PP}"
+								selectedCode="#{regTargovtsiFuraj.predmetDeinost.vid}"
+								saveStateTree="false" withBtnClear="true" compType="2"
+								isSelectNode="false" styleAutoComp="width:99%;"
+								readonly="#{isView ne 0}" minQueryLength="2" update="@this" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_IZNOS_FURAJI_53) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_IZNOS_FURAJI_53)}">
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-4 p-xl-2  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.kol']}"
+								styleClass="form-label" />
+							<p:inputText id="kolF" readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.kolichestvo}" />
+						</div>
+					</c:if>
+
+					<c:if
+						test="#{regTargovtsiFuraj.babhDoc.docPodVid eq null ? systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_IZNOS_FURAJI_53) : systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docPodVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_IZNOS_FURAJI_53)}">
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.poiasnenie']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="furajInfo" rows="2"
+								readonly="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.predmetDeinost.dopInfo}" />
+						</div>
+					</c:if>
+
+
+				</div>
+			</div>
+
+			<p:divider />
+
+			<div class="p-col-12 filter-buttons">
+				<p:commandButton value="#{ui_labels['general.comfirmation']}"
+					styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+					partialSubmit="true" process="@this modalFurajData"
+					action="#{regTargovtsiFuraj.actionAddFuraj()}"
+					rendered="#{isView eq 0}"
+					update="modalFurajData targovtsiFurajForm:registerTabs:vidFuraj" />
+			</div>
+
+		</p:dialog>
+	</h:panelGroup>
+
+
+	<!-- МОДАЛЕН ЗА ТЪРСЕНЕНА ОБЕКТ ДЕЙНОСТ -->
+	<h:panelGroup id="panelObektDeinS">
+
+		<p:dialog appendTo="@form" closeOnEscape="true"
+			header="#{labels['compObektDeinSearch.title']}" fitViewport="true"
+			responsive="true" resizable="true" position="top"
+			widgetVar="obDSearch" dynamic="true" id="modalObDSearch" modal="true">
+
+			<p:messages id="modalObDSearchMsg" showDetail="true" closable="false"
+				style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+			<c:if test="#{regTargovtsiFuraj.showObektDeinPnl}">
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:compObektDeinostSearch id="obDeinS" myId="idObDeinS"
+						modal="true" dateClassif="#{regTargovtsiFuraj.decodeDate}"
+						selIdObDein="#{regTargovtsiFuraj.obektDeinostId}"
+						vidOd="#{BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_FURAJI}"
+						registered="false"
+						update="targovtsiFurajForm:registerTabs:obektDeinData"
+						onComplete="PF('obDSearch').hide(); PF('obDS').hide(); #{regTargovtsiFuraj.actionSlcObektDein()};" />
+				</div>
+			</c:if>
+
+			<c:if test="#{regTargovtsiFuraj.obektDeinWithoutSave}">
+				<div class="container #{guestPreferences.containerPosition}">
+					<ibg:compObektDeinostSearch id="obDeinS2" myId="idObDeinS"
+						modal="true" dateClassif="#{regTargovtsiFuraj.decodeDate}"
+						selIdObDein="#{regTargovtsiFuraj.obektDeinostId}"
+						vidOd="#{BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_FURAJI}"
+						update="targovtsiFurajForm:registerTabs:deinostData "
+						registered="true"
+						onComplete="PF('obDSearch').hide(); PF('obDS').hide(); #{regTargovtsiFuraj.actionSlcObektDein()};" />
+				</div>
+			</c:if>
+
+		</p:dialog>
+	</h:panelGroup>
+
+
+
+	<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ НА ТРАНСПОРТНО СРЕДСТВО -->
+	<h:panelGroup id="panelAddTs">
+
+		<p:dialog appendTo="@form" closeOnEscape="true"
+			header="#{labels['regTargovtsiFuraj.addTS']}" fitViewport="true"
+			responsive="true" resizable="true" position="top"
+			widgetVar="tsSearch" dynamic="true" id="modalTSsearch" modal="true"
+			width="850">
+
+			<p:messages id="modalTSsearchMsg" showDetail="true" closable="false"
+				style="width:100%">
+				<p:autoUpdate />
+			</p:messages>
+
+			<c:if
+				test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_REG_PREVOZVACHI)}">
+
+				<div jsf:id="modalMpsData">
+
+					<div class="p-grid">
+
+						<!-- РЕГ. НОМЕР -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-6 p-xl-3  ui-fluid">
+							<h:outputText value="#{labels['regTarvotsiFuraj.regN']}"
+								styleClass="form-label req" />
+							<div class="ui-inputgroup">
+								<p:inputText id="regNTS"
+									value="#{regTargovtsiFuraj.mpsFuraj.nomer}"
+									oninput="transformText();" readonly="#{isView ne 0}">
+									<p:ajax event="input" process="@this modalMpsData"
+										update="@this modalMpsData"
+										listener="#{regTargovtsiFuraj.actionChangeRegN()}" />
+								</p:inputText>
+
+								<ibg:compMPSsearch
+									titleLoadBtn="#{labels['regTargovtsiFuraj.searchMpsCrit']}"
+									selectedMPSid="#{regTargovtsiFuraj.mpsId}" registered="false"
+									update="targovtsiFurajForm:modalMpsData"
+									rendered="#{isView eq 0}"
+									onComplete="PF('mpsSearchVar').hide(); #{regTargovtsiFuraj.actionSlcMPS()};" />
+							</div>
+						</div>
+
+						<!-- ВИД НА ТС -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-6 p-xl-5 ui-fluid">
+							<h:outputText value="#{labels['regTarvotsiFuraj.vidTS']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="mpsType" autoWidth="false" filter="true"
+								filterMatchMode="startsWith"
+								value="#{regTargovtsiFuraj.mpsFuraj.vid}"
+								disabled="#{isView ne 0}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_VID_MPS, now, regTargovtsiFuraj.currentLang)}"
+									var="slcItem" itemLabel="#{slcItem.tekst}"
+									itemValue="#{slcItem.code}" />
+							</p:selectOneMenu>
+						</div>
+
+						<!--МОДЕЛ -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-6 p-xl-2 ui-fluid">
+							<h:outputText value="#{labels['compMPSsearch.model']}"
+								styleClass="form-label req" />
+							<p:inputText id="modelModal" readonly="#{isView ne 0}"
+								title="#{labels['regTargovtsiFuraj.mpsAutoIns']}"
+								value="#{regTargovtsiFuraj.mpsFuraj.model}" />
+						</div>
+
+						<!-- СЪСТОЯНИЕ НА ФУРАЖИТЕ -->
+						<div class="p-col-12  ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.sastoianieTS']}"
+								styleClass="form-label req" />
+							<p:selectManyCheckbox id="sast"
+								value="#{regTargovtsiFuraj.sastonieList}"
+								disabled="#{isView ne 0}">
+								<f:selectItems var="itemSc" itemLabel="#{itemSc.tekst}"
+									itemValue="#{itemSc.code}"
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_SAST_FURAJ_PREVOZ, regTargovtsiFuraj.decodeDate, regTargovtsiFuraj.currentLang)}" />
+							</p:selectManyCheckbox>
+						</div>
+					</div>
+
+					<p:divider />
+
+					<div class="p-col-12 filter-buttons">
+						<p:commandButton value="#{ui_labels['general.comfirmation']}"
+							styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+							action="#{regTargovtsiFuraj.actionAddMps}"
+							process="@this modalTSsearch" partialSubmit="true"
+							rendered="#{isView eq 0}"
+							update="modalTSsearchMsg targovtsiFurajForm:registerTabs:tsRegPrevoz" />
+					</div>
+
+				</div>
+			</c:if>
+
+		</p:dialog>
+	</h:panelGroup>
+
+
+
+
+	<c:if
+		test="#{systemData.isActionVisible(regTargovtsiFuraj.babhDoc.docVid, BabhConstants.CODE_ZNACHENIE_DEIN_CERT_DOBRA_PRAKTIKA)}">
+
+		<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ НА ДОКУМЕНТИ -->
+		<h:panelGroup id="panelAddDocs">
+
+			<p:dialog appendTo="@form" closeOnEscape="true"
+				header="#{labels['regTargovtsiFuraj.addDocsTitle']}"
+				fitViewport="true" responsive="true" resizable="true" position="top"
+				widgetVar="addDocsVar" dynamic="true" id="modalAddDocs" modal="true">
+
+				<p:messages id="modalAddDocsMsg" showDetail="true" closable="false"
+					style="width:100%">
+					<p:autoUpdate />
+				</p:messages>
+
+				<div class="container #{guestPreferences.containerPosition}"
+					jsf:id="modalDocsData">
+
+					<div class="p-grid">
+
+						<!-- ВИД НА ДОКУМЕНТА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-8 p-xl-8 ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.vidDoc']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="docGoodPract" autoWidth="false"
+								filter="true" filterMatchMode="startsWith"
+								disabled="#{isView ne 0}"
+								value="#{regTargovtsiFuraj.eventDeinostSert.sertType}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_DOCS_DOBRA_PRAKTIKA, now, regTargovtsiFuraj.currentLang)}"
+									var="slcItem" itemLabel="#{slcItem.tekst}"
+									itemValue="#{slcItem.code}" />
+							</p:selectOneMenu>
+						</div>
+
+						<!-- ВИД НА ФУРАЖА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4 ui-fluid">
+							<h:outputText value="#{labels['targovtsiFuraj.furaj']}"
+								styleClass="form-label req" />
+							<p:inputText id="docVidF" readonly="#{isView ne 0}" 
+								value="#{regTargovtsiFuraj.eventDeinostSert.vidFuraji}" />
+						</div>
+
+						<!-- ЕЗИК, НА КОЙТО ДА БЪДЕ ИЗДАДЕН -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4 ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.docLang']}"
+								styleClass="form-label" />
+							<p:inputText readonly="#{isView ne 0}" 
+								value="#{regTargovtsiFuraj.eventDeinostSert.language}" />
+						</div>
+
+						<!-- ДЪРЖАВА, ЗА КОЯТО Е ПРЕДНАЗНАЧЕН ФУРАЖА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4 ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.docDarj']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA id="docDarj"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_DARJAVI_TRETI_STRANI}"
+								selectedCode="#{regTargovtsiFuraj.eventDeinostSert.darj}"
+								emptyMessage="#{labels['docu.countryEmptyMsg']}"
+								saveStateTree="false" withBtnClear="true" compType="3"
+								readonly="#{isView ne 0}" 
+								styleAutoComp="width:99%;" minQueryLength="2" update="@this" />
+						</div>
+
+						<!-- ЖИВОТНИ -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-4 p-xl-4 ui-fluid">
+							<h:outputText value="#{labels['regTargovtsiFuraj.docAnimals']}"
+								styleClass="form-label" />
+							<p:inputText id="docJiv" readonly="#{isView ne 0}" 
+								value="#{regTargovtsiFuraj.eventDeinostSert.jivotni}" />
+						</div>
+
+						<!-- ТЪРГОВИЯ ЗА ЕС -->
+						<div class="p-col-12 ui-fluid ">
+							<h:outputText value="#{labels['regTargovtsiFuraj.furajEU']}"
+								styleClass="form-label" />
+							<p:selectOneRadio id="targoviaEu" 
+								value="#{regTargovtsiFuraj.eventDeinostSert.targoviaEu}"
+								disabled="#{isView ne 0}">
+								<f:selectItem itemLabel="#{ui_labels['general.da']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+								<f:selectItem itemLabel="#{ui_labels['general.ne']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+							</p:selectOneRadio>
+						</div>
+
+
+					</div>
+
+					<p:divider />
+
+					<div class="p-col-12 filter-buttons">
+						<p:commandButton value="#{ui_labels['general.comfirmation']}"
+							styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+							process="@this modalAddDocs" partialSubmit="true"
+							rendered="#{isView eq 0}"
+							action="#{regTargovtsiFuraj.actionAddSert}"
+							update="modalAddDocsMsg targovtsiFurajForm:registerTabs:docGoodPract" />
+					</div>
+
+				</div>
+
+			</p:dialog>
+		</h:panelGroup>
+	</c:if>
+
+
+</ui:composition>

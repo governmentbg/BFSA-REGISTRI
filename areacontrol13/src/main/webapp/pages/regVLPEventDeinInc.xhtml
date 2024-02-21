@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:pe="http://primefaces.org/ui/extensions"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components"> 
+          
+<div >
+       <div class="title-group p-mt-3"
+			jsf:rendered="#{vidDeinVlpLabel ne null}">
+			<p:commandLink class="extended-search-toggle expanded"
+				onclick="toggleSection(this, '#vlpTargForm:registerTabs:eventDeinVlp')">
+				<h:outputText
+					value="#{labels['registerMainTab.deinost']}: #{systemData.decodeItem(BabhConstants.CODE_CLASSIF_VID_DEINOST, vidDeinVlpLabel, regVLP.currentLang, now)}" />
+				<i class="fas fa-caret-right"></i>
+			</p:commandLink>
+		</div>
+		<div jsf:id="eventDeinVlp">
+	           
+	
+				<div jsf:id="basicDataEvD" class="p-grid ui-fluid">
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{vlpReklamaLabel ne null}">
+						<h:outputText value="#{vlpReklamaLabel}"
+							styleClass="form-label" />
+						<p:inputTextarea id="eventDeinReklama" value="#{regVLP.eventDeinostVlp.vlpReklama}"  rows="2" />
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-4 p-xl-4  ui-fluid" jsf:rendered="#{prednReklamaLabel ne null}">
+						<h:outputText value="#{prednReklamaLabel}"
+							styleClass="form-label" />
+						<p:selectOneMenu id="eventDeinPrednReklama" value="#{regVLP.eventDeinostVlp.prednaznReklama}">
+						     <f:selectItem value="#{null}" itemValue="#{null}"/>
+						     <f:selectItems  value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PREDN_REKLAMA, now, regVLP.currentLang)}" 
+						         var="clPer" itemLabel="#{clPer.tekst}" itemValue="#{clPer.code}" />
+					    </p:selectOneMenu>	
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-4 p-xl-4  ui-fluid"  jsf:rendered="#{nomDatLicenzLabel ne null}">
+						<div class="form-label">
+							<h:outputText value="#{nomDatLicenzLabel}" styleClass="form-label " id="nomDatLic"  />
+						</div> 
+						<p:inputText id="nomDatLicenz" value="#{regVLP.eventDeinostVlp.nomDatLizenz}"  style="width:99%"/>
+						   					
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-8 p-lg-8 p-xl-8  ui-fluid"  jsf:rendered="#{nomDatLicenzLabelLong ne null}">
+						<div class="form-label">
+							<h:outputText value="#{nomDatLicenzLabelLong}" styleClass="form-label " id="nomDatLicLong"  />
+						</div> 
+						<p:inputText id="nomDatLicenzLong" value="#{regVLP.eventDeinostVlp.nomDatLizenz}"  style="width:100%"/>
+						   					
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-4 p-lg-4 p-xl-4  ui-fluid" jsf:rendered="#{emailLabel ne null}">
+						<h:outputText value="#{emailLabel}"
+							styleClass="form-label" />
+						<p:inputText id="eventDeinMail"
+							value="#{regVLP.eventDeinostVlp.email}">							
+						</p:inputText>
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-8 p-lg-8 p-xl-8  ui-fluid" jsf:rendered="#{danniKontragentLabel ne null}">
+						<h:outputText value="#{danniKontragentLabel}"
+							styleClass="form-label" />
+						<p:inputText id="danniKontragent"
+							value="#{regVLP.eventDeinostVlp.danniKontragent}" >							
+						</p:inputText>
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{danniKontragentArea ne null}">
+						<h:outputText value="#{danniKontragentArea}"
+							styleClass="form-label" />
+						<p:inputTextarea id="danniKontragentA"
+							value="#{regVLP.eventDeinostVlp.danniKontragent}" rows="4">							
+						</p:inputTextarea>
+					</div>
+					
+					
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{eventDeinDopInfoLabel ne null}">
+						<h:outputText value="#{eventDeinDopInfoLabel}"
+							styleClass="form-label" />
+						<p:inputTextarea id="eventDeinDopInfo" value="#{regVLP.eventDeinostVlp.dopInfo}"  rows="1" />
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{eventDeinOpisanieLabel ne null}">
+						<h:outputText value="#{eventDeinOpisanieLabel}"
+							styleClass="form-label" />						
+						<p:inputTextarea id="eventDeinOpisanie" value="#{regVLP.eventDeinostVlp.opisanie}"  rows="1" />
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-1 p-lg-1 p-xl-1  ui-fluid"  jsf:rendered="#{datInspekciaLabel ne null}">
+						<div class="form-label">
+							<h:outputText value="#{datInspekciaLabel}" styleClass="form-label " />
+						</div> 
+				   		<p:datePicker id="nomDatInspekciaI" mask="true" showIcon="true" 
+							pattern="dd.MM.yyyy" locale="bg" value="#{regVLP.eventDeinostVlp.datInspekcia}" />			
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-8 p-lg-8 p-xl-8  ui-fluid" jsf:rendered="#{obhvatInspekciaLabel ne null}">
+						<h:outputText value="#{obhvatInspekciaLabel}"
+							styleClass="form-label" />
+						<p:inputText id="obhvatInspekcia"
+							value="#{regVLP.eventDeinostVlp.obhvatInspekcia}">							
+						</p:inputText>
+					</div>
+					
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{eventDeinAkredLabLabel ne null}">
+						<h:outputText value="#{eventDeinAkredLabLabel}"
+							styleClass="form-label" />						
+						<p:inputTextarea id="eventDeinAkredLab" value="#{regVLP.eventDeinostVlp.akredLaboratoria}"  rows="1" />
+					</div>
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12  ui-fluid" jsf:rendered="#{eventDeinPomVeshtLabel ne null}">
+						<h:outputText value="#{eventDeinPomVeshtLabel}"
+							styleClass="form-label" />
+						<p:inputTextarea id="eventDeinPomVesht" value="#{regVLP.eventDeinostVlp.pomVeshtestva}"  rows="1" />
+					</div>
+					
+					 
+				</div>      
+		</div> 
+	</div>  
+</html>

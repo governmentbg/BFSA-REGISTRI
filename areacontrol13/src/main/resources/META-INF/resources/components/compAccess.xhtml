@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:jsf="http://xmlns.jcp.org/jsf"
+	  xmlns:p="http://primefaces.org/ui"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:cc="http://java.sun.com/jsf/composite"
+	  xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+<cc:interface componentType="compAccess">
+
+   <cc:attribute name="codeObj"     	type="java.lang.Integer" shortDescription="Дали е за вписване или за заявление. Подава се CODE_ZNACHENIE_JOURNAL_VPISVANE или CODE_ZNACHENIE_JOURNAL_DOC"  />
+   <cc:attribute name="idObj"       	type="java.lang.Integer" shortDescription="id на вписване или на заявление"  />
+   <cc:attribute name="taskInfo"    	type="java.lang.String"  shortDescription="Информацията за задачата, поставена в деловодната система" />
+   <cc:attribute name="header"			type="java.lang.String"  shortDescription="Header for modal" />
+   <cc:attribute name="readonly"    	type="java.lang.Boolean" shortDescription="само за разглеждане" default="false" />
+   <cc:attribute name="dateClassif" 	type="java.util.Date"    shortDescription="Дата, към която да се разкодират имената на лицата. По подразбиране - днешна дата." />
+   <cc:attribute name="infoJournal"		type="java.lang.String"  shortDescription="Инф. за лицензианта от вписването (licenziant) или инф. от заявлението - identInfo " deafult="null" />
+   <!-- <cc:attribute name="onComplete"  type="java.lang.String"  shortDescription="Изпълнява функция при връщане на резултата - подава се името на функцията" /> -->   
+</cc:interface>
+
+<cc:implementation>
+
+	<p:commandButton 	styleClass="ui-button-secondary p-mr-2"
+					icon="fas fa-user-friends"  id="dlgBtnAccess" 
+					actionListener="#{cc.init}" value="Достъп"
+					partialSubmit="true" process="#{cc.clientId}:panelAcc @this" 
+					update="#{cc.clientId}:panelAcc"
+					oncomplete="PF('#{cc.clientId}LicaAccess').show();"
+					title="#{cc.attrs.header}" />
+							
+		<h:panelGroup id="panelAcc" >	
+			
+	  				
+			<p:dialog minWidth="600" width="800" 
+				    header="#{cc.attrs.header}" 
+					responsive="true"	  fitViewport="true" 							 
+					widgetVar="#{cc.clientId}LicaAccess" dynamic="true" 
+					resizable="true" closeOnEscape="true" style="margin-top:50px !important"
+					modal="true"  appendTo="@form" >
+				
+					<p:messages id="slgAccMsg" showDetail="true" closable="true" style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+				
+					<p:toolbar id="tlbr" styleClass="p-mb-5" rendered="#{!cc.attrs.readonly}">
+
+						<f:facet name="left">
+							
+							<ibg:selectManyAdmStr 
+								valueLoadBtn="Добвяне на нови лица"
+								valueConfirmBtn="Запис"
+							    id="lstIzpR" compType="1"  
+								codeClassif="#{BabhConstants.CODE_CLASSIF_ADMIN_STR}"														
+								filtered="false"
+								showRadioBtn="false"  
+								selectedCodes="#{cc.newListLica}"
+								selectedClassifs="#{cc.scList}"
+								specifics="#{cc.specificsAdm}"
+								codeExtCheck="#{cc.codeExtCheck}" 
+								dateClassif="#{cc.currentDate}" 							 
+								header = "Даване на достъп" 	
+								dopInfoAutoComp="true" 
+							    itemtipAtPosition="top"						 
+								isSelectNode="false" styleAutoComp="100%"
+								onComplete="#{cc.actionAddLica()}"
+								update="#{cc.clientId}:panelAcc2"/>
+				
+						</f:facet>
+					</p:toolbar>
+					<div class="p-grid p-align-end ui-fluid"  jsf:id="panelAcc2">
+						<div class="p-col-12">
+						 	<p:dataTable id="tblLicaAcc" var="row" showGridlines="true"  scrollable="true" scrollHeight="240"
+								value="#{cc.listLica}" rowIndexVar="idx"
+								emptyMessage="#{ui_labels['general.norows']}" rows="10"
+								sortMode="single" reflow="true"
+								paginator="false">
+				
+								<p:column width="20" exportable="false"
+									headerText="#{ui_labels['general.No-symbol'] }">
+									<h:outputText value="#{idx + 1}" />
+								</p:column>
+																				
+								<p:column   headerText="Служител">
+									<h:outputText
+										value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ADMIN_STR, row, cc.lang, cc.currentDate)}" />
+								</p:column>
+												
+								<p:column width="30" exportable="false">
+									<p:commandButton
+										action="#{cc.actionRemoveLiceFromList(row, idx)}"
+										partialSubmit="true"
+										update="#{cc.clientId}:tblLicaAcc"
+										icon="fas fa-trash" styleClass="ui-button-danger"
+										title="Премахва достъпа на лицето"
+										rendered="#{!cc.attrs.readonly}">
+										<p:confirm header="#{ui_labels['general.delete']}"
+											message="#{beanMessages['general.confirmDeleteMsg']}"
+											icon="fas fa-exclamation-triangle" />
+									</p:commandButton>
+								</p:column>
+				
+							</p:dataTable>
+						
+						</div>
+						
+						<div class="p-col-12">						
+							<h:outputText value="Информацията за задачата, поставена в деловодната система " styleClass="form-label" />
+							<p:inputTextarea value="#{cc.attrs.taskInfo}" rows="4" readonly="true"  />
+							
+						</div>
+					</div>
+					
+			</p:dialog>
+	
+		</h:panelGroup>
+	
+
+</cc:implementation>
+	
+</html>	

@@ -1,0 +1,127 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:c="http://java.sun.com/jsp/jstl/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+
+
+		<div class="p-col-6 p-md-6 p-lg-3 p-xl-2" >
+			<h:outputText value="#{lblRegNom}" styleClass="form-label req" />
+			<div class="ui-inputgroup "> 
+				<p:inputText   title="#{dTitle}"
+					id="nomOEz#{idd}"  value="#{regLicaDeinZJ.oezOne.regNom}"	
+					onkeypress="if(event.keyCode == 13) {event.preventDefault(); $(':focus').blur()} ">
+					<p:ajax event="change" update="deinostData#{idd} "
+						process="deinostData#{idd}  @this" partialSubmit="true"
+						listener="#{regLicaDeinZJ.actionFindOezByRegNom()}" />				
+				</p:inputText>
+		
+		 	 	<p:commandButton id="btnOez#{idd}" styleClass="p-mr-2"
+					icon="fas fa-list-ul" partialSubmit="true"
+			        process="deinostData#{idd} @this"
+			        update="deinostData#{idd}"
+			        oncomplete="PF('obDS').show(); "
+			        title="Разширено търсене на ОЕЗ" 
+			        rendered="#{isView ne 1}"/>
+			    	<h:outputText value=" "  /> 
+		    </div> 		   
+		<!-- ако се въведе номер, да се направи търсене в таблица oez -->
+		</div>
+ 	
+ 		
+		<c:if test="#{one}">
+		
+			<div class="p-col-6 p-md-6 p-lg-3 p-xl-2">
+				<h:outputText value="#{labels['compObektDeinSearch.regNomStar']}" styleClass="form-label" />
+				<p:inputText value="#{regLicaDeinZJ.oezOne.regNomerStar}" readonly="true"/>
+			</div>
+			
+		<ui:remove><!--
+			<div class="p-col-6 p-md-4 p-lg-2 p-xl-2" >
+				<h:outputText value="#{labels['compObektDeinSearch.regNom2']}" styleClass="form-label" />
+				<p:inputText value="#{regLicaDeinZJ.oezOne.regNom}" readonly="true"/>
+			</div>  
+		-->
+		</ui:remove>
+			
+			<div class="p-col-12 p-md-12 p-lg-6 p-xl-8">
+				<h:outputText value="Наименование" styleClass="form-label" />
+				<p:inputText readonly="true" value="#{regLicaDeinZJ.oezOne.naimenovanie}"/>
+			</div>
+			<div class="p-col-12 p-md-12 p-lg-6 p-xl-6">
+				<h:outputText value="Местонахождение" styleClass="form-label" />
+				<p:inputText readonly="true" value="#{regLicaDeinZJ.oezOneAdres}"/>
+			</div>
+			<div class="p-col-12 p-md-12 p-lg-6 p-xl-6">
+				<h:outputText value="Оператор на ОЕЗ" styleClass="form-label" />
+				<p:inputText readonly="true" value="#{regLicaDeinZJ.oezOneOperator}"/>
+			</div> 
+		</c:if>
+		
+	 	<c:if test="#{!one}"> <!--  използва се за износа на животни -->
+	 		<div class="p-col-12">
+				<p:dataTable id="tblOezList" var="row" showGridlines="true"
+					value="#{regLicaDeinZJ.vpisvane.eventDeinJiv.obektDeinostDeinost}"
+					rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+					rows="5" sortMode="single" reflow="true"
+					paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+					rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+					paginatorAlwaysVisible="true" paginator="true">
+
+					<p:column width="20" exportable="false"
+						headerText="#{ui_labels['general.No-symbol'] }">
+						<h:outputText value="#{idx + 1}" />
+					</p:column>
+					<p:column width="150" headerText="#{lblRegNom}">
+						<h:outputText value="#{row.obektDeinost.regNom}" />
+					</p:column>
+					<p:column width="150" headerText="#{labels['compObektDeinSearch.regNomStar']}">
+						<h:outputText value="#{row.obektDeinost.regNomerStar}" />
+					</p:column>
+					<!-- 
+					<p:column width="150" headerText="#{labels['compObektDeinSearch.regNom']}">
+						<h:outputText value="#{row.obektDeinost.regNom}" />
+					</p:column> -->
+					<p:column  headerText="Наименование">
+						<h:outputText value="#{row.obektDeinost.naimenovanie}" />
+					</p:column>
+					<p:column width="300" headerText="Местонахождение">
+						<h:outputText value="#{regLicaDeinZJ.loadOezAdres(row)}" />
+					</p:column>
+					<p:column width="30" exportable="false">
+						<p:commandButton
+							action="#{regLicaDeinZJ.actionRemoveOezFromList(row, idx)}"
+							update=" dZJForm:registerTabs:tblOezList"
+							icon="fas fa-trash" styleClass="ui-button-danger"
+							title="Премахване на ред">
+							<p:confirm header="#{ui_labels['general.delete']}"
+								message="#{beanMessages['general.confirmDeleteMsg']}"
+								icon="fas fa-exclamation-triangle" />
+						</p:commandButton>
+					</p:column>
+
+				</p:dataTable>
+			</div>
+	 	</c:if>
+	
+		<p:dialog appendTo="@form" closeOnEscape="true" header="#{labels['compObektDeinSearch.title']}" fitViewport="true"
+			responsive="true" resizable="true" position="top" widgetVar="obDS" dynamic="true" id="modalObDS" modal="true">
+			
+			<div class="container #{guestPreferences.containerPosition}">
+	
+				<ibg:compObektDeinostSearch id="obDeinS" myId="idObDeinS"  modal="true" registered="true"
+					vidOd="#{BabhConstants.CODE_ZNACHENIE_TIP_OBEKT_OEZ}" 
+					selIdObDein="#{regLicaDeinZJ.oezId}"							
+					update="dZJForm:registerTabs:deinostData#{idd}" 
+					onComplete="PF('obDS').hide(); #{regLicaDeinZJ.actionFindOezById()};" />
+	
+			</div>
+	
+		</p:dialog>
+ 
+
+</ui:composition>

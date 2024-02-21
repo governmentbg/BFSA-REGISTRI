@@ -1,0 +1,161 @@
+<ui:composition 
+	xmlns="http://www.w3.org/1999/xhtml" 
+	xmlns:h="http://java.sun.com/jsf/html"
+ 	xmlns:f="http://java.sun.com/jsf/core" 
+  	xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui" 
+    template="/template/template.xhtml"
+    xmlns:jsf="http://xmlns.jcp.org/jsf"
+    xmlns:ibg="http://java.sun.com/jsf/composite/components">
+
+   <ui:define name="title">Test Svilen</ui:define>
+    
+    
+    <ui:define name="viewname">
+        <li>Test Svilen</li>
+        
+    </ui:define>
+	
+	<ui:define name="head"> 
+
+
+	</ui:define>
+	
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			
+		</f:metadata>
+	</ui:define>
+
+    <ui:define name="content">
+		
+		  
+		  	<f:metadata>
+			<!-- 	<f:viewAction action="#{userData.checkPageAccess(1053)}" onPostback="false" /> -->
+				<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			</f:metadata>
+		
+			<h:form id="testForm" >
+			
+				<div class="page-title-wrapper">	
+					<div class="container title">
+					
+					
+					<div class="p-col-12 p-sm-12 p-md-12 p-lg-5 p-xl-5 ui-fluid" > 
+							 	
+							<h:outputText value="Наименование/ЕИК"
+								styleClass="form-label" />
+								
+							<div class="selectModalA-with-buttons">
+								<h:panelGroup id="refCorrInp" layout="block" styleClass="koresp-input">
+									 
+								
+								<ibg:selectReferents id="findCoresp"  
+										readonly="#{isView eq 1}"
+										update="testForm"
+										typeSearch="EIK"
+										dateClassif="#{testSvilen.decodeDate}"
+										corespCompCommand="PF('mCorrD').show();"
+										onComplete="#{testSvilen.someActionAfterSelection()}"	
+										selectedCode="#{testSvilen.idObject}"
+										searchWord="#{testSvilen.txtRef}"/>
+								</h:panelGroup>
+								<div jsf:id="refCorr">
+									<ui:remove>	<!--  Корекция на данни на кореспондент	--></ui:remove>
+									<p:commandButton id="btnCorrD"
+										rendered="#{testSvilen.idObject ne null}"
+										icon="#{(isView ne 1) ? 'fas fa-edit' : 'fas fa-eye'}" partialSubmit="true"
+										process="testForm:dpCorrData @this"
+										update="testForm:dpCorrData"
+										oncomplete="PF('mCorrD').show(); "
+										title="Актуализация на юридическо лице1"/>
+	
+									<ui:remove><!--  Разширено търсене на кореспондент --></ui:remove>
+									<p:commandButton id="btnCorrS"
+										onmousemove="document.getElementById('testForm:btnCorrS').focus();"
+										rendered="#{isView ne 1 and testSvilen.idObject eq null}"
+										icon="fas fa-list-ul" partialSubmit="true"
+										process="testForm:dpCorrSearch @this"
+										update="testForm:dpCorrSearch"
+										oncomplete="PF('mCorrS').show(); "
+										title="#{labels['search.extendRef']}2" />
+	
+									<ui:remove>	<!--  Нов кореспондент	-->
+									<p:commandButton id="btnCorrN"
+										onmousemove="document.getElementById('testForm:btnCorrN').focus();"
+										rendered="#{isView ne 1 and testSvilen.idObject eq null}"
+										icon="fas fa-plus" partialSubmit="true" 
+										process="testForm:dpCorrData @this"
+										update="testForm:dpCorrData"
+										oncomplete="PF('mCorrD').show();"
+										title="#{labels['docu.refCorrNew']}3" /></ui:remove>
+								</div>
+							</div>
+
+											
+				    </div>
+						 	
+							
+						
+					</div>
+				</div>
+			
+		<h:panelGroup id="dpCorrData">	
+		<p:dialog appendTo="@form"  closeOnEscape="true" 
+		    header="Въвеждане/актуализация на лице"  
+		    fitViewport="true"	
+		    resizable="true"
+		    responsive="true" 
+		    position="top" 		
+			widgetVar="mCorrD" dynamic="true" id="modalCorrD" 
+			modal="true">
+			<div class="container #{guestPreferences.containerPosition}">	
+				
+			 		<ibg:refCorrespData id="btnCorrD1"  readonly="#{isView eq 1}"
+						 codeRef="#{testSvilen.idObject}"
+						 saveInComponent="true"
+						 searchTxt="#{testSvilen.txtRef}" 
+						 vidDoc="13"
+						 dateClassif="#{testSvilen.decodeDate}"
+						 modal="true" refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_NFL}"
+						 update="testForm:refCorrInp testForm:refCorr"	
+						 onComplete = "PF('mCorrD').hide();document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"/>
+			</div>		
+	 		
+		</p:dialog>
+							
+				</h:panelGroup>			
+	<h:panelGroup id="dpCorrSearch">	
+	
+		<p:dialog appendTo="@form"  closeOnEscape="true"
+		    header="#{labels['docu.titleExtSrchCoresp']}" 
+		    fitViewport="true"	
+		    responsive="true" 
+		    resizable="true"
+		    position="top"	
+			widgetVar="mCorrS" dynamic="true" id="modalCorrS" 
+			modal="true">
+			<div class="container #{guestPreferences.containerPosition}">		
+				
+				 	<ibg:refCorrespSearch id="mCorrS1" myId="mCS1"
+						 codeRef="#{testSvilen.idObject}"
+						 searchTxt="#{testSvilen.txtRef}" 
+						 dateClassif="#{testSvilen.decodeDate}"
+						 modal="true" refType="#{BabhConstants.CODE_ZNACHENIE_REF_TYPE_FZL}"
+						 update="testForm"
+						 onComplete = "PF('mCorrS').hide();#{testSvilen.someActionAfterSelection()};"/>
+				
+			</div>
+						
+		</p:dialog>	
+	</h:panelGroup>			 
+		
+			</h:form>
+			
+	</ui:define>
+</ui:composition>
+
+
+		
+			

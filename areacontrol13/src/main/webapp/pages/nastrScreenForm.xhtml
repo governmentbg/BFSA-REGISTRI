@@ -1,0 +1,639 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:jsf="http://xmlns.jcp.org/jsf"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	template="/template/template.xhtml">
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+			<f:viewAction action="#{userData.checkPageAccess(108)}"
+				onPostback="false" />
+
+			<ui:remove>
+				<!-- тук също се появява проблема с визуализирането на съобщенията от инита.. за въпроси -> @s.arnaudova -->
+			</ui:remove>
+			<f:viewAction action="#{nastrScreenFormBean.init}" />
+		</f:metadata>
+
+
+	</ui:define>
+
+	<ui:define name="title">#{navTexts['/pages/zaiavNastrObj.xhtml']}</ui:define>
+
+	<ui:define name="viewname">
+		<li><p:commandLink title="#{ui_labels['general.back']}"
+				action="#{navigation.goBack()}"
+				rendered="#{navigation.navPath.size()>1}">
+				<i class="fas fa-caret-left" />
+			</p:commandLink></li>
+		<li>#{navTexts['/pages/zaiavNastrObj.xhtml']}</li>
+	</ui:define>
+
+
+	<ui:define name="content">
+		<h:form id="nastScreenForm">
+
+			<div class="#{guestPreferences.containerPosition}">
+
+				<div class="card"
+					jsf:rendered="#{nastrScreenFormBean.showEkranPanel}">
+
+					<!-- ТООЛБАР -->
+					<p:toolbar id="tlbr" styleClass="margin-bottom">
+
+						<f:facet name="left">
+							<p:commandButton icon="fas fa-save"
+								value="#{ui_labels['general.save']}" id="btnSave"
+								partialSubmit="true" ajax="false"
+								action="#{nastrScreenFormBean.actionSave}" process="@form"
+								update="@form"
+								oncomplete="document.body.scrollTop = 0; document.documentElement.scrollTop = 0;"
+								styleClass="p-mr-2" />
+						</f:facet>
+
+						<f:facet name="right">
+							<p:commandButton icon="fas fa-times"
+								styleClass="ui-button-danger"
+								value="#{ui_labels['general.delete']}" partialSubmit="true"
+								update="@form"
+								rendered="#{nastrScreenFormBean.registerOption.id ne null}"
+								action="#{nastrScreenFormBean.actionDelete}">
+								<p:confirm header="#{ui_labels['general.comfirmation']}"
+									message="#{beanMessages['general.confirmDeleteMsg']}"
+									icon="fas fa-exclamation-triangle" />
+							</p:commandButton>
+						</f:facet>
+
+					</p:toolbar>
+
+					<!-- ОСНОВНИ ДАННИ -->
+					<div class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '#nastScreenForm:basicData')">
+							<h:outputText value="#{labels['nastrObjInc.basicData']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+					</div>
+
+					<div jsf:id="basicData" class="p-grid ui-fluid">
+
+						<!-- РЕГИСТЪР -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-6 p-xl-6  ui-fluid">
+							<h:outputText value="#{labels['nastrScreenFormsList.vidRegis']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VID_REGISTRI}"
+								dateClassif="#{nastrScreenFormBean.decodeDate}"
+								selectedCode="#{nastrScreenFormBean.registerOption.registerId}"
+								id="vidRegist" styleAutoComp="width: 100%;" filtered="false"
+								sortByName="false" saveStateTree="false" withBtnClear="true"
+								onComplete="#{nastrScreenFormBean.actionChangeRegisterId()}"
+								onClear="#{nastrScreenFormBean.actionClearRegister()}"
+								update="nastScreenForm:basicData nastScreenForm:docsPnl nastScreenForm:docsOutPnl"
+								compType="2"
+								readOnlyCodes="#{nastrScreenFormBean.readOnlyCodesVidReg}" />
+						</div>
+
+						<!-- ВИД ОБЕКТ -->
+						<div class="p-col-12 p-sm-12 p-md-6 p-lg-3 p-xl-3  ui-fluid">
+							<h:outputText value="#{labels['nastrScreenFormsList.objType']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="objType" autoWidth="false"
+								value="#{nastrScreenFormBean.registerOption.objectType}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_TIP_OBEKT_LICENZ, now, nastrScreenFormBean.currentLang)}"
+									var="objType" itemLabel="#{objType.tekst}"
+									itemValue="#{objType.code}" />
+							</p:selectOneMenu>
+						</div>
+
+
+
+
+						<!-- SQL .. Това ще се позволява ли да се редактира?-->
+						<div class="p-col-12 ui-fluid p-mt-3">
+							<h:outputText value="#{labels['nastrScreenForm.sql']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="sql" style="min-width:100%; max-width:100%;"
+								rows="3"
+								value="#{nastrScreenFormBean.registerOption.registerSql}" />
+						</div>
+					</div>
+
+					<!-- ВХОДНИ ДОКУМЕНТИ -->
+					<div jsf:id="insDocs" class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '#nastScreenForm:docsPnl')">
+							<h:outputText value="#{labels['nastrScreenForm.insDocs']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+
+						<p:commandButton id="btnAddDoc"
+							value="#{labels['nastrScreenForm.newDoc']}"
+							styleClass="ui-button-success" icon="fas fa-plus"
+							partialSubmit="true" update="newInsDocDlg" process="@this"
+							action="#{nastrScreenFormBean.actionNewDocIn}"
+							oncomplete="PF('modalInsDoc').show();">
+						</p:commandButton>
+					</div>
+
+					<div jsf:id="docsPnl" class="p-grid ui-fluid">
+
+						<p:dataTable id="tblDocsList" var="row" lazy="true"
+							value="#{nastrScreenFormBean.registerOption.docsIn}"
+							rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+							rows="5" sortMode="single" reflow="true"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+							paginatorAlwaysVisible="true" paginator="true"
+							showGridlines="true">
+
+							<p:column width="30" exportable="false"
+								headerText="#{ui_labels['general.No-symbol']}">
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="35" exportable="false">
+								<p:commandButton icon="fas fa-edit" styleClass="btn-new"
+									update="nastScreenForm:newInsDocDlg nastScreenForm:docData"
+									partialSubmit="true" process="@this"
+									oncomplete="PF('modalInsDoc').show();"
+									title="#{ui_labels['general.edit']}"
+									action="#{nastrScreenFormBean.actionEditDocIn}">
+									<f:setPropertyActionListener value="#{row}"
+										target="#{nastrScreenFormBean.docsIn}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column headerText="#{labels['nastrScreenForm.uslugaNum']}"
+								width="10%">
+								<h:outputText value="#{row.meuNimber}" />
+							</p:column>
+
+
+							<p:column headerText="#{labels['nastrScreenForm.vidDoc']}">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row.vidDoc, nastrScreenFormBean.currentLang, null)}" />
+							</p:column>
+
+							<p:column headerText="#{labels['nastrScreenForm.docFor']}">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ZAIAV_PREDNAZNACHENIE, row.purpose, nastrScreenFormBean.currentLang, null)}" />
+							</p:column>
+
+							<p:column exportable="false" width="35">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this tblDocsList"
+									update="@this nastScreenForm:docsPnl tblDocsList"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{nastrScreenFormBean.actionDeleteDocIn}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}"
+										message="#{beanMessages['nastrScreenForm.confirmDelDocIn']}"
+										icon="fas fa-exclamation-triangle" />
+									<f:setPropertyActionListener value="#{row}"
+										target="#{nastrScreenFormBean.docsIn}" />
+								</p:commandButton>
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+
+					<!-- ИЗХОДНИ ДОКУМЕНТИ -->
+					<div jsf:id="outDocs" class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '#nastScreenForm:docsOutPnl')">
+							<h:outputText value="#{labels['nastrScreenForm.outDocs']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+
+						<p:commandButton id="btnNewDoc"
+							value="#{labels['nastrScreenForm.newDoc']}"
+							styleClass="ui-button-success" icon="fas fa-plus"
+							action="#{nastrScreenFormBean.actionNewDocOut}"
+							partialSubmit="true" update="newOutDocDlg" process="@this"
+							oncomplete="PF('modalOutDoc').show();">
+						</p:commandButton>
+					</div>
+
+					<div jsf:id="docsOutPnl" class="p-grid ui-fluid">
+
+						<p:dataTable id="tblOutDocsList" var="row" lazy="true"
+							value="#{nastrScreenFormBean.registerOption.docsOut}"
+							rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+							rows="5" sortMode="single" reflow="true"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+							paginatorAlwaysVisible="true" paginator="true"
+							showGridlines="true">
+
+							<p:column width="30" exportable="false"
+								headerText="#{ui_labels['general.No-symbol']}">
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="35" exportable="false">
+								<p:commandButton icon="fas fa-edit" styleClass="btn-new"
+									update="nastScreenForm:newOutDocDlg" partialSubmit="true"
+									process="@this nastScreenForm:docsOutPnl" oncomplete="PF('modalOutDoc').show();"
+									title="#{ui_labels['general.edit']}"
+									action="#{nastrScreenFormBean.actionEditDocOut}">
+									<f:setPropertyActionListener value="#{row}"
+										target="#{nastrScreenFormBean.docsOut}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column headerText="#{labels['nastrScreenForm.vidDoc']}">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DOC_VID, row.vidDoc, nastrScreenFormBean.currentLang, null)}" />
+							</p:column>
+
+							<p:column headerText="#{labels['nastrScreenForm.saveNum']}"
+								width="150">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_DANE, row.saveNomReissue, nastrScreenFormBean.currentLang, null)}" />
+							</p:column>
+							
+							<p:column headerText="#{labels['nastrScreenForm.srok']}"
+								width="100">
+								<h:outputText rendered="#{row.periodValid == null}"
+									value="#{labels['nastrScreenForm.docBezsrochen']}" />
+								<h:outputText rendered="#{row.periodValid != null}"
+									value="#{labels['nastrScreenForm.docSrochen']}" />							
+							</p:column>
+
+							<p:column exportable="false" width="35">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this tblOutDocsList"
+									update="@this nastScreenForm:docsOutPnl tblOutDocsList"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{nastrScreenFormBean.actionDeleteDocOut}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}"
+										message="#{beanMessages['nastrScreenForm.confirmDelDocIn']}"
+										icon="fas fa-exclamation-triangle" />
+									<f:setPropertyActionListener value="#{row}"
+										target="#{nastrScreenFormBean.docsOut}" />
+								</p:commandButton>
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+
+					<!-- СТРУКТУРА НА ЕКРАНА -->
+					<div jsf:id="pageStruct" class="title-group p-mt-3">
+						<p:commandLink class="extended-search-toggle expanded"
+							onclick="toggleSection(this, '#nastScreenForm:pageStructPnl')">
+							<h:outputText value="#{labels['nastrScreenForm.pageStruct']}" />
+							<i class="fas fa-caret-right"></i>
+						</p:commandLink>
+
+						<p:commandButton id="btnAddAttr"
+							value="#{labels['nastrObjInc.addAttr']}"
+							styleClass="ui-button-success" icon="fas fa-plus"
+							action="#{nastrScreenFormBean.actionNewDisplay}"
+							update="pageStructDlgDlg" process="@this" partialSubmit="true"
+							oncomplete="PF('modalPageStruct').show();">
+						</p:commandButton>
+					</div>
+
+					<div jsf:id="pageStructPnl" class="p-grid ui-fluid">
+
+						<p:dataTable id="tblAttrList" var="row" lazy="true"
+							value="#{nastrScreenFormBean.registerOption.display}"
+							rowIndexVar="idx" emptyMessage="#{ui_labels['general.norows']}"
+							rows="5" sortMode="single" reflow="true"
+							paginatorTemplate="{RowsPerPageDropdown} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {Exporters}"
+							rowsPerPageTemplate="5,10,15,20,25" paginatorPosition="bottom"
+							paginatorAlwaysVisible="true" paginator="true"
+							showGridlines="true">
+
+							<p:column width="30" exportable="false"
+								headerText="#{ui_labels['general.No-symbol']}">
+								<h:outputText value="#{idx + 1}" />
+							</p:column>
+
+							<p:column width="35" exportable="false">
+								<p:commandButton icon="fas fa-edit" styleClass="btn-new"
+									update="nastScreenForm:pageStructDlgDlg nastScreenForm:modalPageStructData"
+									partialSubmit="true" process="@this"
+									oncomplete="PF('modalPageStruct').show();"
+									title="#{ui_labels['general.edit']}"
+									actionListener="#{nastrScreenFormBean.actionEditDisplay}">
+									<f:setPropertyActionListener value="#{row}"
+										target="#{nastrScreenFormBean.display}" />
+								</p:commandButton>
+							</p:column>
+
+							<p:column headerText="#{labels['nastrObjInc.attr']}" width="40%">
+								<h:outputText
+									value="#{systemData.decodeItem(BabhConstants.CODE_CLASSIF_ATTR_EKRANI, row.objectClassifId, nastrScreenFormBean.currentLang, null)}" />
+							</p:column>
+
+							<p:column headerText="#{labels['nastrObjInc.label']}">
+								<h:outputText value="#{row.label}" />
+							</p:column>
+
+							<p:column exportable="false" width="35">
+								<p:commandButton icon="fas fa-trash" partialSubmit="true"
+									process="@this tblAttrList"
+									update="@this nastScreenForm:pageStructPnl tblAttrList"
+									styleClass="ui-button-danger"
+									title="#{ui_labels['general.delete']}"
+									action="#{nastrScreenFormBean.actionDeleteDisplay}">
+									<p:confirm header="#{ui_labels['general.comfirmation']}"
+										message="#{beanMessages['nastrObjBean.confDelAttr']}"
+										icon="fas fa-exclamation-triangle" />
+									<f:setPropertyActionListener value="#{row}"
+										target="#{nastrScreenFormBean.display}" />
+								</p:commandButton>
+							</p:column>
+						</p:dataTable>
+					</div>
+
+				</div>
+			</div>
+
+
+
+
+			<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ/РЕДАКЦИЯ НА ВХОДЕН ДОКУМЕНТ -->
+			<h:panelGroup id="newInsDocDlg">
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['nastrScreenForm.newInsDoc']}" fitViewport="true"
+					responsive="true" dynamic="true" id="modalInsDoc" modal="true"
+					widgetVar="modalInsDoc" position="top">
+
+					<p:messages id="modalInsDocMsg" showDetail="true" closable="false"
+						style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+
+					<div jsf:id="docData"
+						class="#{guestPreferences.containerPosition} p-grid ui-fluid">
+
+						<!-- ЗАЯВЛЕНИЕ САМО ЗА БАБХ -->
+						<div class="p-col-12 p-sm-12 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.onlyBabh']}"
+								styleClass="form-label" />
+							<p:selectOneRadio id="onlyBabh"
+								value="#{nastrScreenFormBean.docsIn.onlyBabh}">
+								<f:selectItem itemLabel="#{ui_labels['general.da']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+								<f:selectItem itemLabel="#{ui_labels['general.ne']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+							</p:selectOneRadio>
+						</div>
+
+						<!-- НОМЕР НА УСЛУГАТА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2 p-xl-2 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.uslugaNum']}"
+								styleClass="form-label req" />
+							<p:inputText id="numUslDlg"
+								value="#{nastrScreenFormBean.docsIn.meuNimber}" />
+						</div>
+
+
+						<!-- ВИД НА ДОКУМЕНТА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-10 p-xl-10 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.vidDoc']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_DOC_VID}"
+								dateClassif="#{nastrScreenFormBean.decodeDate}" id="vidDocDlg"
+								selectedCode="#{nastrScreenFormBean.docsIn.vidDoc}"
+								filtered="false" sortByName="true" saveStateTree="false"
+								withBtnClear="true" compType="2" isSelectNode="true"
+								styleAutoComp="width:100%; " />
+						</div>
+
+						<!-- ПРЕДНАЗНАЧЕНИЕ -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-2 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.docFor']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="docForDlg" filter="true"
+								filterMatchMode="startsWith" autoWidth="false"
+								value="#{nastrScreenFormBean.docsIn.purpose}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_ZAIAV_PREDNAZNACHENIE, now, nastrScreenFormBean.currentLang)}"
+									var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}" />
+							</p:selectOneMenu>
+						</div>
+
+						<!-- ПЛАЩАНЕ НА УСЛУГАТА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-3 p-xl-2 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.pay']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="payDlg" filter="true"
+								filterMatchMode="startsWith" autoWidth="false"
+								value="#{nastrScreenFormBean.docsIn.payCharacteristic}">
+								<f:selectItem value="#{null}" itemValue="#{null}" />
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_METOD_PLASHTANE, now, nastrScreenFormBean.currentLang)}"
+									var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}" />
+								<p:ajax event="change" update="paySum"
+									listener="#{nastrScreenFormBean.actionChangePayType}"
+									process="@this docData" partialSubmit="true" />
+							</p:selectOneMenu>
+						</div>
+
+						<!-- РАЗМЕР НА ТАКСАТА -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-2 p-xl-2 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.paySum']}"
+								styleClass="form-label" />
+							<p:inputNumber id="paySum" minValue="0"
+								disabled="#{nastrScreenFormBean.docsIn.payCharacteristic eq BabhConstants.CODE_ZNACHENIE_PAY_TYPE_NOPAY}"
+								converterMessage="Моля, въведете цяло число!"
+								value="#{nastrScreenFormBean.docsIn.payAmount}" />
+						</div>
+
+						<!--ДЕЙНОСТИ-->
+						<div class="p-col-12 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.deinosti']}"
+								styleClass="form-label" />
+							<ibg:selectManyModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_VID_DEINOST}"
+								selectedCodes="#{nastrScreenFormBean.docInActivities}"
+								selectedClassifs="#{nastrScreenFormBean.deinList}"
+								showRadioBtn="true" minQueryLength="2" compType="2"
+								saveStateTree="true" styleAutoComp="width:100%; " />
+						</div>
+					</div>
+
+					<p:divider />
+
+					<div class="p-col-12 filter-buttons">
+						<p:commandButton value="#{ui_labels['general.comfirmation']}"
+							styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+							partialSubmit="true"
+							action="#{nastrScreenFormBean.actionAddDocIn}"
+							process="@this docData" update="docData insDocs docsPnl " />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+
+
+
+			<!-- МОДАЛЕН ЗА ВЪВЕЖДАНЕ/РЕДАКЦИЯ НА ИЗХОДЕН ДОКУМЕНТ -->
+			<h:panelGroup id="newOutDocDlg">
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['nastrScreenForm.newOutDoc']}" fitViewport="true"
+					responsive="true" dynamic="true" id="modalOutDoc" modal="true"
+					widgetVar="modalOutDoc" position="top" width="90%">
+
+					<p:messages id="modalOutDocMsg" showDetail="true" closable="false"
+						style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+
+					<div jsf:id="docOutData"
+						class="#{guestPreferences.containerPosition} p-grid ui-fluid">
+
+						<!-- ВИД НА ДОКУМЕНТА -->
+						<div class="p-col-12 ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.vidDoc']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								codeClassif="#{BabhConstants.CODE_CLASSIF_DOC_VID}"
+								dateClassif="#{nastrScreenFormBean.decodeDate}"
+								id="vidDocOutDlg"
+								selectedCode="#{nastrScreenFormBean.docsOut.vidDoc}"
+								filtered="false" sortByName="true" saveStateTree="false"
+								withBtnClear="true" compType="2" isSelectNode="false"
+								styleAutoComp="width:100%; " />
+						</div>
+
+						<!-- СРОК НА ВАЛИДНОСТ -->
+						<div class="p-col-12 p-sm-12 p-md-3 p-lg-3 p-xl-2  ui-fluid ">
+							<h:outputText value="#{labels['nastrScreenForm.srok']}"
+								styleClass="form-label req" />
+							<p:selectOneMenu id="srokVal"
+								value="#{nastrScreenFormBean.srokDocOut}">
+								<f:selectItem
+									itemLabel="#{labels['nastrScreenForm.docSrochen']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+								<f:selectItem
+									itemLabel="#{labels['nastrScreenForm.docBezsrochen']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+								<p:ajax event="change" process="@this" update="docOutData"
+									listener="#{nastrScreenFormBean.actionChangePerType()}" />
+							</p:selectOneMenu>
+						</div>
+
+
+						<!-- ПРОДЪЛЖИТЕЛНОСТ НА ВАЛИДНОСТ -->
+						<div class="p-col-12 p-sm-12 p-md-2 p-lg-2 p-xl-1  ui-fluid"
+							jsf:rendered="#{nastrScreenFormBean.srokDocOut eq BabhConstants.CODE_ZNACHENIE_DA}">
+							<h:outputText value="#{labels['nastrScreenForm.periodVal']}"
+								styleClass="form-label req" />
+							<p:inputNumber id="periodValue" minValue="1" decimalPlaces="0"
+								value="#{nastrScreenFormBean.docsOut.periodValid}" title="#{labels['nastrScreenForm.plsInsSrok']}" />
+						</div>
+
+						<!-- МЕРНА ЕДИНИЦА -->
+						<div class="p-col-12 p-sm-12 p-md-4 p-lg-4 p-xl-3  ui-fluid"
+							jsf:rendered="#{nastrScreenFormBean.srokDocOut eq BabhConstants.CODE_ZNACHENIE_DA}">
+							<h:outputText value="#{labels['nastrScreenForm.periodType']}"
+								styleClass="form-label req" />
+							<p:selectOneRadio id="periodType" layout="lineDirection"
+								value="#{nastrScreenFormBean.docsOut.typePeriodValid}">
+								<f:selectItems
+									value="#{systemData.getSysClassification(BabhConstants.CODE_CLASSIF_PERIODI_VALID_DOCS, now, nastrScreenFormBean.currentLang)}"
+									var="item" itemLabel="#{item.tekst}" itemValue="#{item.code}" />								
+							</p:selectOneRadio>
+						</div>
+
+						<!-- ЗАПАЗВАНЕ НА НОМЕРА -->
+						<div class="p-col-12  ui-fluid ">
+							<h:outputText
+								value="#{labels['nastrScreenForm.saveNumPreizdavane']}"
+								styleClass="form-label req" />
+							<p:selectOneRadio id="saveState"
+								value="#{nastrScreenFormBean.docsOut.saveNomReissue}">
+								<f:selectItem itemLabel="#{ui_labels['general.da']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_DA}" />
+								<f:selectItem itemLabel="#{ui_labels['general.ne']}"
+									itemValue="#{BabhConstants.CODE_ZNACHENIE_NE}" />
+							</p:selectOneRadio>
+						</div>
+					</div>
+
+					<p:divider />
+
+					<div class="p-col-12 filter-buttons">
+						<p:commandButton value="#{ui_labels['general.comfirmation']}"
+							styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+							action="#{nastrScreenFormBean.actionAddDocOut}"
+							process="@this docOutData" update="docOutData outDocs docsOutPnl" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+
+
+			<!-- МОДАЛЕН ЗА ПРОМЯНА В СТРУКТУРАТА НА ЕКРАНА -->
+			<h:panelGroup id="pageStructDlgDlg">
+				<p:dialog appendTo="@form" closeOnEscape="true"
+					header="#{labels['nastrObjInc.addAttr']}" fitViewport="true"
+					responsive="true" dynamic="true" id="modalPageStruct" modal="true"
+					widgetVar="modalPageStruct" position="top">
+
+					<p:messages id="modalPageStructMsg" showDetail="true"
+						closable="false" style="width:100%">
+						<p:autoUpdate />
+					</p:messages>
+
+					<div jsf:id="modalPageStructData"
+						class="#{guestPreferences.containerPosition} p-grid ui-fluid">
+
+						<!-- АТРИБУТ -->
+						<div class="p-col-12 p-sm-12 p-md-12 p-lg-12 p-xl-12 ui-fluid ">
+							<h:outputText value="#{labels['nastrObjInc.attr']}"
+								styleClass="form-label req" />
+							<ibg:selectOneModalA
+								readonly="#{nastrScreenFormBean.flagEditDisplay}"
+								codeClassif="#{BabhConstants.CODE_CLASSIF_ATTR_EKRANI}"
+								dateClassif="#{nastrScreenFormBean.decodeDate}" id="attr"
+								selectedCode="#{nastrScreenFormBean.display.objectClassifId}"
+								filtered="false" sortByName="true" saveStateTree="false"
+								withBtnClear="true" compType="2" isSelectNode="false"
+								styleAutoComp="width:100%; " />
+						</div>
+
+						<!-- ЕТИКЕТ НА ЕКРАНА -->
+						<div class="p-col-12 ui-fluid ">
+							<h:outputText value="#{labels['nastrObjInc.attr']}"
+								styleClass="form-label" />
+							<p:inputTextarea id="attrLabel" rows="2"
+								value="#{nastrScreenFormBean.display.label}"
+								style="min-width: 100%; max-width: 100%;" />
+						</div>
+					</div>
+
+					<p:divider />
+
+					<div class="p-col-12 filter-buttons">
+						<p:commandButton value="#{ui_labels['general.comfirmation']}"
+							styleClass="ui-confirmdialog-yes" icon="fas fa-check"
+							action="#{nastrScreenFormBean.actionAddDisplay}"
+							process="@this modalPageStructData"
+							update="modalPageStructData pageStruct pageStructPnl" />
+					</div>
+
+				</p:dialog>
+			</h:panelGroup>
+
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>

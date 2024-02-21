@@ -1,0 +1,34 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:ibg="http://java.sun.com/jsf/composite/components"
+	xmlns:p="http://primefaces.org/ui" xmlns:jsf="http://xmlns.jcp.org/jsf"
+	template="/template/templateView.xhtml">
+
+
+	<ui:define name="metadata">
+		<f:metadata>
+			<!-- <f:viewAction action="#{userData.checkPageAccess(65)}"
+				onPostback="false" />  -->
+			<f:importConstants type="com.ib.babhregs.system.BabhConstants" />
+		</f:metadata>
+
+	</ui:define>
+
+
+	<ui:define name="title">#{navTexts['/pages/babhZaiavView.xhtml']}</ui:define>
+	<ui:define name="viewname">		
+		<li>#{navTexts['/pages/babhZaiavView.xhtml']}</li>
+	</ui:define>
+
+
+	<ui:define name="content">
+	
+		<ui:include src="/pages/babhZaiavInc.xhtml">
+			<ui:param name="isView" value="1" />
+		</ui:include>
+
+	</ui:define>
+
+</ui:composition>
